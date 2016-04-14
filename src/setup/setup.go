@@ -26,11 +26,11 @@ func NewCSMSetup(logger lager.Logger,
 }
 
 func (s *CSMSetup) getSetupStartupExtension(homePath string) (bool, *string) {
-	return s.FileHelper.GetExtension(homePath + "/setup/startup")
+	return s.FileHelper.GetExtension(homePath + "setup/startup")
 }
 
 func (s *CSMSetup) getSetupShutdownExtension(homePath string) (bool, *string) {
-	return s.FileHelper.GetExtension(homePath + "/setup/shutdown")
+	return s.FileHelper.GetExtension(homePath + "setup/shutdown")
 }
 
 func (s *CSMSetup) executeExtension(extensionPath *string, setup *models.ServiceManagerWorkspaceResponse) {
@@ -63,7 +63,7 @@ func (s *CSMSetup) executeExtension(extensionPath *string, setup *models.Service
 					}
 					s.Logger.Info("executeExtension", lager.Data{"extension processing status ": setup.Status})
 				} else {
-					// file size of extenion output file is not greater than 0
+					// file size of extension output file is not greater than 0
 					setup.Status = common.PROCESSING_STATUS_FAILED
 					s.Logger.Info("executeExtension", lager.Data{"extension output file is empty": success})
 				}

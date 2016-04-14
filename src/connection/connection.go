@@ -26,15 +26,15 @@ func NewCSMConnection(logger lager.Logger, config *common.ServiceManagerConfigur
 }
 
 func (c *CSMConnection) getConnectionsGetExtension(homePath string) (bool, *string) {
-	return c.FileHelper.GetExtension(homePath + "/connection/get")
+	return c.FileHelper.GetExtension(homePath + "connection/get")
 }
 
 func (c *CSMConnection) getConnectionsCreateExtension(homePath string) (bool, *string) {
-	return c.FileHelper.GetExtension(homePath + "/connection/create")
+	return c.FileHelper.GetExtension(homePath + "connection/create")
 }
 
 func (c *CSMConnection) getConnectionsDeleteExtension(homePath string) (bool, *string) {
-	return c.FileHelper.GetExtension(homePath + "/connection/delete")
+	return c.FileHelper.GetExtension(homePath + "connection/delete")
 }
 
 func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, extensionPath *string, connection *models.ServiceManagerConnectionResponse) {
@@ -75,7 +75,7 @@ func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *stri
 					}
 					c.Logger.Info("executeExtension", lager.Data{"extension processing status ": connection.Status})
 				} else {
-					// file size of extenion output file is not greater than 0
+					// file size of extension output file is not greater than 0
 					connection.Status = common.PROCESSING_STATUS_FAILED
 					c.Logger.Debug("executeExtension", lager.Data{"extension output file is empty": success})
 				}

@@ -19,6 +19,7 @@ help:
 	@echo "  generate           Generates both server and client"
 	@echo "  build              generates swagger code and rebuilds the service only"
 	@echo "  test               Run the unit tests"
+	@echo "  coverage           Run the unit tests and produces a coverage report"
 	@echo "  tools              Installs tools needed to run"
 	@echo
 
@@ -42,6 +43,10 @@ clean-all: clean
 generate:
 	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
 	scripts/generate-server.sh
+
+coverage:
+	@echo "$(OK_COLOR)==> Running tests with coverage tool$(NO_COLOR)"
+	./scripts/testCoverage.sh
 
 build:	generate
 	@echo "$(OK_COLOR)==> Building Catalog Service Manager code $(NO_COLOR)"

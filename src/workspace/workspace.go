@@ -26,15 +26,15 @@ func NewCSMWorkspace(logger lager.Logger,
 }
 
 func (w *CSMWorkspace) getWorkspaceGetExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(homePath + "/workspace/get")
+	return w.FileHelper.GetExtension(homePath + "workspace/get")
 }
 
 func (w *CSMWorkspace) getWorkspaceCreateExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(homePath + "/workspace/create")
+	return w.FileHelper.GetExtension(homePath + "workspace/create")
 }
 
 func (w *CSMWorkspace) getWorkspaceDeleteExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(homePath + "/workspace/delete")
+	return w.FileHelper.GetExtension(homePath + "workspace/delete")
 }
 
 func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *string, workspace *models.ServiceManagerWorkspaceResponse) {
@@ -71,7 +71,7 @@ func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *stri
 					}
 					w.Logger.Info("executeExtension", lager.Data{"extension processing status ": workspace.Status})
 				} else {
-					// file size of extenion output file is not greater than 0
+					// file size of extension output file is not greater than 0
 					workspace.Status = common.PROCESSING_STATUS_FAILED
 					w.Logger.Debug("executeExtension", lager.Data{"extension execution failed": success})
 				}
@@ -112,7 +112,7 @@ func (w *CSMWorkspace) GetWorkspace(workspaceID string) *models.ServiceManagerWo
 	if exists && filename != nil {
 		w.executeExtension(&workspaceID, filename, &workspace)
 	} else {
-		w.Logger.Info("GetWorkspace", lager.Data{"Extention not found ": exists})
+		w.Logger.Info("GetWorkspace", lager.Data{"extension not found ": exists})
 	}
 	return &workspace
 }
@@ -127,7 +127,7 @@ func (w *CSMWorkspace) CreateWorkspace(workspaceCreate *models.ServiceManagerWor
 	if exists && filename != nil {
 		w.executeExtension(&workspaceCreate.WorkspaceID, filename, &workspace)
 	} else {
-		w.Logger.Info("CreateWorkspace", lager.Data{"Extention not found ": exists})
+		w.Logger.Info("CreateWorkspace", lager.Data{"extension not found ": exists})
 	}
 
 	return &workspace
@@ -143,7 +143,7 @@ func (w *CSMWorkspace) DeleteWorkspace(workspaceID string) *models.ServiceManage
 	if exists && filename != nil {
 		w.executeExtension(&workspaceID, filename, &workspace)
 	} else {
-		w.Logger.Info("CreateWorkspace", lager.Data{"Extention not found": exists})
+		w.Logger.Info("CreateWorkspace", lager.Data{"extension not found": exists})
 	}
 
 	return &workspace
