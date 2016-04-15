@@ -9,6 +9,9 @@ ifndef CSM_API_KEY
 	export CSM_API_KEY:=csm-auth-token
 endif
 
+# List of files to be tested
+TESTLIST=$(shell go list ./... | grep -v examples)
+
 .PHONY: all clean build test release
 
 default: help
@@ -66,7 +69,7 @@ build:	generate
 
 test:
 	@echo "$(OK_COLOR)==> Running tests $(NO_COLOR)"
-	godep go test ./... | grep -v generated | grep -v cmd/catalog-service-manager/handlers | grep -v scripts | grep -v examples
+	godep go test $(TESTLIST) | grep -v generated | grep -v cmd/catalog-service-manager/handlers | grep -v scripts 
 
 tools:
 	@echo "$(OK_COLOR)==> Installing tools and go dependancies $(NO_COLOR)"

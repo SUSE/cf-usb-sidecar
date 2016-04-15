@@ -1,0 +1,12 @@
+FROM catalog-service-manager:build
+
+COPY . /go/src/github.com/hpcloud/catalog-service-manager/examples/amazon-rds
+ENV GOPATH /go
+ENV GOBIN /go/bin
+WORKDIR /go/src/github.com/hpcloud/catalog-service-manager/examples/amazon-rds
+
+RUN make tools
+RUN make build
+
+
+ENTRYPOINT cp /go/bin/amazon-rds-mysql /csm-amazon-rds/
