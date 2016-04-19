@@ -16,11 +16,14 @@ help:
 	@echo "  all                Cleans, builds, runs tests"
 	@echo "  clean              Removes all build output"
 	@echo "  clean-all          Remove all build output and generated code"
+	@echo "  clean-docker       Remove all docker containers and images for catalog-service-manager"
 	@echo "  generate           Generates both server and client"
 	@echo "  build              generates swagger code and rebuilds the service only"
 	@echo "  test               Run the unit tests"
 	@echo "  coverage           Run the unit tests and produces a coverage report"
 	@echo "  tools              Installs tools needed to run"
+	@echo "  dev-base           Builds docker image for dev/test"
+	@echo "  release-base       Builds docker image for release"
 	@echo
 
 
@@ -39,6 +42,11 @@ clean-all: clean
 	@echo "$(OK_COLOR)==> Removing generated code$(NO_COLOR)"
 	rm -rf generated
 
+clean-docker:
+	scripts/docker/remove-docker-container.sh csm
+	scripts/docker/remove-docker-container.sh catalog-service-manager
+	scripts/docker/remove-docker-image.sh csm
+	scripts/docker/remove-docker-image.sh catalog-service-manager
 
 generate:
 	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
@@ -63,4 +71,12 @@ tools:
 	go get github.com/tools/godep
 
 	./scripts/tools/codegen.sh
+
+dev-base: clean-all
+	@echo "$(OK_COLOR)==> Building dev/test docker image for Catalog Service Manager $(NO_COLOR)"
+	scripts/docker/development/generate-development-base-image.sh
+
+release-base: clean-all
+	@echo "$(OK_COLOR)==> Building release docker image for Catalog Service Manager $(NO_COLOR)"
+	scripts/docker/release/generate-release-base-image.sh
 

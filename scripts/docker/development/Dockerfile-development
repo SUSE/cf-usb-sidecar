@@ -1,0 +1,41 @@
+# uses catalog-service-manager:build image which has all 
+# the necessary tools installed for this project
+
+# Use following script to generate the build image
+# catalog-service-manager/scripts/docker/generate-build-image.sh
+
+# Refer to read me on the project for more details.
+
+FROM catalog-service-manager:build
+
+# copying project's root directory into the image
+COPY . /go/src/github.com/hpcloud/catalog-service-manager
+
+# setting up go build environment
+ENV GOPATH /go
+ENV GOBIN /go/bin
+WORKDIR /go/src/github.com/hpcloud/catalog-service-manager
+
+# building the project
+RUN make clean-all
+RUN make build
+
+# creating placeholder for extensions
+RUN mkdir -p /catalog-service-manager/bin/
+RUN mkdir -p /catalog-service-manager/setup
+RUN mkdir -p /catalog-service-manager/setup/startup
+RUN mkdir -p /catalog-service-manager/setup/shutdown
+
+RUN mkdir -p /catalog-service-manager/workspace
+RUN mkdir -p /catalog-service-manager/workspace/get 
+RUN mkdir -p /catalog-service-manager/workspace/create 
+RUN mkdir -p /catalog-service-manager/workspace/delete
+RUN mkdir -p /catalog-service-manager/connection 
+RUN mkdir -p /catalog-service-manager/connection/get 
+RUN mkdir -p /catalog-service-manager/connection/create 
+RUN mkdir -p /catalog-service-manager/connection/delete
+
+RUN cp /go/bin/catalog-service-manager /catalog-service-manager/bin/
+
+# run catalog-service-manager binary
+ENTRYPOINT  /catalog-service-manager/bin/catalog-service-manager

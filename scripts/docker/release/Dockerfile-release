@@ -1,0 +1,22 @@
+FROM golang:1.5-alpine
+
+RUN mkdir -p /catalog-service-manager/bin/
+
+RUN mkdir -p /catalog-service-manager/setup
+RUN mkdir -p /catalog-service-manager/setup/startup
+RUN mkdir -p /catalog-service-manager/setup/shutdown
+
+RUN mkdir -p /catalog-service-manager/workspace
+RUN mkdir -p /catalog-service-manager/workspace/get 
+RUN mkdir -p /catalog-service-manager/workspace/create 
+RUN mkdir -p /catalog-service-manager/workspace/delete
+
+RUN mkdir -p /catalog-service-manager/connection
+RUN mkdir -p /catalog-service-manager/connection/get 
+RUN mkdir -p /catalog-service-manager/connection/create 
+RUN mkdir -p /catalog-service-manager/connection/delete
+
+COPY CSM_BIN/catalog-service-manager /catalog-service-manager/bin/
+
+
+ENTRYPOINT /catalog-service-manager/bin/catalog-service-manager

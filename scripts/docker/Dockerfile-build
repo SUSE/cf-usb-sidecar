@@ -1,0 +1,14 @@
+FROM golang:1.5-alpine
+
+RUN apk --no-cache add --update git
+RUN apk --no-cache add --update mercurial
+RUN apk --no-cache add --update make
+COPY . /go/src/github.com/hpcloud/catalog-service-manager
+ENV GOPATH /go
+ENV GOBIN /go/bin
+
+WORKDIR /go/src/github.com/hpcloud/catalog-service-manager
+
+RUN make tools
+
+ENTRYPOINT echo `hostname`

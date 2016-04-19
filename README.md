@@ -129,3 +129,36 @@ curl -X DELETE http://localhost:8081/workspaces/test_workspace/connections/test_
 ### delete workspace
 
 curl -X DELETE http://localhost:8081/workspaces/test_workspace
+
+## Docker Containers for Catalog Service Manager
+CSM provides a base docker image which users creating CSM for their services should be able to extended easily. For more information on how to extend the base image please refer to the documentation on Extending_CSM.md
+
+### catalog-service-manager:build image (based on golang:1.6-alpine)
+This is the build image which has all the CSM dependencies installed (mercurial, swagger, make, git etc) on it. By having this image locally available we save at least few minutes, everytime we have to build other images in the workflow. Although you don't need to build this image explicitly its built by the other scripts if they don't find it in docker images.
+
+```
+scripts/generate-build-image.sh
+```
+
+### catalog-service-manager:development (based on catalog-service-manager:build)
+This is the dev image for CSM and primarily used by developers working on CSM. It uses catalog-service-manager:build and copies CSM code and compiles it there and runs tests on the container. If required this container can be started as a docker container locally with the command 
+```
+make dev-base
+```
+or if you want to run the script directly
+```
+scripts/development/generate-development-base-image.sh
+```
+This also publishes the image  with tag catalog-service-manager:base
+
+### catalog-service-manager:release (based on catalog-service-manager:build)
+This is the intermediate docker image for CSM and primarily used by for generating the release artifacts. It uses catalog-service-manager:build and copies CSM code and compiles it there and runs tests on the container. When the image building is finished we start the container with a local directory mounted on the container where we copy the build artifacts 
+```
+make release-base
+````
+or if you want to run the script directly
+
+```
+scripts/release/generate-release-base-image.sh
+```
+This also publishes the image with tag catalog-service-manager:base, and this is the image/tag which will be used by all the services.
