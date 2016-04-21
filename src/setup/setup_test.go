@@ -16,9 +16,9 @@ import (
 )
 
 var (
-    DEFAULT_STARTUP_EXTENSION="/catalog-service-manager/setup/startup"
-    DEFAULT_SHUTDOWN_EXTENSION="/catalog-service-manager/setup/shutdown"
-    FAKE_STARTUP_EXTENSION="/tmp/fake/setup/startup/startup.sh"
+	DEFAULT_STARTUP_EXTENSION  = "/catalog-service-manager/setup/startup"
+	DEFAULT_SHUTDOWN_EXTENSION = "/catalog-service-manager/setup/shutdown"
+	FAKE_STARTUP_EXTENSION     = "/tmp/fake/setup/startup/startup.sh"
 )
 
 type MockedFileExtension struct {
@@ -85,15 +85,15 @@ func setup(cmsFileHelper utils.CSMFileHelperInterface) (*common.ServiceManagerCo
 }
 
 func getStatusString(status *string, processingType *string, details map[string]interface{}) string {
-    test := models.ServiceManagerWorkspaceResponse{
-        Status: *status,
-    }
-    if processingType != nil {
-        test.ProcessingType = *processingType
-    }
-    if details != nil {
-        test.Details = details
-    }
+	test := models.ServiceManagerWorkspaceResponse{
+		Status: *status,
+	}
+	if processingType != nil {
+		test.ProcessingType = *processingType
+	}
+	if details != nil {
+		test.Details = details
+	}
 	out, _ := json.Marshal(test)
 	return string(out)
 }

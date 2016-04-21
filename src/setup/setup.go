@@ -2,10 +2,10 @@ package setup
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"os"
 	"errors"
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
+	"io/ioutil"
+	"os"
 
 	"github.com/hpcloud/catalog-service-manager/src/common"
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"
@@ -34,10 +34,10 @@ func (s *CSMSetup) getSetupShutdownExtension(homePath string) (bool, *string) {
 }
 
 func (s *CSMSetup) executeExtension(extensionPath *string, setup *models.ServiceManagerWorkspaceResponse) {
-    if extensionPath == nil {
-        s.Logger.Error("executeExtension", errors.New("extensionPath is nil"))
-        return
-    }
+	if extensionPath == nil {
+		s.Logger.Error("executeExtension", errors.New("extensionPath is nil"))
+		return
+	}
 	s.Logger.Info("executeExtension", lager.Data{"extension Path ": extensionPath})
 	if success, outputFile, output := s.FileHelper.RunExtensionFileGen(*extensionPath, ""); success {
 		s.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})

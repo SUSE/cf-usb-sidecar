@@ -1,12 +1,16 @@
 package common
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 type ServiceManagerConfiguration struct {
 	PARAMETERS   *string
 	MANAGER_HOME *string
 	LOG_LEVEL    *string
 	DEV_MODE     *string
+	API_KEY      *string
 }
 
 var paramDefaultList = map[string]string{
@@ -23,6 +27,7 @@ func NewServiceManagerConfiguration() *ServiceManagerConfiguration {
 	config.MANAGER_HOME = config.getConfigFromEnv("CSM_HOME")
 	config.LOG_LEVEL = config.getConfigFromEnv("CSM_LOG_LEVEL")
 	config.DEV_MODE = config.getConfigFromEnv("CSM_DEV_MODE")
+	config.API_KEY = config.getConfigFromEnv("CSM_API_KEY")
 
 	return &config
 }
@@ -33,11 +38,12 @@ func (*ServiceManagerConfiguration) getConfigFromEnv(key string) *string {
 
 	if ok {
 		return &value
-	} else {
-		defValue, found := paramDefaultList[key]
-		if found {
-			return &defValue
-		}
-		panic("Please configure " + key)
 	}
+	defValue, found := paramDefaultList[key]
+	if found {
+		return &defValue
+	}
+	fmt.Fprintf(os.Stderr, "error: Please configure "+key+".")
+	os.Exit(1)
+	return nil
 }

@@ -2,9 +2,9 @@ package connection
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
-	"errors"
 	"strings"
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
@@ -38,18 +38,18 @@ func (c *CSMConnection) getConnectionsDeleteExtension(homePath string) (bool, *s
 }
 
 func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, extensionPath *string, connection *models.ServiceManagerConnectionResponse) {
-    if workspaceID == nil {
-        c.Logger.Error("executeExtension", errors.New("workspaceID is nil"))
-        return
-    }
-    if connectionID == nil {
-        c.Logger.Error("executeExtension", errors.New("connectionID is nil"))
-        return
-    }
-    if extensionPath == nil {
-        c.Logger.Error("executeExtension", errors.New("extensionPath is nil"))
-        return
-    }
+	if workspaceID == nil {
+		c.Logger.Error("executeExtension", errors.New("workspaceID is nil"))
+		return
+	}
+	if connectionID == nil {
+		c.Logger.Error("executeExtension", errors.New("connectionID is nil"))
+		return
+	}
+	if extensionPath == nil {
+		c.Logger.Error("executeExtension", errors.New("extensionPath is nil"))
+		return
+	}
 	c.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "extension Path ": extensionPath})
 	if success, outputFile, output := c.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, *connectionID); success {
 		c.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})

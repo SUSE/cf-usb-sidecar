@@ -17,7 +17,7 @@ import (
 // This file is safe to edit. Once it exists it will not be overwritten
 
 func configureFlags(api *operations.CatlogServiceManagerAPI) {
-	
+
 }
 
 func ConfigureAPI(api *operations.CatlogServiceManagerAPI) http.Handler {
@@ -28,27 +28,29 @@ func ConfigureAPI(api *operations.CatlogServiceManagerAPI) http.Handler {
 
 	api.JSONProducer = httpkit.JSONProducer()
 
-	api.ConnectionCreateConnectionHandler = connection.CreateConnectionHandlerFunc(func(params connection.CreateConnectionParams) middleware.Responder {
+	api.APIKeyAuth = handlers.ApiKeyAuth
+
+	api.ConnectionCreateConnectionHandler = connection.CreateConnectionHandlerFunc(func(params connection.CreateConnectionParams, principal interface{}) middleware.Responder {
 		return handlers.CreateConnection(params.WorkspaceID, params.ConnectionCreateRequest)
 	})
 
-	api.WorkspaceCreateWorkspaceHandler = workspace.CreateWorkspaceHandlerFunc(func(params workspace.CreateWorkspaceParams) middleware.Responder {
+	api.WorkspaceCreateWorkspaceHandler = workspace.CreateWorkspaceHandlerFunc(func(params workspace.CreateWorkspaceParams, principal interface{}) middleware.Responder {
 		return handlers.CreateWorkspace(params.CreateWorkspaceRequest)
 	})
 
-	api.WorkspaceDeleteWorkspaceHandler = workspace.DeleteWorkspaceHandlerFunc(func(params workspace.DeleteWorkspaceParams) middleware.Responder {
+	api.WorkspaceDeleteWorkspaceHandler = workspace.DeleteWorkspaceHandlerFunc(func(params workspace.DeleteWorkspaceParams, principal interface{}) middleware.Responder {
 		return handlers.DeleteWorkspace(params.WorkspaceID)
 	})
 
-	api.ConnectionDeleteConnectionHandler = connection.DeleteConnectionHandlerFunc(func(params connection.DeleteConnectionParams) middleware.Responder {
+	api.ConnectionDeleteConnectionHandler = connection.DeleteConnectionHandlerFunc(func(params connection.DeleteConnectionParams, principal interface{}) middleware.Responder {
 		return handlers.DeleteConnection(params.WorkspaceID, params.ConnectionID)
 	})
 
-	api.WorkspaceGetWorkspaceHandler = workspace.GetWorkspaceHandlerFunc(func(params workspace.GetWorkspaceParams) middleware.Responder {
+	api.WorkspaceGetWorkspaceHandler = workspace.GetWorkspaceHandlerFunc(func(params workspace.GetWorkspaceParams, principal interface{}) middleware.Responder {
 		return handlers.GetWorkspace(params.WorkspaceID)
 	})
 
-	api.ConnectionGetConnectionHandler = connection.GetConnectionHandlerFunc(func(params connection.GetConnectionParams) middleware.Responder {
+	api.ConnectionGetConnectionHandler = connection.GetConnectionHandlerFunc(func(params connection.GetConnectionParams, principal interface{}) middleware.Responder {
 		return handlers.GetConnection(params.WorkspaceID, params.ConnectionID)
 	})
 

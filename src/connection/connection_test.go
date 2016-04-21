@@ -1,10 +1,10 @@
 package connection
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"encoding/json"
 	"strings"
 	"testing"
 
@@ -16,12 +16,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-
 var (
-    DEFAULT_GET_CONNECTION_EXTENSION="/catalog-service-manager/connection/get"
-    DEFAULT_DELETE_CONNECTION_EXTENSION="/catalog-service-manager/connection/delete"
-    DEFAULT_CREATE_CONNECTION_EXTENSION="/catalog-service-manager/connection/create"
-    FAKE_GET_CONNECTION_EXTENSION="/tmp/fake/connection/get/getConnection.sh"
+	DEFAULT_GET_CONNECTION_EXTENSION    = "/catalog-service-manager/connection/get"
+	DEFAULT_DELETE_CONNECTION_EXTENSION = "/catalog-service-manager/connection/delete"
+	DEFAULT_CREATE_CONNECTION_EXTENSION = "/catalog-service-manager/connection/create"
+	FAKE_GET_CONNECTION_EXTENSION       = "/tmp/fake/connection/get/getConnection.sh"
 )
 
 type MockedFileExtension struct {
@@ -88,17 +87,17 @@ func setup(cmsFileHelper utils.CSMFileHelperInterface) (*common.ServiceManagerCo
 }
 
 func getStatusString(status *string, processingType *string, details map[string]interface{}) string {
-    test := models.ServiceManagerWorkspaceResponse{
-        Status: *status,
-    }
-    if processingType != nil {
-        test.ProcessingType = *processingType
-    }
-    if details != nil {
-        test.Details = details
-    }
-    out, _ := json.Marshal(test)
-    return string(out)
+	test := models.ServiceManagerWorkspaceResponse{
+		Status: *status,
+	}
+	if processingType != nil {
+		test.ProcessingType = *processingType
+	}
+	if details != nil {
+		test.Details = details
+	}
+	out, _ := json.Marshal(test)
+	return string(out)
 }
 
 func Test_GetWorkspace_NoExtension(t *testing.T) {
@@ -108,6 +107,7 @@ func Test_GetWorkspace_NoExtension(t *testing.T) {
 	connection := csmConnection.GetConnection("123", "123")
 	assert.Equal(t, connection.ProcessingType, "None")
 }
+
 func Test_GetWorkspace_NullExtension(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_CONNECTION_EXTENSION).Return(true, nil)

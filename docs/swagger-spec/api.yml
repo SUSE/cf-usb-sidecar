@@ -3,17 +3,26 @@ info:
   version: v1
   title: Catalog Service Manager API
   description: |
-   The first version of the Catalog Service Manager API. 
+   The first version of the Catalog Service Manager API.
    This API will be available on the Catalog Service Manager container which
-   runs along side your service and serves some of the service management 
+   runs along side your service and serves some of the service management
    capabilities.
-   
+
 consumes:
     - application/json
 produces:
     - application/json
 schemes:
     - http
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: x-csm-token
+    in: header
+
+security:
+  - api_key: []
 
 paths:
   /workspaces:
@@ -189,7 +198,7 @@ definitions:
         additionalProperties:
           items:
             type: string
- 
+
   ServiceManagerConnectionResponse:
     type: object
     required:

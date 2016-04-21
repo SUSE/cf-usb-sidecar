@@ -4,6 +4,10 @@ OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
+# Set environment variables if they are not before starting.
+ifndef CSM_API_KEY
+	export CSM_API_KEY:=csm-auth-token
+endif
 
 .PHONY: all clean build test release
 
@@ -29,7 +33,6 @@ help:
 
 run:	generate
 	godep go run cmd/catalog-service-manager/catalog-service-manager.go
-
 
 all: 	clean-all build test
 
@@ -60,7 +63,7 @@ build:	generate
 	@echo "$(OK_COLOR)==> Building Catalog Service Manager code $(NO_COLOR)"
 	cd cmd/catalog-service-manager;\
         godep go install .
-        
+
 test:
 	@echo "$(OK_COLOR)==> Running tests $(NO_COLOR)"
 	godep go test ./... | grep -v generated | grep -v cmd/catalog-service-manager/handlers | grep -v scripts | grep -v examples

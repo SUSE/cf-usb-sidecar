@@ -37,10 +37,9 @@ func main() {
 
 	parser := flags.NewParser(server, flags.Default)
 	parser.ShortDescription = `Catalog Service Manager API`
-	parser.LongDescription = `The first version of the Catalog Service Manager API. 
-This API will be available on the Catalog Service Manager container which
-runs along side your service and serves some of the service management 
-capabilities.
+	parser.LongDescription = `This API will be available on the Catalog Service
+Manager container which runs along side your service and serves some of the
+service management capabilities.
 `
 
 	server.ConfigureFlags()

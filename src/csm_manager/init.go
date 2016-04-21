@@ -12,12 +12,12 @@ import (
 )
 
 var (
-    csmSetup *internalSetup.CSMSetup
-    csmWorkspace *internalWorkspaces.CSMWorkspace
-    csmConnection *internalConnection.CSMConnection
+	csmSetup      *internalSetup.CSMSetup
+	csmWorkspace  *internalWorkspaces.CSMWorkspace
+	csmConnection *internalConnection.CSMConnection
 
-    config *common.ServiceManagerConfiguration
-    logger lager.Logger
+	config *common.ServiceManagerConfiguration
+	logger lager.Logger
 )
 
 //InitServiceCatalogManager initilizes service catalog manager
@@ -62,7 +62,7 @@ func GetLogger() lager.Logger {
 	return logger
 }
 
-// logs the initialization details
+// logInitDetails logs the initialization details
 func logInitDetails(logger lager.Logger, config *common.ServiceManagerConfiguration) {
 	logger.Info("InitServiceCatalogManager", lager.Data{"Initialisizing ": "Catalog Service Manager"})
 	logger.Info("InitServiceCatalogManager", lager.Data{"CSM_LOG_LEVEL ": *config.LOG_LEVEL})
@@ -73,10 +73,10 @@ func logInitDetails(logger lager.Logger, config *common.ServiceManagerConfigurat
 	}
 	logger.Info("InitServiceCatalogManager", lager.Data{"CSM_HOME ": *config.MANAGER_HOME})
 	logger.Info("InitServiceCatalogManager", lager.Data{"CSM_PARAMETERS ": *config.PARAMETERS})
-
+	logger.Info("InitServiceCatalogManager", lager.Data{"CSM_API_KEY ": *config.API_KEY})
 }
 
-// runs CheckExtension on setup, workspace and connection objects
+// CheckExtension runs on setup, workspace and connection objects
 // We log this on startup so that we can let user know what all
 // extensions are visible/known to the CSM service
 func checkExtensions() {
