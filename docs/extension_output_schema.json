@@ -1,0 +1,18 @@
+{
+	"title": "CSM Extension Output Schema",
+	"type": "object",
+	"properties": {
+		"status": {
+			"description": "status of the extension execution",
+			"type": "string",
+			"enum": ["successful", "failed"]
+		},
+		"details": {
+			"description": " about workspace/connection, map of key and value parameters",
+			"type": "object",
+			"properties": {}
+		}
+	},
+        "required": ["status"]
+
+}
