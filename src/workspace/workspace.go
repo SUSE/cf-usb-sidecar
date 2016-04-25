@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"errors"
+	"path/filepath"	
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
@@ -26,15 +27,15 @@ func NewCSMWorkspace(logger lager.Logger,
 }
 
 func (w *CSMWorkspace) getWorkspaceGetExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(homePath + "workspace/get")
+	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace","get"))
 }
 
 func (w *CSMWorkspace) getWorkspaceCreateExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(homePath + "workspace/create")
+	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace","create"))
 }
 
 func (w *CSMWorkspace) getWorkspaceDeleteExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(homePath + "workspace/delete")
+	return w.FileHelper.GetExtension(filepath.Join(homePath , "workspace","delete"))
 }
 
 func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *string, workspace *models.ServiceManagerWorkspaceResponse) {

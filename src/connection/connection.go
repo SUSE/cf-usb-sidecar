@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"path/filepath"
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
@@ -26,15 +27,15 @@ func NewCSMConnection(logger lager.Logger, config *common.ServiceManagerConfigur
 }
 
 func (c *CSMConnection) getConnectionsGetExtension(homePath string) (bool, *string) {
-	return c.FileHelper.GetExtension(homePath + "connection/get")
+	return c.FileHelper.GetExtension(filepath.Join(homePath, "connection","get"))
 }
 
 func (c *CSMConnection) getConnectionsCreateExtension(homePath string) (bool, *string) {
-	return c.FileHelper.GetExtension(homePath + "connection/create")
+	return c.FileHelper.GetExtension(filepath.Join(homePath , "connection","create"))
 }
 
 func (c *CSMConnection) getConnectionsDeleteExtension(homePath string) (bool, *string) {
-	return c.FileHelper.GetExtension(homePath + "connection/delete")
+	return c.FileHelper.GetExtension(filepath.Join(homePath , "connection","delete"))
 }
 
 func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, extensionPath *string, connection *models.ServiceManagerConnectionResponse) {

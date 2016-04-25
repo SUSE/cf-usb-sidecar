@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"path/filepath"
 	"encoding/json"
 	"errors"
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
@@ -26,11 +27,11 @@ func NewCSMSetup(logger lager.Logger,
 }
 
 func (s *CSMSetup) getSetupStartupExtension(homePath string) (bool, *string) {
-	return s.FileHelper.GetExtension(homePath + "setup/startup")
+	return s.FileHelper.GetExtension(filepath.Join(homePath,"setup","startup"))
 }
 
 func (s *CSMSetup) getSetupShutdownExtension(homePath string) (bool, *string) {
-	return s.FileHelper.GetExtension(homePath + "setup/shutdown")
+	return s.FileHelper.GetExtension(filepath.Join(homePath ,"setup","shutdown"))
 }
 
 func (s *CSMSetup) executeExtension(extensionPath *string, setup *models.ServiceManagerWorkspaceResponse) {

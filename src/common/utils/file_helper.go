@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/pivotal-golang/lager"
 )
@@ -31,7 +32,7 @@ func (c CSMFileHelper) GetExtension(extPath string) (bool, *string) {
 		return false, nil
 	}
 	for _, file := range files {
-		filename := extPath + "/" + file.Name()
+		filename := filepath.Join(extPath , file.Name())
 		return true, &filename
 	}
 	return false, nil
