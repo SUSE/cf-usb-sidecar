@@ -1,0 +1,22 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.wrappingColumn": 0,
+    "files.exclude": {
+        "**/.git": true,
+        "**/Godeps": true,
+        "**/.DS_Store": true,
+        "**/debug": true,
+        "**/debug.test": true,
+        ".vscode": true,
+        ".cover": true,
+        "catalog": true,
+        // Makefile gets messed up whenever I edit it from VS Code so not showing it in the list helps a lot
+        "Makefile": true
+    },
+    "go.gopath": "${workspaceRoot}/Godeps/_workspace:${workspaceRoot}/../../../..",
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnType": true,
+    "go.useCodeSnippetsOnFunctionSuggest": true,
+    "go.formatTool": "gofmt",
+    "go.formatOnSave": true
+}

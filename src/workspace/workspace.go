@@ -2,10 +2,10 @@ package workspace
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
-	"errors"
-	"path/filepath"	
+	"path/filepath"
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
@@ -27,26 +27,26 @@ func NewCSMWorkspace(logger lager.Logger,
 }
 
 func (w *CSMWorkspace) getWorkspaceGetExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace","get"))
+	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace", "get"))
 }
 
 func (w *CSMWorkspace) getWorkspaceCreateExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace","create"))
+	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace", "create"))
 }
 
 func (w *CSMWorkspace) getWorkspaceDeleteExtension(homePath string) (bool, *string) {
-	return w.FileHelper.GetExtension(filepath.Join(homePath , "workspace","delete"))
+	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace", "delete"))
 }
 
 func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *string, workspace *models.ServiceManagerWorkspaceResponse) {
-    if workspaceID == nil {
-        w.Logger.Error("executeExtension", errors.New("workspaceID is nil"))
-        return
-    }
-    if extensionPath == nil {
-        w.Logger.Error("executeExtension", errors.New("extensionPath is nil"))
-        return
-    }
+	if workspaceID == nil {
+		w.Logger.Error("executeExtension", errors.New("workspaceID is nil"))
+		return
+	}
+	if extensionPath == nil {
+		w.Logger.Error("executeExtension", errors.New("extensionPath is nil"))
+		return
+	}
 	w.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "extension Path ": extensionPath})
 	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID); success {
 		w.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})

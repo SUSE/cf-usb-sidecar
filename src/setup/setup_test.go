@@ -196,6 +196,18 @@ func TestCheck_Shutdown(t *testing.T) {
 	setupStatus := csmSetup.Shutdown()
 	assert.Equal(t, setupStatus, false)
 }
+
+func Test_Shutdown_RunExtensionUnAccessibleFile(t *testing.T) {
+	csmMockedFileExtension := MockedFileExtension{}
+	csmMockedFileExtension.On("GetExtension", DEFAULT_SHUTDOWN_EXTENSION).Return(true, FAKE_STARTUP_EXTENSION)
+	status := "successful"
+	statusString := getStatusString(&status, nil, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_STARTUP_EXTENSION, []string{""}).Return(true, "UnaccessibleOuputFile", statusString)
+	_, csmSetup := setup(csmMockedFileExtension)
+	setupStatus := csmSetup.Shutdown()
+	assert.Equal(t, setupStatus, false)
+}
+
 func TestCheck_CheckExtensions(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_STARTUP_EXTENSION).Return(true, nil).Once()

@@ -67,7 +67,7 @@ build:	generate
 	cd cmd/catalog-service-manager;\
         godep go install .
 
-test:
+test: test-format
 	@echo "$(OK_COLOR)==> Running tests $(NO_COLOR)"
 	godep go test $(TESTLIST) | grep -v generated | grep -v cmd/catalog-service-manager/handlers | grep -v scripts 
 
@@ -86,3 +86,7 @@ release-base: clean-all
 	@echo "$(OK_COLOR)==> Building release docker image for Catalog Service Manager $(NO_COLOR)"
 	scripts/docker/release/generate-release-base-image.sh
 
+test-format:
+	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
+	./scripts/testFmt.sh src
+	./scripts/testFmt.sh cmd

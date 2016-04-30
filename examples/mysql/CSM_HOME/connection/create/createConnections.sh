@@ -13,7 +13,7 @@ else
 	NewPassword=`date | md5sum | head -c 20`
 fi
 
-write_success_output () { 
+write_success_output () {
 	cat <<EOF > ${OUTPUT_FILE}
 {
 	"status": "successful",
@@ -45,12 +45,17 @@ mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p$
 if [ $? -eq 0 ]; then
 	mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "CREATE USER \"d${NewUsername}\"@\"%\" IDENTIFIED BY \"${NewPassword}\";FLUSH PRIVILEGES" > /dev/null 2>&1
 
+	if [ $? -ne 0 ]; then
+		write_failed_output
+		exit 0
+	fi
+
 	sleep 1
-	
+
 	mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "select * from mysql.user where User=\"d${NewUsername}\";" | grep ${NewUsername} > /dev/null 2>&1
 	if [ $? -eq 0 ]; then
 		mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "GRANT ALL PRIVILEGES ON d${INSTANCE_ID}.* TO \"d${NewUsername}\"@\"%\";FLUSH PRIVILEGES" > /dev/null 2>&1
-                
+
 		if [ $? -eq 0 ]; then
 			write_success_output
 		else
@@ -58,7 +63,7 @@ if [ $? -eq 0 ]; then
 		fi
 	else
 		write_failed_output
-	fi			
+	fi
 else
     write_failed_output
 fi

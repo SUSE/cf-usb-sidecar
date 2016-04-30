@@ -21,6 +21,8 @@ var (
 	DEFAULT_DELETE_CONNECTION_EXTENSION = "/catalog-service-manager/connection/delete"
 	DEFAULT_CREATE_CONNECTION_EXTENSION = "/catalog-service-manager/connection/create"
 	FAKE_GET_CONNECTION_EXTENSION       = "/tmp/fake/connection/get/getConnection.sh"
+	FAKE_CREATE_CONNECTION_EXTENSION    = "/tmp/fake/connection/create/createConnection.sh"
+	FAKE_DELETE_CONNECTION_EXTENSION    = "/tmp/fake/connection/delete/deleteConnection.sh"
 )
 
 type MockedFileExtension struct {
@@ -189,6 +191,7 @@ func Test_GetWorkspace_RunExtensionUnAccessibleFile(t *testing.T) {
 	connection := csmConnection.GetConnection("123", "123")
 	assert.Equal(t, connection.ProcessingType, "Extension")
 }
+
 func TestCheck_GetConnection(t *testing.T) {
 	_, csmConnection := setup(nil)
 	connection := csmConnection.GetConnection("123", "123")
@@ -196,20 +199,53 @@ func TestCheck_GetConnection(t *testing.T) {
 }
 
 func TestCheck_CreateWorkspace(t *testing.T) {
-	_, csmConnection := setup(nil)
+	csmMockedFileExtension := MockedFileExtension{}
+	csmMockedFileExtension.On("GetExtension", DEFAULT_CREATE_CONNECTION_EXTENSION).Return(true, FAKE_CREATE_CONNECTION_EXTENSION)
+	status := "successful"
+	statusString := getStatusString(&status, nil, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_CREATE_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, statusString)
+	_, csmConnection := setup(csmMockedFileExtension)
 
 	connectionID := "123"
 	connectionDetails := models.ServiceManagerConnectionCreateRequest{
 		ConnectionID: connectionID,
 	}
 	connection := csmConnection.CreateConnection("123", &connectionDetails)
-	assert.Equal(t, connection.ProcessingType, "Default")
+	assert.Equal(t, connection.ProcessingType, "Extension")
 }
 
-func TestCheck_DeleteWorkspace(t *testing.T) {
+func TestCheck_CreateWorkspaceFailure(t *testing.T) {
+	os.Setenv("test-param", "test-value")
+	os.Setenv("CSM_PARAMETERS", "test-param")
+	_, csmConnection := setup(nil)
+
+	connectionID := "123"
+	connectionCreate := models.ServiceManagerConnectionCreateRequest{
+		ConnectionID: connectionID,
+	}
+	connection := csmConnection.CreateConnection("123", &connectionCreate)
+	assert.Equal(t, connection.ProcessingType, "Default")
+	os.Unsetenv("CSM_PARAMETERS")
+	os.Unsetenv("test-param")
+}
+
+func TestCheck_DeleteWorkspaceWithNone(t *testing.T) {
 	_, csmConnection := setup(nil)
 	connection := csmConnection.DeleteConnection("123", "123")
 	assert.Equal(t, connection.ProcessingType, "None")
+}
+
+func TestCheck_DeleteWorkspace(t *testing.T) {
+	csmMockedFileExtension := MockedFileExtension{}
+	csmMockedFileExtension.On("GetExtension", DEFAULT_DELETE_CONNECTION_EXTENSION).Return(true, FAKE_DELETE_CONNECTION_EXTENSION)
+	status := "successful"
+	statusString := getStatusString(&status, nil, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_DELETE_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, statusString)
+	_, csmConnection := setup(csmMockedFileExtension)
+
+	// _, csmConnection := setup(nil)
+	connection := csmConnection.DeleteConnection("123", "123")
+	assert.Equal(t, connection.ProcessingType, "Extension")
 }
 
 func TestCheck_CheckExtensions(t *testing.T) {

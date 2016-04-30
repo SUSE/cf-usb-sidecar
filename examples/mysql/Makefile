@@ -27,7 +27,7 @@ clean-docker:
 	../../scripts/docker/remove-docker-container.sh csm-mysql-db
 	../../scripts/docker/remove-docker-container.sh csm-mysql
 	../../scripts/docker/remove-docker-image.sh csm-mysql
-	
+
 clean-all: clean-docker
 
 build-image:
@@ -36,7 +36,8 @@ build-image:
 
 run:
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
-	scripts/docker-run-csm-mysql.sh
+	CSM_API_KEY=csm-auth-token scripts/docker-run-csm-mysql.sh
 
 tools:
+	@echo "$(OK_COLOR)==> Start MySQL DB container $(NO_COLOR)"
 	scripts/docker-run-csm-mysql-db.sh

@@ -19,7 +19,7 @@ const (
 )
 
 func NewLogger(level string) lager.Logger {
-	var logger = lager.NewLogger("catalog")
+	var logger = lager.NewLogger("csm")
 
 	var minLogLevel lager.LogLevel
 	switch level {

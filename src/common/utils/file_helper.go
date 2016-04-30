@@ -32,7 +32,7 @@ func (c CSMFileHelper) GetExtension(extPath string) (bool, *string) {
 		return false, nil
 	}
 	for _, file := range files {
-		filename := filepath.Join(extPath , file.Name())
+		filename := filepath.Join(extPath, file.Name())
 		return true, &filename
 	}
 	return false, nil
@@ -44,7 +44,7 @@ func (c CSMFileHelper) RunExtension(extensionPath string, params ...string) (boo
 		cmdOut []byte
 		err    error
 	)
-	cmd := fmt.Sprintf("%s %s %s", extensionPath, params)
+	cmd := fmt.Sprintf("%s %s", extensionPath, params)
 	c.Logger.Debug("RunExtension", lager.Data{"Running command : ": cmd})
 
 	if cmdOut, err = exec.Command(extensionPath, params...).Output(); err != nil {
@@ -70,7 +70,7 @@ func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...strin
 
 	newParams := append([]string{outputFilePath}, params...)
 
-	cmd := fmt.Sprintf("%s %s %s", extensionPath, newParams)
+	cmd := fmt.Sprintf("%s %s", extensionPath, newParams)
 	c.Logger.Debug("RunExtension", lager.Data{"Running command : ": cmd})
 
 	if cmdOut, err = exec.Command(extensionPath, newParams...).Output(); err != nil {

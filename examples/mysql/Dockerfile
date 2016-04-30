@@ -1,6 +1,6 @@
 FROM catalog-service-manager:base
 
-RUN apk --no-cache add --update mysql-client
+RUN apk --no-cache add mysql-client
 
 COPY ./CSM_HOME/setup /catalog-service-manager/setup
 COPY ./CSM_HOME/connection /catalog-service-manager/connection
