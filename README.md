@@ -43,8 +43,8 @@ variables.
 This is the list of environment variables that Catalog Service Manager should
 read, this needs to be set if you are running catalog service manager in the
 default mode (specifically without create connections extensions). When
-extensions are not catalog service manager reads this environment and returns
-all the variables listed here. present
+extensions are not present, catalog service manager reads this environment and returns
+all the variables listed here. 
 
 ```
 export CSM_PARAMETERS="HOSTNAME USERNAME"
@@ -104,6 +104,23 @@ these files may contain credentials to the service.
 export DEV_MODE=true
 ```
 
+### CSM_EXT_TIMEOUT and CSM_EXT_TIMEOUT_ERROR
+
+* CSM_EXT_TIMEOUT has a default value of 30s
+* CSM_EXT_TIMEOUT_ERROR has a default value of 2s
+
+Set CSM_EXT_TIMEOUT environment variable to a value that represents the number of seconds that the 
+catalog service manager will wait for a response from the extension before 
+sending it a request to stop.
+
+The catalog service manager will wait for a gracefull stop a number of 
+CSM_EXT_TIMEOUT_ERROR seconds. If in this interval the extension did not 
+stop, the manager will try to force stop the extension.
+
+```
+export CSM_EXT_TIMEOUT=30
+export CSM_EXT_TIMEOUT_ERROR=2
+```
 
 ## Run the service
 
