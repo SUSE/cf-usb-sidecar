@@ -1,0 +1,131 @@
+package utils
+
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"testing"
+
+	"github.com/hpcloud/catalog-service-manager/src/common"
+	"github.com/pivotal-golang/lager"
+)
+
+func GetFileToRunPath(filename string) *string {
+	env, _ := os.Getwd()
+	if env == "" {
+		return nil
+	} else {
+		fp := filepath.Join(env, "../../../tests/integration-tests/test_assets", filename)
+		return &fp
+	}
+}
+
+/////////////////////
+///////WARNING///////
+////this can take quite a while
+////if you do not want to wait for (CSM_EXT_TIMEOUT + CSM_EXT_TIMEOUT_ERROR) secs, disable it
+////////////////////
+func TestRunExtensionShouldKillAfterTimeout(t *testing.T) {
+	//t.Skip()
+	t.Log("Should die after (CSM_EXT_TIMEOUT + CSM_EXT_TIMEOUT_ERROR) secs with false and no string output")
+
+	logger := lager.NewLogger("test long running file")
+	config := common.NewServiceManagerConfiguration()
+	*config.EXT_TIMEOUT = "2"
+	*config.EXT_TIMEOUT_ERROR = "1" //this will lower the time to wait to about 3 secs
+	csm := CSMFileHelper{Logger: logger, Config: config}
+
+	fileToRun := GetFileToRunPath("long_running_task.sh")
+
+	if fileToRun == nil {
+		t.Error("$TEST_ASSETS not set?")
+		t.Fail()
+		return
+	}
+
+	param := "workspace_id"
+
+	bOk, file, strout := csm.RunExtensionFileGen(*fileToRun, param)
+	if file != nil {
+		defer os.Remove(file.Name())
+	}
+	if bOk || strout != nil {
+		t.Error("For ", *fileToRun, param, "expected", false, nil, "got", bOk, *strout)
+	}
+}
+
+func TestRunExtensionShouldFalse(t *testing.T) {
+
+	param := 10
+
+	t.Log(fmt.Sprintf("Should  return an exitStatus %d ", param))
+
+	logger := lager.NewLogger("should fail file")
+	config := common.NewServiceManagerConfiguration()
+	csm := CSMFileHelper{Logger: logger, Config: config}
+
+	sParam := strconv.Itoa(param)
+
+	fileToRun := GetFileToRunPath("non_clean_exit_task.sh")
+
+	if fileToRun == nil {
+		t.Error("$TEST_ASSETS not set?")
+		t.Fail()
+		return
+	}
+
+	bOk, file, strout := csm.RunExtensionFileGen(*fileToRun, sParam)
+	if file != nil {
+		defer os.Remove(file.Name())
+	}
+	if strout == nil {
+		t.Error("For ", *fileToRun, param, "expected", false, "not nil", "got", bOk, strout)
+		t.Fail()
+		return
+	}
+	exitErrWithStat := ExitErrorWithStatus{param}
+	sOut, _ := json.Marshal(exitErrWithStat)
+	if bOk || *strout != string(sOut) {
+		t.Error("For ", *fileToRun, param, "expected", false, sOut, "got", bOk, *strout)
+	}
+}
+
+func TestRunExtensionShouldOk(t *testing.T) {
+	t.Log("Everything should be ok")
+
+	logger := lager.NewLogger("ok file")
+	config := common.NewServiceManagerConfiguration()
+	csm := CSMFileHelper{Logger: logger, Config: config}
+
+	fileToRun := GetFileToRunPath("normal_response_task.sh")
+
+	if fileToRun == nil {
+		t.Error("$TEST_ASSETS not set?")
+		t.Fail()
+		return
+	}
+
+	param := "workspace_id"
+
+	t.Log("testing for", *fileToRun, param)
+
+	bOk, file, _ := csm.RunExtensionFileGen(*fileToRun, param, "2")
+
+	if file == nil {
+		t.Error("For ", fileToRun, param, "expected file not nul", "got", file)
+		return
+	}
+
+	fileContent, _ := ioutil.ReadFile(file.Name())
+	sFileContent := strings.Trim(string(fileContent), "\r\n ")
+
+	defer os.Remove(file.Name())
+
+	if !bOk || sFileContent != "{\"response\":\"OK\"}" {
+		t.Error("For ", *fileToRun, param, "expected", true, "|{\"response\":\"OK\"}|", "got", bOk, "|"+sFileContent+"|")
+	}
+}

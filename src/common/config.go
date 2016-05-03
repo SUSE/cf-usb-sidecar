@@ -6,18 +6,22 @@ import (
 )
 
 type ServiceManagerConfiguration struct {
-	PARAMETERS   *string
-	MANAGER_HOME *string
-	LOG_LEVEL    *string
-	DEV_MODE     *string
-	API_KEY      *string
+	PARAMETERS        *string
+	MANAGER_HOME      *string
+	LOG_LEVEL         *string
+	DEV_MODE          *string
+	API_KEY           *string
+	EXT_TIMEOUT       *string
+	EXT_TIMEOUT_ERROR *string
 }
 
 var paramDefaultList = map[string]string{
-	"CSM_HOME":       "/catalog-service-manager/",
-	"CSM_PARAMETERS": "",
-	"CSM_LOG_LEVEL":  "info",
-	"CSM_DEV_MODE":   "false",
+	"CSM_HOME":              "/catalog-service-manager/",
+	"CSM_PARAMETERS":        "",
+	"CSM_LOG_LEVEL":         "info",
+	"CSM_DEV_MODE":          "false",
+	"CSM_EXT_TIMEOUT":       "30",
+	"CSM_EXT_TIMEOUT_ERROR": "2",
 }
 
 // NewServiceManagerConfiguration : Creates object of ServiceManagerConfiguration
@@ -28,6 +32,8 @@ func NewServiceManagerConfiguration() *ServiceManagerConfiguration {
 	config.LOG_LEVEL = config.getConfigFromEnv("CSM_LOG_LEVEL")
 	config.DEV_MODE = config.getConfigFromEnv("CSM_DEV_MODE")
 	config.API_KEY = config.getConfigFromEnv("CSM_API_KEY")
+	config.EXT_TIMEOUT = config.getConfigFromEnv("CSM_EXT_TIMEOUT")
+	config.EXT_TIMEOUT_ERROR = config.getConfigFromEnv("CSM_EXT_TIMEOUT_ERROR")
 
 	return &config
 }

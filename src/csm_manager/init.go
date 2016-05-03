@@ -26,6 +26,7 @@ func InitServiceCatalogManager() {
 	logger = common.NewLogger(strings.ToLower(*config.LOG_LEVEL))
 	fileHelper := utils.CSMFileHelper{
 		Logger: logger,
+		Config: config,
 	}
 	csmSetup = internalSetup.NewCSMSetup(logger, config, fileHelper)
 	csmWorkspace = internalWorkspaces.NewCSMWorkspace(logger, config, fileHelper)
