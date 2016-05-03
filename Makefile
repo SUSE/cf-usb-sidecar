@@ -10,7 +10,7 @@ ifndef CSM_API_KEY
 endif
 
 # List of files to be tested
-TESTLIST=$(shell go list ./... | grep -v examples)
+TESTLIST=$(shell go list ./... | grep -v examples | grep -v services)
 
 .PHONY: all clean build test release
 
