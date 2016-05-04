@@ -124,7 +124,9 @@ func (w *CSMConnection) executeRequest(workspaceID string, connectionID string, 
 	var modelserr *models.Error
 	var connection *models.ServiceManagerConnectionResponse
 	var err error
-	connection, modelserr, err = w.executeExtension(&workspaceID, &connectionID, filename, common.GET_WORKSPACE_OK_RESPONSE)
+
+	connection, modelserr, err = w.executeExtension(&workspaceID, &connectionID, filename, ok_resp)
+
 	if err != nil {
 		w.Logger.Error(requestType, err)
 		modelserr = utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())

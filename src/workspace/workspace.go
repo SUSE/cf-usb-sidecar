@@ -72,7 +72,6 @@ func checkParamsOk(workspaceID *string, extensionPath *string) error {
 		err := errors.New("extensionPath is nil")
 		return err
 	}
-
 	return nil
 }
 
@@ -87,11 +86,11 @@ func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *stri
 		w.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
 
 		fileContent, err := utils.ReadOutputFile(outputFile, *w.Config.DEV_MODE != "true")
+		return marshalResponseFromMessage(fileContent, ok_resp)
 
 		if err != nil {
 			return nil, nil, err
 		}
-
 		return marshalResponseFromMessage(fileContent, ok_resp)
 
 	} else {
@@ -122,7 +121,9 @@ func (w *CSMWorkspace) executeRequest(workspaceID string, requestType string, ok
 	var modelserr *models.Error
 	var workspace *models.ServiceManagerWorkspaceResponse
 	var err error
-	workspace, modelserr, err = w.executeExtension(&workspaceID, filename, common.GET_WORKSPACE_OK_RESPONSE)
+
+	workspace, modelserr, err = w.executeExtension(&workspaceID, filename, ok_resp)
+
 	if err != nil {
 		w.Logger.Error(requestType, err)
 		modelserr = utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())
@@ -146,7 +147,6 @@ func (w *CSMWorkspace) GetWorkspace(workspaceID string) (*models.ServiceManagerW
 
 // CreateWorkspace create workspaces
 func (w *CSMWorkspace) CreateWorkspace(workspaceID string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
-
 	w.Logger.Info("CreateWorkspace", lager.Data{"workspaceID": workspaceID})
 	exists, filename := w.getWorkspaceCreateExtension(*w.Config.MANAGER_HOME)
 
