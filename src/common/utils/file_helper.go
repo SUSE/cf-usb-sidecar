@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -84,10 +83,6 @@ func (c CSMFileHelper) RunExtension(extensionPath string, params ...string) (boo
 
 }
 
-type ExitErrorWithStatus struct {
-	ExitStatus int `json:"exitStatus"`
-}
-
 //returns false if the process is forced stopped and true otherwise
 func RunCmd(cmdExec *exec.Cmd, c CSMFileHelper) bool {
 	var (
@@ -96,6 +91,7 @@ func RunCmd(cmdExec *exec.Cmd, c CSMFileHelper) bool {
 		timerErr       *time.Timer
 		bCommandExitOk bool
 	)
+	bCommandExitOk = true
 	sTimeout := *c.Config.EXT_TIMEOUT
 	sTimeoutErr := *c.Config.EXT_TIMEOUT_ERROR
 
@@ -122,7 +118,7 @@ func RunCmd(cmdExec *exec.Cmd, c CSMFileHelper) bool {
 		err := cmdExec.Process.Signal(os.Interrupt)
 
 		c.Logger.Info("RunExtension", lager.Data{fmt.Sprintf("Extension timeout PID : %d", cmdExec.Process.Pid): "Stoping gracefully"})
-
+		bCommandExitOk = false
 		timerErr = time.AfterFunc(timeoutOnErr*time.Second, func() {
 			c.Logger.Info("RunExtension", lager.Data{fmt.Sprintf("Extension timeout PID : %d", cmdExec.Process.Pid): "Stoping forcefully"})
 
@@ -141,8 +137,9 @@ func RunCmd(cmdExec *exec.Cmd, c CSMFileHelper) bool {
 	cmdExec.Wait()
 
 	if timerErr != nil {
-		bCommandExitOk = timerErr.Stop()
-	} else {
+		timerErr.Stop()
+	}
+	if timer != nil {
 		bCommandExitOk = timer.Stop()
 	}
 
@@ -171,12 +168,6 @@ func ReadExitStatus(err error, cmdExec *exec.Cmd, c CSMFileHelper) int {
 	return 0
 }
 
-func isValidJSON(s string) bool {
-	var vjson map[string]interface{}
-	err := json.Unmarshal([]byte(s), &vjson)
-	return err == nil
-}
-
 //RunExtensionFileGen executes the extension
 func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, *string) {
 	var (
@@ -203,8 +194,10 @@ func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...strin
 
 	err = cmdExec.Start()
 
+	//if we could not start the process we consider the command returned an error code
 	if err != nil {
-		return false, nil, nil
+		sExitErrorWithStatus := "The extension process could not be started"
+		return false, tmpfile, &sExitErrorWithStatus
 	}
 
 	bCommandExitOk = RunCmd(cmdExec, c)
@@ -220,15 +213,10 @@ func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...strin
 	//if the command exited with an error status
 	if exitStatus != 0 {
 		c.Logger.Info("RunExtension", lager.Data{"Extension_Executed": "Error state"})
-		c.Logger.Debug("RunExtension", lager.Data{"Output : ": cmdErr.String()})
-		if isValidJSON(cmdErr.String()) {
-			sCmdErr := cmdErr.String()
-			return false, tmpfile, &sCmdErr
-		}
-		exitErrorWithStatus := ExitErrorWithStatus{ExitStatus: exitStatus}
-		bExitErrorWithStatus, _ := json.Marshal(exitErrorWithStatus)
-		sExitErrorWithStatus := string(bExitErrorWithStatus)
-		return false, tmpfile, &sExitErrorWithStatus
+		sCmdErr := fmt.Sprintf("%s, %s", cmdErr.String(), cmdOut.String())
+		c.Logger.Debug("RunExtension", lager.Data{"Output : ": sCmdErr})
+
+		return false, tmpfile, &sCmdErr
 
 	}
 

@@ -9,5 +9,10 @@ import (
 
 func GetConnection(workspaceID string, connectionID string) middleware.Responder {
 	internalConnection := csm_manager.GetConnection()
-	return connection.NewGetConnectionOK().WithPayload(internalConnection.GetConnection(workspaceID, connectionID))
+	conn, err := internalConnection.GetConnection(workspaceID, connectionID)
+	if err != nil {
+		return connection.NewGetConnectionDefault(int(*err.Code)).WithPayload(err)
+	}
+
+	return connection.NewGetConnectionOK().WithPayload(conn)
 }

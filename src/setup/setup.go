@@ -3,10 +3,11 @@ package setup
 import (
 	"encoding/json"
 	"errors"
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 
 	"github.com/hpcloud/catalog-service-manager/src/common"
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"

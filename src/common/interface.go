@@ -1,6 +1,8 @@
 package common
 
-import "github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
+import (
+	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
+)
 
 type CSMSetupInterface interface {
 	CheckExtensions()
