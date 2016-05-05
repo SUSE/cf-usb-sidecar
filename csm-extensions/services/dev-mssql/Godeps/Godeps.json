@@ -1,7 +1,10 @@
 {
-	"ImportPath": "github.com/hpcloud/catalog-service-manager/services/dev-mssql",
+	"ImportPath": "github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mssql",
 	"GoVersion": "go1.6",
-	"GodepVersion": "v62",
+	"GodepVersion": "v63",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/denisenkom/go-mssqldb",
@@ -124,6 +127,11 @@
 		{
 			"ImportPath": "golang.org/x/crypto/md4",
 			"Rev": "575fdbe86e5dd89229707ebec0575ce7d088a4a6"
+		},
+		{
+			"ImportPath": "gopkg.in/caarlos0/env.v2",
+			"Comment": "v2.0",
+			"Rev": "65331f179c42e3ffe33457b69bee55472a779cd6"
 		}
 	]
 }
