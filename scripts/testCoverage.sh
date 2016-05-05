@@ -26,6 +26,7 @@ generate_cover_data() {
 generate_cover_data $(go list ./... | 
 grep -v github.com/hpcloud/catalog-service-manager/generated | 
 grep -v github.com/hpcloud/catalog-service-manager/example | 
+grep -v github.com/hpcloud/catalog-service-manager/csm-extensions |
 grep -v github.com/hpcloud/catalog-service-manager/scripts | 
 grep -v github.com/hpcloud/catalog-service-manager/cmd/catalog-service-manager/handlers | 
 grep -v github.com/hpcloud/catalog-service-manager/src/api)

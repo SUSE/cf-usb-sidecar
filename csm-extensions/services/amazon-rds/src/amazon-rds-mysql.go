@@ -44,7 +44,7 @@ func createSecurityGroup(region string) string {
 		DryRun:      aws.Bool(false),
 	}
 	resp, err := svc.CreateSecurityGroup(params)
-	
+
 	if err != nil {
 		return ""
 	}
@@ -160,7 +160,7 @@ func createWorkspace(region string, dbidentifier string, masteruser string, mast
 	connectionstring := masteruser + ":" + masterpwd + "@tcp(" + rdshost + ":3306)/"
 	db, err := sql.Open("mysql", connectionstring)
 	logErr(err)
-	
+
 	// create database
 	_, dberr := db.Exec("CREATE DATABASE " + workspace + ";")
 	logErr(dberr)

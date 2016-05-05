@@ -1,0 +1,93 @@
+NO_COLOR=\033[0m
+OK_COLOR=\033[32;01m
+OK_GREEN_COLOR=\033[32;01m
+ERROR_COLOR=\033[31;01m
+WARN_CYN_COLOR=\033[33;01m
+
+ifndef DOCKER_REPOSITORY
+	export DOCKER_REPOSITORY:=service-catalog
+endif
+
+ifndef REGISTRY_LOCATION
+	export REGISTRY_LOCATION:=docker-registry.helion.space:443
+endif
+
+export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export CSM_RDS_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/amazon-rds
+export CSM_RDS_IMAGE_NAME:=csm-rds-mysql
+export CSM_RDS_IMAGE_TAG:=latest
+export CSM_RDS_BUILD_IMAGE_NAME:=csm-rds-build
+
+.PHONY: clean-all clean build-image run-image tools
+
+default: help
+
+help:
+	@echo "These 'make' targets are available."
+	@echo
+	@echo "  all                  cleans existing container and images and then"
+	@echo "                       build docker image and runs the csm-mysql container "
+	@echo "  build                build the amazon rds mysql binary"
+	@echo "  run                  run the csm docker container for amazon rds"
+	@echo "  tools                Installs tools needed to run"
+	@echo "  test-format          Run the formatting tests"
+	@echo "  test                 Run the formatting tests"
+	@echo "  clean-containers     Remove all docker containers amazon-rds-mysql"
+	@echo "  clean-images         Remove all docker images for amazon-rds-mysql"
+	@echo "  clean-all            Remove docker container and images"
+	@echo "  build-image          Build amazon-rds-mysql docker image "
+	@echo "  push-image           Push the amazon-rds-mysql docker image to registry"
+	@echo
+
+all:	clean-all build-image tools run
+
+build: 
+	go install ./src/amazon-rds-mysql.go
+
+run:
+	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
+	${CSM_RDS_EXTENSION_ROOT}/scripts/docker-run-csm-mysql.sh
+
+tools:
+	go get github.com/aws/aws-sdk-go
+	go get github.com/go-sql-driver/mysql
+	go get github.com/go-ini/ini
+	go get github.com/jmespath/go-jmespath
+
+test-format:
+	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
+	${CSM_ROOT}/scripts/testFmt.sh src
+		
+# (required) run tests
+test:	test-format
+
+# (required) clean containers
+clean-containers:
+	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_RDS_BUILD_IMAGE_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_RDS_IMAGE_NAME}
+
+# (required) clean docker images
+clean-images:
+	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_RDS_IMAGE_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_RDS_BUILD_IMAGE_NAME}
+
+# (required) clean docker containers and images
+clean-all:	clean-containers clean-images
+
+# (required) build docker image for service
+build-image:	
+	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
+	${CSM_RDS_EXTENSION_ROOT}/scripts/build-csm-amazon-rds-binary.sh
+	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_RDS_BUILD_IMAGE_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_RDS_BUILD_IMAGE_NAME}
+	${CSM_RDS_EXTENSION_ROOT}/scripts/build-docker-image.sh
+
+
+# (required) push image to docker registry
+push-image:
+	docker tag -f ${CSM_RDS_IMAGE_NAME}:${CSM_RDS_IMAGE_TAG} $(REGISTRY_LOCATION)/${DOCKER_REPOSITORY}/${CSM_RDS_IMAGE_NAME}:${CSM_RDS_IMAGE_TAG}
+	docker push $(REGISTRY_LOCATION)/${DOCKER_REPOSITORY}/${CSM_RDS_IMAGE_NAME}:${CSM_RDS_IMAGE_TAG}
+ifdef APP_VERSION_TAG
+	docker tag -f ${CSM_RDS_IMAGE_NAME}:${CSM_RDS_IMAGE_TAG} $(REGISTRY_LOCATION)/${DOCKER_REPOSITORY}/${CSM_RDS_IMAGE_NAME}:$(APP_VERSION_TAG)
+	docker push $(REGISTRY_LOCATION)/${DOCKER_REPOSITORY}/${CSM_RDS_IMAGE_NAME}:$(APP_VERSION_TAG)
+endif

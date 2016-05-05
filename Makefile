@@ -37,7 +37,7 @@ help:
 run:	generate
 	godep go run cmd/catalog-service-manager/catalog-service-manager.go
 
-all: 	clean-all build test
+all: 	clean-all build 
 
 clean:
 	@echo "$(OK_COLOR)==> Removing build artifacts$(NO_COLOR)"
@@ -54,9 +54,15 @@ clean-docker:
 	scripts/docker/remove-docker-image.sh csm
 	scripts/docker/remove-docker-image.sh catalog-service-manager
 
-generate:
+generate-server:
 	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
 	scripts/generate-server.sh
+
+generate-client:
+	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
+	scripts/generate-csm-client.sh
+
+generate: generate-server generate-client
 
 coverage:
 	@echo "$(OK_COLOR)==> Running tests with coverage tool$(NO_COLOR)"
