@@ -5,15 +5,6 @@ import (
 	"os"
 )
 
-//since we receive the http_code in the extension response
-//we need to know which is the correct one
-var CREATE_WORKSPACE_OK_RESPONSE = 201
-var GET_WORKSPACE_OK_RESPONSE = 200
-var DELETE_WORKSPACE_OK_RESPONSE = 200
-var CREATE_CONNECTION_OK_RESPONSE = 201
-var GET_CONNECTION_OK_RESPONSE = 200
-var DELETE_CONNECTION_OK_RESPONSE = 200
-
 type ServiceManagerConfiguration struct {
 	PARAMETERS        *string
 	MANAGER_HOME      *string

@@ -2,13 +2,11 @@ package workspace
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
 
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"
 	"github.com/stretchr/testify/assert"
@@ -20,6 +18,8 @@ var (
 	DEFAULT_DELETE_WORKSPACE_EXTENSION = "/catalog-service-manager/workspace/delete"
 	DEFAULT_CREATE_WORKSPACE_EXTENSION = "/catalog-service-manager/workspace/create"
 	FAKE_GET_WORKSPACE_EXTENSION       = "/tmp/fake/workspace/get/getWorkspace.sh"
+	FAKE_CREATE_WORKSPACE_EXTENSION    = "/tmp/fake/workspace/create/createWorkspace.sh"
+	FAKE_DELETE_WORKSPACE_EXTENSION    = "/tmp/fake/workspace/delete/deleteWorkspace.sh"
 )
 
 type MockedFileExtension struct {
@@ -51,23 +51,41 @@ func (l MockedFileExtension) RunExtension(extensionPath string, params ...string
 func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, *string) {
 
 	args := l.Called(extensionPath, params)
+
 	if args.Get(1) == nil {
+		if len(args) >= 3 && args.Get(2) == nil {
+			return args.Bool(0), nil, nil
+		}
+		if len(args) >= 3 {
+			retString := args.String(2)
+			return args.Bool(0), nil, &retString
+		}
 		return args.Bool(0), nil, nil
 	} else if args.Get(1) != nil {
 		arg2 := args.String(1)
-		tmpfile, _ := ioutil.TempFile("", "example")
+		tmpfile, _ := ioutil.TempFile("", "example1")
 		if arg2 == "DeletedOutputFile" {
 			os.Remove(tmpfile.Name())
 		} else if arg2 == "UnaccessibleOuputFile" {
-			tmpfile.Write([]byte(args.String(2)))
+			if len(args) >= 3 && args.Get(2) != nil {
+				tmpfile.Write([]byte(args.String(2)))
+			}
 			os.Chown(tmpfile.Name(), 0, 0)
 			os.Chmod(tmpfile.Name(), 0000)
-			fmt.Println(tmpfile.Name())
+			return true, tmpfile, nil
 		} else if arg2 != "" {
 			tmpfile.Write([]byte(arg2))
 		}
-		retString := &arg2
-		return args.Bool(0), tmpfile, retString
+		if len(args) >= 3 && args.Get(2) == nil {
+			return args.Bool(0), tmpfile, nil
+		}
+		if len(args) >= 3 && args.Get(2) != nil {
+			retString := args.String(2)
+			return args.Bool(0), tmpfile, &retString
+		} else {
+			return args.Bool(0), tmpfile, nil
+		}
+
 	}
 	return false, nil, nil
 }
@@ -86,155 +104,166 @@ func setup(cmsFileHelper utils.CSMFileHelperInterface) (*common.ServiceManagerCo
 }
 
 func getStatusString(status *string, processingType *string, details map[string]interface{}) string {
-	test := models.ServiceManagerWorkspaceResponse{
+	test := utils.JsonResponse{
 		Status: *status,
-	}
-	if processingType != nil {
-		test.ProcessingType = *processingType
 	}
 	if details != nil {
 		test.Details = details
 	}
-
 	out, _ := json.Marshal(test)
 	return string(out)
 }
 
 func Test_GetWorkspace_NoExtension(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
-	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(false, nil)
+	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(false, nil, nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "None")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
 }
 
 func Test_GetWorkspace_NullExtension(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
-	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(true, nil)
+	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(false, "", "extension not found")
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "None")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Message, utils.ERR_EXTENSION_NOT_FOUND)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
 }
 
 func Test_GetWorkspace_FailedToRunExtension(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(false, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(false, nil, nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "Extension")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Message, utils.ERR_TIMEOUT)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_408)
 }
 
 func Test_GetWorkspace_RunExtensionSuccessful(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
 	status := "successful"
-	statusString := getStatusString(&status, nil, nil)
+	processingType := "Extension"
+	statusString := getStatusString(&status, &processingType, nil)
 	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, statusString)
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
 	assert.Equal(t, workspace.ProcessingType, "Extension")
 	assert.Equal(t, workspace.Status, "successful")
+	assert.Nil(t, modelserr)
 }
 
 func Test_GetWorkspace_RunExtensionFailed(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
 	status := "failed"
-	statusString := getStatusString(&status, nil, nil)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, statusString)
+	processingType := "Extension"
+	statusString := getStatusString(&status, &processingType, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(false, statusString, "An Error")
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "Extension")
-	assert.Equal(t, workspace.Status, "failed")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, &utils.HTTP_500, modelserr.Code)
+	assert.Equal(t, "An Error", modelserr.Message)
 }
 
 func Test_GetWorkspace_RunExtensionIncorrectJsonOutput(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "Incorrect")
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "Incorrect", nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "Extension")
-	assert.Equal(t, workspace.Status, "")
-	assert.Nil(t, workspace.Details)
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Contains(t, modelserr.Message, "Invalid json response from extension")
 }
 
 func Test_GetWorkspace_RunExtensionEmptyOuput(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "")
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, " ", nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "Extension")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Contains(t, modelserr.Message, "Invalid json response from extension")
 }
 
 func Test_GetWorkspace_RunExtensionDeletedOuputFile(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "DeletedOutputFile")
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "DeletedOutputFile", nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "Extension")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Contains(t, modelserr.Message, "Error reading response from extension:")
 }
 
 func Test_GetWorkspace_RunExtensionUnAccessibleFile(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
-	status := "successful"
-	statusString := getStatusString(&status, nil, nil)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "UnaccessibleOuputFile", statusString)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "UnaccessibleOuputFile", nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "Extension")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
 }
 
 func TestCheck_GetWorkspace(t *testing.T) {
 	_, csmWorkspace := setup(nil)
-	workspace := csmWorkspace.GetWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "None")
+	workspace, modelserr := csmWorkspace.GetWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
 }
 
 func TestCheck_CreateWorkspace(t *testing.T) {
-	_, csmWorkspace := setup(nil)
+	csmMockedFileExtension := MockedFileExtension{}
+	csmMockedFileExtension.On("GetExtension", DEFAULT_CREATE_WORKSPACE_EXTENSION).Return(true, FAKE_CREATE_WORKSPACE_EXTENSION)
+	status := "successful"
+	processingType := "Extension"
+	statusString := getStatusString(&status, &processingType, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_CREATE_WORKSPACE_EXTENSION, []string{"123"}).Return(true, statusString)
+	_, csmWorkspace := setup(csmMockedFileExtension)
 	workspaceID := "123"
-	workspaceDetails := models.ServiceManagerWorkspaceCreateRequest{
-		WorkspaceID: workspaceID,
-	}
-	workspace := csmWorkspace.CreateWorkspace(&workspaceDetails)
-	assert.Equal(t, workspace.ProcessingType, "None")
+	workspace, modelserr := csmWorkspace.CreateWorkspace(workspaceID)
+	assert.Equal(t, workspace.ProcessingType, "Extension")
+	assert.Nil(t, modelserr)
 }
 
 func Test_CreateWorkspaceUnAccessibleFile(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
-	csmMockedFileExtension.On("GetExtension", DEFAULT_CREATE_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
-	status := "successful"
-	statusString := getStatusString(&status, nil, nil)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "UnaccessibleOuputFile", statusString)
+	csmMockedFileExtension.On("GetExtension", DEFAULT_CREATE_WORKSPACE_EXTENSION).Return(true, FAKE_CREATE_WORKSPACE_EXTENSION)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_CREATE_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "UnaccessibleOuputFile", nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
 	workspaceID := "123"
-	workspaceDetails := models.ServiceManagerWorkspaceCreateRequest{
-		WorkspaceID: workspaceID,
-	}
-	workspace := csmWorkspace.CreateWorkspace(&workspaceDetails)
-	assert.Equal(t, workspace.ProcessingType, "Extension")
+	workspace, modelserr := csmWorkspace.CreateWorkspace(workspaceID)
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Contains(t, modelserr.Message, "Error reading response from extension:")
 }
 
 func TestCheck_DeleteWorkspace(t *testing.T) {
 	_, csmWorkspace := setup(nil)
-	workspace := csmWorkspace.DeleteWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "None")
+	workspace, modelserr := csmWorkspace.DeleteWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
 }
 
 func Test_DeleteWorkspaceUnAccessibleFile(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_DELETE_WORKSPACE_EXTENSION).Return(true, FAKE_GET_WORKSPACE_EXTENSION)
-	status := "successful"
-	statusString := getStatusString(&status, nil, nil)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "UnaccessibleOuputFile", statusString)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_WORKSPACE_EXTENSION, []string{"123"}).Return(true, "UnaccessibleOuputFile", nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
-	workspace := csmWorkspace.DeleteWorkspace("123")
-	assert.Equal(t, workspace.ProcessingType, "Extension")
+	workspace, modelserr := csmWorkspace.DeleteWorkspace("123")
+	assert.Nil(t, workspace)
+	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Contains(t, modelserr.Message, "Error reading response from extension:")
 }
 
 func TestCheck_CheckExtensions(t *testing.T) {

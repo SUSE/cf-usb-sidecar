@@ -16,7 +16,6 @@ fi
 write_success_output () {
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code" :201,
 	"status": "successful",
 	"details": {
 		"host" : "${MYSQL_SERVICE_HOST}",
@@ -24,8 +23,7 @@ write_success_output () {
 		"username" : "d${NewUsername}",
 		"password" : "${NewPassword}",
 		"database" : "d${INSTANCE_ID}"
-	},
-	"processing_type":"Extension"
+	}
 	
 }
 EOF
@@ -36,10 +34,9 @@ EOF
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code" : 500, 
-	"details" : "$1", 
-	"status": "failed",
-	"processing_type" : "Extension"
+	"error_code" : 500, 
+	"error_message" : "$1", 
+	"status": "failed"
 }
 EOF
 }

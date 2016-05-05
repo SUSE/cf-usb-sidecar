@@ -1,6 +1,6 @@
-#! /bin/bash
-for ((i=0;i<41;i++ )) 
+#!/bin/sh
+
+for i in $(seq 1 60)
 do
 	sleep 1s
-	echo "$i secs"
 done

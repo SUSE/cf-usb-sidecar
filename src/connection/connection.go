@@ -1,10 +1,11 @@
 package connection
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
@@ -38,27 +39,42 @@ func (c *CSMConnection) getConnectionsDeleteExtension(homePath string) (bool, *s
 }
 
 //create ServiceManagerConnectionResponse from the json we received in file
-func marshalResponseFromMessage(message []byte, ok_resp int) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
+func marshalResponseFromMessage(message []byte) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
 	connection := utils.NewConnection()
 	jsonresp := utils.JsonResponse{}
-	err := json.Unmarshal(message, &jsonresp)
+	if len(message) == 0 {
+		return nil, nil, errors.New("Empty response")
+	}
+	err := jsonresp.Unmarshal(message)
+
 	if err != nil {
-		return nil, nil, errors.New(fmt.Sprintf("Invalid json response from extension: %s", err.Error()))
+		return nil, nil, err
 	}
-	if jsonresp.HttpCode != ok_resp { //the extension is giving us an error response
-		if jsonresp.HttpCode == 0 {
-			err = errors.New("invalid response received from extension")
-			return nil, nil, err
+	if strings.ToLower(jsonresp.Status) != "successful" { //the extension is giving us an error responses
+		var code int64
+		var message string
+		if jsonresp.ErrorCode == 0 {
+			code = utils.HTTP_500
+		} else {
+			code = int64(jsonresp.ErrorCode)
 		}
-		code := int64(jsonresp.HttpCode)
-		//if the client wants us to use a specific error code we must create a specific error here
-		//all the other errors will have code 500
-		return nil, utils.GenerateErrorResponse(&code, fmt.Sprintf("%v", jsonresp.Details)), nil
+
+		message = jsonresp.ErrorMessage
+
+		return nil, utils.GenerateErrorResponse(&code, message), nil
+
 	}
+
 	connection.Details = make(map[string]interface{})
-	connection.Details["data"] = jsonresp.Details
-	connection.Status = jsonresp.Status
-	connection.ProcessingType = jsonresp.ProcessingType
+	switch t := jsonresp.Details.(type) {
+	default:
+		connection.Details["data"] = t
+	case map[string]interface{}:
+		connection.Details = jsonresp.Details.(map[string]interface{})
+	}
+	//connection.Details = jsonresp.Details.(map[string]interface{})
+	connection.Status = "successful"
+	connection.ProcessingType = "Extension"
 
 	return &connection, nil, nil
 }
@@ -79,7 +95,7 @@ func checkParamsOk(workspaceID *string, connectionID *string, extensionPath *str
 	return nil
 }
 
-func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, extensionPath *string, ok_resp int) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
+func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, extensionPath *string) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
 	if err := checkParamsOk(workspaceID, connectionID, extensionPath); err != nil {
 		return nil, nil, err
 	}
@@ -89,18 +105,15 @@ func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *stri
 		c.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
 
 		fileContent, err := utils.ReadOutputFile(outputFile, *c.Config.DEV_MODE != "true")
-
 		if err != nil {
-			return nil, nil, errors.New(fmt.Sprintf("Invalid json response from extension: %", err.Error()))
+			return nil, nil, errors.New(fmt.Sprintf("Error reading response from extension: %s", err.Error()))
 		}
-
-		return marshalResponseFromMessage(fileContent, ok_resp)
-
+		return marshalResponseFromMessage(fileContent)
 	} else {
 		// extension couldn't be executed, returned an error or timedout
 		//first we check for timeout (success=false,  output==nil)
 		if output == nil {
-			return nil, utils.GenerateErrorResponse(&utils.HTTP_408, "Timeout while executing the extension. The extension did not respond in a reasonable ammount of time."), nil
+			return nil, utils.GenerateErrorResponse(&utils.HTTP_408, utils.ERR_TIMEOUT), nil
 		}
 		//else it means that the extension did not return a zero code	 ("success = false, output != nil)
 		err := errors.New(*output)
@@ -120,12 +133,12 @@ func (c *CSMConnection) CheckExtensions() {
 	c.Logger.Info("CheckExtensions", lager.Data{"Connections Delete extension ": file})
 }
 
-func (w *CSMConnection) executeRequest(workspaceID string, connectionID string, requestType string, ok_resp int, filename *string) (*models.ServiceManagerConnectionResponse, *models.Error) {
+func (w *CSMConnection) executeRequest(workspaceID string, connectionID string, requestType string, filename *string) (*models.ServiceManagerConnectionResponse, *models.Error) {
 	var modelserr *models.Error
 	var connection *models.ServiceManagerConnectionResponse
 	var err error
 
-	connection, modelserr, err = w.executeExtension(&workspaceID, &connectionID, filename, ok_resp)
+	connection, modelserr, err = w.executeExtension(&workspaceID, &connectionID, filename)
 
 	if err != nil {
 		w.Logger.Error(requestType, err)
@@ -141,10 +154,10 @@ func (c *CSMConnection) GetConnection(workspaceID string, connectionID string) (
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsGetExtension(*serviceManagerConfig.MANAGER_HOME)
 	if !exists || filename == nil {
-		c.Logger.Info("GetConnection", lager.Data{"extension not found ": exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, "extension not found")
+		c.Logger.Info("GetConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
 	}
-	return c.executeRequest(workspaceID, connectionID, "GetConnection", common.GET_CONNECTION_OK_RESPONSE, filename)
+	return c.executeRequest(workspaceID, connectionID, "GetConnection", filename)
 }
 
 // CreateConnection create connections
@@ -154,10 +167,25 @@ func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsCreateExtension(*serviceManagerConfig.MANAGER_HOME)
 	if !exists || filename == nil {
-		c.Logger.Info("CreateConnection", lager.Data{"extension not found ": exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, "extension not found")
+		c.Logger.Info("CreateConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
+	} else if (!exists) && (serviceManagerConfig.PARAMETERS != nil) {
+		connection := utils.NewConnection()
+		c.Logger.Info("GetConnection", lager.Data{"Extension not found ": exists})
+		parametersNameList := strings.Split(*serviceManagerConfig.PARAMETERS, " ")
+		c.Logger.Info("GetConnection", lager.Data{"Parameter List ": parametersNameList})
+		connection.Details = make(map[string]interface{})
+		for _, parameterName := range parametersNameList {
+			parameterValue, ok := os.LookupEnv(parameterName)
+			if ok {
+				connection.Details[parameterName] = parameterValue
+			}
+		}
+		connection.ProcessingType = common.PROCESSING_TYPE_DEFAULT
+		return &connection, nil
+
 	}
-	return c.executeRequest(workspaceID, connectionID, "CreateConnection", common.CREATE_CONNECTION_OK_RESPONSE, filename)
+	return c.executeRequest(workspaceID, connectionID, "CreateConnection", filename)
 }
 
 // DeleteConnection delete connections
@@ -167,8 +195,8 @@ func (c *CSMConnection) DeleteConnection(workspaceID string, connectionID string
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsDeleteExtension(*serviceManagerConfig.MANAGER_HOME)
 	if !exists || filename == nil {
-		c.Logger.Info("DeleteConnection", lager.Data{"extension not found ": exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, "extension not found")
+		c.Logger.Info("DeleteConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
 	}
-	return c.executeRequest(workspaceID, connectionID, "DeleteConnection", common.DELETE_CONNECTION_OK_RESPONSE, filename)
+	return c.executeRequest(workspaceID, connectionID, "DeleteConnection", filename)
 }

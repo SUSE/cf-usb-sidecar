@@ -13,10 +13,10 @@ NewUsername=`echo ${CREDENTIALS_ID} |  cut -c 1-15`
 write_success_output () { 
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code":200,
 	"status": "successful",
-	"details":"user exists",
-	"processing_type":"Extension"
+	"details":{
+		"result" : "user exists"	
+	}
 }
 EOF
 }
@@ -25,10 +25,9 @@ EOF
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code" : 500, 
-	"details" : "$1", 
-	"status": "failed",
-	"processing_type" : "Extension"
+	"error_code" : 404,
+	"error_message":"$1", 
+	"status": "failed"
 }
 EOF
 }

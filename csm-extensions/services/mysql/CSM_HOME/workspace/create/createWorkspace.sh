@@ -11,10 +11,10 @@ Password=${MYSQL_ROOT_PASSWORD}
 write_success_output () { 
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code":201,
 	"status": "successful",
-	"details":"database created",
-	"processing_type":"Extension"
+	"details": {
+		"result":"database created"
+	}
 }
 EOF
 }
@@ -23,22 +23,9 @@ EOF
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code":500,
+	"error_code":500,
 	"status": "failed",
-	"details":"database could not be created",
-	"processing_type":"Extension"
-}
-EOF
-}
-
-# creates output file for failed execution
-write_exists_output(){
-	cat <<EOF > ${OUTPUT_FILE}
-{
-	"http_code":500,
-	"status": "failed",
-	"details":"database already exists",
-	"processing_type":"Extension"
+	"error_message":"$1"
 }
 EOF
 }
@@ -47,8 +34,8 @@ EOF
 mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "show databases" | grep "d${INSTANCE_ID}" > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    write_exists_output
-	return
+    write_failed_output "Database already exists"
+	exit 0
 fi
 
 sleep 1
@@ -64,5 +51,5 @@ mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p$
 if [ $? -eq 0 ]; then
     write_success_output
 else
-    write_failed_output
+    write_failed_output "database could not be created"
 fi

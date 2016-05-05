@@ -10,10 +10,10 @@ Password=${MYSQL_ROOT_PASSWORD}
 write_success_output () { 
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code":200,
 	"status": "successful",
-	"details": "database exists",
-	"processing_type":"Extension"
+	"details": {
+		"result":"database exists"	
+	}
 }
 EOF
 }
@@ -22,10 +22,9 @@ EOF
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code" : 500, 
-	"details" : "no database with this name was found", 
-	"status": "failed",
-	"processing_type" : "Extension"
+	"error_code" : 500, 
+	"error_message" : "no database with this name was found", 
+	"status": "failed"
 }
 EOF
 }

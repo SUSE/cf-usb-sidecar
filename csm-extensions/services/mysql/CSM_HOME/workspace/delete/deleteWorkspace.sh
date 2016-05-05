@@ -11,10 +11,10 @@ Password=${MYSQL_ROOT_PASSWORD}
 write_success_output () { 
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code":200,
 	"status": "successful",
-	"details":"database deleted",
-	"processing_type":"Extension"
+	"details":{
+		"result" : "database deleted"
+	}
 }
 EOF
 }
@@ -23,10 +23,9 @@ EOF
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"http_code" : 500, 
-	"details" : "Could not delete the database", 
-	"status": "failed",
-	"processing_type" : "Extension"
+	"error_code" : 500, 
+	"error_message" : "$1", 
+	"status": "failed"
 }
 EOF
 }
@@ -34,7 +33,7 @@ EOF
 mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "show databases" | grep "d${INSTANCE_ID}" > /dev/null 2>&1
 
 if [ $? -ne 0 ]; then
-	write_failed_output
+	write_failed_output "Database does not exist"
 	return
 fi
 
@@ -51,5 +50,5 @@ if [ $? -ne 0 ]; then
 	write_success_output
 else
 	# database still exists, something went wrong
-	write_failed_output
+	write_failed_output "Could not delete the database"
 fi

@@ -196,7 +196,7 @@ func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...strin
 
 	//if we could not start the process we consider the command returned an error code
 	if err != nil {
-		sExitErrorWithStatus := "The extension process could not be started"
+		sExitErrorWithStatus := fmt.Sprintf("The extension process could not be started: %s", err.Error())
 		return false, tmpfile, &sExitErrorWithStatus
 	}
 

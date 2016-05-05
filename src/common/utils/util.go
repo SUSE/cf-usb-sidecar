@@ -3,8 +3,10 @@ package utils
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
@@ -13,17 +15,27 @@ import (
 var HTTP_500 int64 = 500
 var HTTP_408 int64 = 408
 
+const ERR_EXTENSION_NOT_FOUND string = "extension not found"
+const ERR_TIMEOUT string = "Timeout while executing the extension. The extension did not respond in a reasonable ammount of time."
+
 type JsonResponse struct {
-	HttpCode       int         `json:"http_code"`
-	Details        interface{} `json:"details"`
-	Status         string      `json:"status"`
-	ProcessingType string      `json:"processing_type"`
+	ErrorCode    int         `json:"error_code,omitempty"`
+	ErrorMessage string      `json:"error_message,omitempty"`
+	Details      interface{} `json:"details,omitempty"`
+	Status       string      `json:"status"`
 }
 
-func IsValidJSON(s string) bool {
-	var vjson map[string]interface{}
-	err := json.Unmarshal([]byte(s), &vjson)
-	return err == nil
+func (j *JsonResponse) Unmarshal(value []byte) error {
+	err := json.Unmarshal(value, j)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Invalid json response from extension: %s", err.Error()))
+	}
+	if strings.ToLower((*j).Status) != "successful" &&
+		strings.ToLower((*j).Status) != "failed" {
+		return errors.New(fmt.Sprintf("Invalid status received from extension: %s", (*j).Status))
+	}
+
+	return nil
 }
 
 func NewWorkspace() models.ServiceManagerWorkspaceResponse {
@@ -60,6 +72,9 @@ func ReadOutputFile(outputFile *os.File, removeAfter bool) ([]byte, error) {
 				fileContentB, err := ioutil.ReadFile(outputFile.Name())
 				if err != nil {
 					return nil, err
+				}
+				if len(fileContentB) == 0 {
+					return nil, errors.New("The generated file is empty")
 				}
 				return fileContentB, nil
 			} else {
