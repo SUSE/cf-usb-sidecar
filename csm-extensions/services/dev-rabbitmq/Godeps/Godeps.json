@@ -1,7 +1,10 @@
 {
-	"ImportPath": "github.com/hpcloud/catalog-service-manager/services/dev-rabbitmq",
+	"ImportPath": "github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq",
 	"GoVersion": "go1.6",
-	"GodepVersion": "v62",
+	"GodepVersion": "v63",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/fsouza/go-dockerclient",
@@ -184,6 +187,11 @@
 			"ImportPath": "github.com/stretchr/testify/assert",
 			"Comment": "v1.0-17-g089c718",
 			"Rev": "089c7181b8c728499929ff09b62d3fdd8df8adff"
+		},
+		{
+			"ImportPath": "gopkg.in/caarlos0/env.v2",
+			"Comment": "v2.0",
+			"Rev": "65331f179c42e3ffe33457b69bee55472a779cd6"
 		}
 	]
 }
