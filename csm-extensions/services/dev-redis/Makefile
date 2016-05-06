@@ -53,7 +53,7 @@ test:	test-format
 clean-containers:
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh csm-dev-mysql-db
+	${CSM_ROOT}/scripts/docker/remove-docker-container.sh csm-dev-redis-db
 
 # (required) clean docker images
 clean-images:
