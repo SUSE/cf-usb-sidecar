@@ -1,9 +1,9 @@
 #!/bin/sh
 
-MSSQL_USER="sa"
-MSSQL_PASS="password"
-MSSQL_HOST="sqlserver"
-MSSQL_PORT="1433"
+MONGO_USER="user"
+MONGO_PASS="password"
+MONGO_HOST="db"
+MONGO_PORT="1234"
 CSM_LOG_LEVEL="debug"
 CSM_DEV_MODE="true"
 CSM_API_KEY="csm-auth-token"
@@ -19,11 +19,11 @@ fi
 
 
 docker run --name ${CSM_EXTENSION_IMAGE_NAME} \
-	-p 8091:8081 \
-	-e MSSQL_USER=${MSSQL_USER} \
-	-e MSSQL_PASS=${MSSQL_PASS} \
-	-e MSSQL_HOST=${MSSQL_HOST} \
-	-e MSSQL_PORT=${MSSQL_PORT} \
+	-p 8092:8081 \
+	-e MONGO_USER=${MONGO_USER} \
+	-e MONGO_PASS=${MONGO_PASS} \
+	-e MONGO_HOST=${MONGO_HOST} \
+	-e MONGO_PORT=${MONGO_PORT} \
 	-e CSM_LOG_LEVEL=${CSM_LOG_LEVEL} \
 	-e CSM_API_KEY=${CSM_API_KEY} \
 	-e CSM_DEV_MODE=${CSM_DEV_MODE} \

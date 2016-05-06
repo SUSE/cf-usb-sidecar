@@ -7,11 +7,11 @@ WARN_CYN_COLOR=\033[33;01m
 .PHONY: clean-all clean build-image tools run
 
 export CSM_ROOT := $(shell echo ${GOPATH}/src/github.com/hpcloud/catalog-service-manager)
-export CSM_EXTENSION_ROOT := $(shell echo ${CSM_ROOT}/csm-extensions/services/dev-mssql)
-export CSM_EXTENSION_IMAGE_NAME := $(shell echo "csm-dev-mssql")
+export CSM_EXTENSION_ROOT := $(shell echo ${CSM_ROOT}/csm-extensions/services/dev-mongo)
+export CSM_EXTENSION_IMAGE_NAME := $(shell echo "csm-dev-mongo")
 export CSM_EXTENSION_IMAGE_TAG := $(shell echo "latest")
 
-export CSM_EXTENSION_BUILD_IMAGE_NAME := $(shell echo "csm-dev-mssql-build")
+export CSM_EXTENSION_BUILD_IMAGE_NAME := $(shell echo "csm-dev-mongo-build")
 
 
 default: help
@@ -53,7 +53,7 @@ test:	test-format
 clean-containers:
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh csm-dev-mssql-db
+	${CSM_ROOT}/scripts/docker/remove-docker-container.sh csm-dev-mongo-db
 
 # (required) clean docker images
 clean-images:
@@ -74,7 +74,7 @@ build-image:
 
 # (required) push image to docker registry
 push-image:
-	docker tag -f dev-mssql:latest $(REGISTRY_LOCATION)/catalog/dev-mssql:$(APP_VERSION_TAG)
-	docker tag -f dev-mssql:latest $(REGISTRY_LOCATION)/catalog/dev-mssql:latest
-	docker push $(REGISTRY_LOCATION)/catalog/dev-mssql:$(APP_VERSION_TAG)
-	docker push $(REGISTRY_LOCATION)/catalog/dev-mssql:latest
+	docker tag -f dev-mongo:latest $(REGISTRY_LOCATION)/catalog/dev-mongo:$(APP_VERSION_TAG)
+	docker tag -f dev-mongo:latest $(REGISTRY_LOCATION)/catalog/dev-mongo:latest
+	docker push $(REGISTRY_LOCATION)/catalog/dev-mongo:$(APP_VERSION_TAG)
+	docker push $(REGISTRY_LOCATION)/catalog/dev-mongo:latest
