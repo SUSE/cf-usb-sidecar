@@ -19,7 +19,7 @@ fi
 
 
 docker run --name ${CSM_EXTENSION_IMAGE_NAME} \
-	-p 8081:8081 \
+	-p 8091:8081 \
 	-e MSSQL_USER=${MSSQL_USER} \
 	-e MSSQL_PASS=${MSSQL_PASS} \
 	-e MSSQL_HOST=${MSSQL_HOST} \
