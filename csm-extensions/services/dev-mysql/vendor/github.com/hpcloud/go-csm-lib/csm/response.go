@@ -1,30 +1,27 @@
 package csm
 
-import "github.com/hpcloud/go-csm-lib/csm/status"
-
 type CSMResponse struct {
-	HttpCode       int         `json:"http_code"`
-	Details        interface{} `json:"details"`
-	Status         string      `json:"status"`
-	ProcessingType string      `json:"processing_type"`
+	ErrorCode    int         `json:"error_code,omitempty"`
+	ErrorMessage string      `json:"error_message,omitempty"`
+	Details      interface{} `json:"details,omitempty"`
+	Status       string      `json:"status"`
 }
 
-func NewCSMResponse(httpCode int, details interface{}, stat status.Status) CSMResponse {
-	response := CSMResponse{}
-
-	switch stat {
-	case status.None:
-		response.Status = "none"
-	case status.Failed:
-		response.Status = "failed"
-	case status.Successful:
-		response.Status = "successful"
-	case status.Unknown:
-		response.Status = "unknown"
-
+func CreateCSMResponse(details interface{}) CSMResponse {
+	response := CSMResponse{
+		Status:  "successful",
+		Details: details,
 	}
-	response.HttpCode = httpCode
+	response.Status = "successful"
 	response.Details = details
-	response.ProcessingType = "Extension"
+	return response
+}
+
+func CreateCSMErrorResponse(errorCode int, errorMessage string) CSMResponse {
+	response := CSMResponse{
+		Status:       "failed",
+		ErrorCode:    errorCode,
+		ErrorMessage: errorMessage,
+	}
 	return response
 }

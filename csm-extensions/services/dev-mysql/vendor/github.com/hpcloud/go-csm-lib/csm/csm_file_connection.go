@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/hpcloud/go-csm-lib/csm/status"
 	"github.com/pivotal-golang/lager"
 )
 
@@ -38,7 +37,7 @@ func (c *csmFileConnection) Write(response CSMResponse) error {
 }
 
 func (c *csmFileConnection) WriteError(input error) error {
-	response := NewCSMResponse(500, input.Error(), status.Failed)
+	response := CreateCSMErrorResponse(500, input.Error())
 
 	err := c.Write(response)
 	return err

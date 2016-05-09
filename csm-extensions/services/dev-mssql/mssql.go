@@ -113,7 +113,7 @@ func (e *mssqlExtension) GetConnection(workspaceID, connectionID string) (*csm.C
 		return nil, err
 	}
 
-	response := csm.CSMResponse{}
+	var response csm.CSMResponse
 
 	if exists {
 		response = csm.NewCSMResponse(200, "", status.Successful)
@@ -131,7 +131,7 @@ func (e *mssqlExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 		return nil, err
 	}
 
-	response := csm.CSMResponse{}
+	var response csm.CSMResponse
 
 	if exists {
 		response = csm.NewCSMResponse(200, "", status.Successful)

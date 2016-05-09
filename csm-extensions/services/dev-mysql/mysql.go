@@ -1,11 +1,10 @@
 package mysql
 
 import (
-	"github.com/hpcloud/go-csm-lib/csm"
-	"github.com/hpcloud/go-csm-lib/csm/status"
-	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/provisioner"
+	"github.com/hpcloud/go-csm-lib/csm"
+	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/go-csm-lib/util"
 	"github.com/pivotal-golang/lager"
 )
@@ -54,7 +53,7 @@ func (e *mysqlExtension) CreateConnection(workspaceID, connectionID string) (*cs
 		Database: dbName,
 	}
 
-	response := csm.NewCSMResponse(200, binding, status.Successful)
+	response := csm.CreateCSMResponse(binding)
 	return &response, err
 }
 func (e *mysqlExtension) CreateWorkspace(workspaceID string) (*csm.CSMResponse, error) {
@@ -65,7 +64,7 @@ func (e *mysqlExtension) CreateWorkspace(workspaceID string) (*csm.CSMResponse, 
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -82,7 +81,7 @@ func (e *mysqlExtension) DeleteConnection(workspaceID, connectionID string) (*cs
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -95,7 +94,7 @@ func (e *mysqlExtension) DeleteWorkspace(workspaceID string) (*csm.CSMResponse, 
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -110,12 +109,12 @@ func (e *mysqlExtension) GetConnection(workspaceID, connectionID string) (*csm.C
 		return nil, err
 	}
 
-	response := csm.CSMResponse{}
+	var response csm.CSMResponse
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "Connection does not exist")
 	}
 
 	return &response, nil
@@ -131,9 +130,9 @@ func (e *mysqlExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 	response := csm.CSMResponse{}
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "")
 	}
 
 	return &response, nil
