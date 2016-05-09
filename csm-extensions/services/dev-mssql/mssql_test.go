@@ -171,6 +171,7 @@ func TestGetConnectionUserDoesNotExist(t *testing.T) {
 	assert.NotNil(response)
 	assert.Equal(404, response.ErrorCode)
 	assert.Equal("failed", response.Status)
+	assert.Equal("Connection does not exist", response.ErrorMessage)
 }
 
 func TestGetConnectionError(t *testing.T) {
@@ -211,6 +212,7 @@ func TestGetWorkspaceDoesNotExist(t *testing.T) {
 	assert.NotNil(response)
 	assert.Equal(404, response.ErrorCode)
 	assert.Equal("failed", response.Status)
+	assert.Equal("Workspace does not exist", response.ErrorMessage)
 }
 
 func TestGetWorkspaceDoesError(t *testing.T) {

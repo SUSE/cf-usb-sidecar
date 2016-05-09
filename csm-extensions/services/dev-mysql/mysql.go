@@ -132,7 +132,7 @@ func (e *mysqlExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 	if exists {
 		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.CreateCSMErrorResponse(404, "")
+		response = csm.CreateCSMErrorResponse(404, "Workspace does not exist")
 	}
 
 	return &response, nil
