@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/provisioner/provisionerfakes"
+	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"
 )
@@ -42,7 +42,7 @@ func TestCreateConnection(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(response)
-	assert.Equal(200, response.HttpCode)
+	assert.Equal(0, response.ErrorCode)
 	assert.Equal("successful", response.Status)
 
 	creds := response.Details.(config.PostgresBindingCredentials)
@@ -80,7 +80,7 @@ func TestCreateWorkspace(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(response)
-	assert.Equal(200, response.HttpCode)
+	assert.Equal(0, response.ErrorCode)
 	assert.Equal("successful", response.Status)
 }
 
@@ -106,7 +106,7 @@ func TestDeleteConnection(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(response)
-	assert.Equal(200, response.HttpCode)
+	assert.Equal(0, response.ErrorCode)
 	assert.Equal("successful", response.Status)
 }
 
@@ -132,7 +132,7 @@ func TestDeleteWorkspace(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(response)
-	assert.Equal(200, response.HttpCode)
+	assert.Equal(0, response.ErrorCode)
 	assert.Equal("successful", response.Status)
 }
 
@@ -158,7 +158,7 @@ func TestGetConnection(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(response)
-	assert.Equal(200, response.HttpCode)
+	assert.Equal(0, response.ErrorCode)
 	assert.Equal("successful", response.Status)
 }
 
@@ -172,8 +172,8 @@ func TestGetConnectionUserDoesNotExist(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(response)
-	assert.Equal(404, response.HttpCode)
-	assert.Equal("successful", response.Status)
+	assert.Equal(404, response.ErrorCode)
+	assert.Equal("failed", response.Status)
 }
 
 func TestGetConnectionError(t *testing.T) {
@@ -198,7 +198,7 @@ func TestGetWorkspace(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(response)
-	assert.Equal(200, response.HttpCode)
+	assert.Equal(0, response.ErrorCode)
 	assert.Equal("successful", response.Status)
 }
 
@@ -212,8 +212,8 @@ func TestGetWorkspaceDoesNotExist(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(response)
-	assert.Equal(404, response.HttpCode)
-	assert.Equal("successful", response.Status)
+	assert.Equal(404, response.ErrorCode)
+	assert.Equal("failed", response.Status)
 }
 
 func TestGetWorkspaceDoesError(t *testing.T) {

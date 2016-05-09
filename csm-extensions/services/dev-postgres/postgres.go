@@ -1,11 +1,10 @@
 package postgres
 
 import (
-	"github.com/hpcloud/go-csm-lib/csm"
-	"github.com/hpcloud/go-csm-lib/csm/status"
-	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/provisioner"
+	"github.com/hpcloud/go-csm-lib/csm"
+	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/go-csm-lib/util"
 	"github.com/pivotal-golang/lager"
 )
@@ -57,7 +56,7 @@ func (e *postgresExtension) CreateConnection(workspaceID, connectionID string) (
 		JdbcUrl:          config.GenerateConnectionString(config.JdbcUrilTemplate, e.conf.Host, e.conf.Port, dbName, username, password),
 	}
 
-	response := csm.NewCSMResponse(200, binding, status.Successful)
+	response := csm.CreateCSMResponse(binding)
 	return &response, err
 }
 
@@ -69,7 +68,7 @@ func (e *postgresExtension) CreateWorkspace(workspaceID string) (*csm.CSMRespons
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -87,7 +86,7 @@ func (e *postgresExtension) DeleteConnection(workspaceID, connectionID string) (
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -100,7 +99,7 @@ func (e *postgresExtension) DeleteWorkspace(workspaceID string) (*csm.CSMRespons
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -118,9 +117,9 @@ func (e *postgresExtension) GetConnection(workspaceID, connectionID string) (*cs
 	response := csm.CSMResponse{}
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "Connection does not exist")
 	}
 
 	return &response, nil
@@ -136,9 +135,9 @@ func (e *postgresExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, 
 	response := csm.CSMResponse{}
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "Workspace does not exist")
 	}
 
 	return &response, nil

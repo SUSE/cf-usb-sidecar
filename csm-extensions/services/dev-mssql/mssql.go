@@ -4,7 +4,6 @@ import (
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mssql/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mssql/provisioner"
 	"github.com/hpcloud/go-csm-lib/csm"
-	"github.com/hpcloud/go-csm-lib/csm/status"
 	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/go-csm-lib/util"
 	"github.com/pivotal-golang/lager"
@@ -55,7 +54,7 @@ func (e *mssqlExtension) CreateConnection(workspaceID, connectionID string) (*cs
 			dbName, username, password),
 	}
 
-	response := csm.NewCSMResponse(200, binding, status.Successful)
+	response := csm.CreateCSMResponse(binding)
 	return &response, err
 }
 
@@ -67,7 +66,7 @@ func (e *mssqlExtension) CreateWorkspace(workspaceID string) (*csm.CSMResponse, 
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -84,7 +83,7 @@ func (e *mssqlExtension) DeleteConnection(workspaceID, connectionID string) (*cs
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -98,7 +97,7 @@ func (e *mssqlExtension) DeleteWorkspace(workspaceID string) (*csm.CSMResponse, 
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -116,9 +115,9 @@ func (e *mssqlExtension) GetConnection(workspaceID, connectionID string) (*csm.C
 	var response csm.CSMResponse
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "Workspace does not exist")
 	}
 
 	return &response, nil
@@ -134,9 +133,9 @@ func (e *mssqlExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 	var response csm.CSMResponse
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "Connection does not exist")
 	}
 
 	return &response, nil
