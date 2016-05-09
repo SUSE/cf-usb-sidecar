@@ -3,11 +3,10 @@ package rabbitmq
 import (
 	"fmt"
 
-	"github.com/hpcloud/go-csm-lib/csm"
-	"github.com/hpcloud/go-csm-lib/csm/status"
-	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq/provisioner"
+	"github.com/hpcloud/go-csm-lib/csm"
+	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/go-csm-lib/util"
 	"github.com/pivotal-golang/lager"
 )
@@ -58,7 +57,7 @@ func (e *rabbitmqExtension) CreateConnection(workspaceID, connectionID string) (
 		Pass:         credentials["password"],
 	}
 
-	response := csm.NewCSMResponse(200, binding, status.Successful)
+	response := csm.CreateCSMResponse(binding)
 	return &response, err
 }
 func (e *rabbitmqExtension) CreateWorkspace(workspaceID string) (*csm.CSMResponse, error) {
@@ -69,7 +68,7 @@ func (e *rabbitmqExtension) CreateWorkspace(workspaceID string) (*csm.CSMRespons
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -86,7 +85,7 @@ func (e *rabbitmqExtension) DeleteConnection(workspaceID, connectionID string) (
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -99,7 +98,7 @@ func (e *rabbitmqExtension) DeleteWorkspace(workspaceID string) (*csm.CSMRespons
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -117,9 +116,9 @@ func (e *rabbitmqExtension) GetConnection(workspaceID, connectionID string) (*cs
 	response := csm.CSMResponse{}
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "Connection does not exist")
 	}
 
 	return &response, nil
@@ -135,9 +134,9 @@ func (e *rabbitmqExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, 
 	response := csm.CSMResponse{}
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "Workspace does not exist")
 	}
 
 	return &response, nil

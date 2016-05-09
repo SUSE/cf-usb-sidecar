@@ -3,11 +3,10 @@ package redis
 import (
 	"fmt"
 
-	"github.com/hpcloud/go-csm-lib/csm"
-	"github.com/hpcloud/go-csm-lib/csm/status"
-	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis/provisioner"
+	"github.com/hpcloud/go-csm-lib/csm"
+	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/go-csm-lib/util"
 	"github.com/pivotal-golang/lager"
 )
@@ -40,7 +39,7 @@ func (e *redisExtension) CreateConnection(workspaceID, connectionID string) (*cs
 		Uri:      fmt.Sprintf("redis://:%s@%s:%s/", credentials["password"], credentials["host"], credentials["port"]),
 	}
 
-	response := csm.NewCSMResponse(200, binding, status.Successful)
+	response := csm.CreateCSMResponse(binding)
 	return &response, err
 }
 func (e *redisExtension) CreateWorkspace(workspaceID string) (*csm.CSMResponse, error) {
@@ -51,14 +50,14 @@ func (e *redisExtension) CreateWorkspace(workspaceID string) (*csm.CSMResponse, 
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
 func (e *redisExtension) DeleteConnection(workspaceID, connectionID string) (*csm.CSMResponse, error) {
 	e.logger.Info("delete-connection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -71,13 +70,13 @@ func (e *redisExtension) DeleteWorkspace(workspaceID string) (*csm.CSMResponse, 
 		return nil, err
 	}
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
 func (e *redisExtension) GetConnection(workspaceID, connectionID string) (*csm.CSMResponse, error) {
 
-	response := csm.NewCSMResponse(200, "", status.Successful)
+	response := csm.CreateCSMResponse("")
 
 	return &response, nil
 }
@@ -92,9 +91,9 @@ func (e *redisExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 	response := csm.CSMResponse{}
 
 	if exists {
-		response = csm.NewCSMResponse(200, "", status.Successful)
+		response = csm.CreateCSMResponse("")
 	} else {
-		response = csm.NewCSMResponse(404, "", status.Successful)
+		response = csm.CreateCSMErrorResponse(404, "Workspace does not exist")
 	}
 
 	return &response, nil
