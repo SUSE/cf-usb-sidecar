@@ -1,11 +1,11 @@
 package workspace
 
 import (
-	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"os"
+	"fmt"
 	"path/filepath"
+
+	"strings"
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
@@ -38,56 +38,87 @@ func (w *CSMWorkspace) getWorkspaceDeleteExtension(homePath string) (bool, *stri
 	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace", "delete"))
 }
 
-func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *string, workspace *models.ServiceManagerWorkspaceResponse) {
+//create ServiceManagerWorkspaceResponse from the json we received in file
+func marshalResponseFromMessage(message []byte) (*models.ServiceManagerWorkspaceResponse, *models.Error, error) {
+	workspace := utils.NewWorkspace()
+	jsonresp := utils.JsonResponse{}
+	if len(message) == 0 {
+		return nil, nil, errors.New("Empty response")
+	}
+	err := jsonresp.Unmarshal(message)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if strings.ToLower(jsonresp.Status) != "successful" { //the extension is giving us an error responses
+		var code int64
+		var message string
+		if jsonresp.ErrorCode == 0 {
+			code = utils.HTTP_500
+		} else {
+			code = int64(jsonresp.ErrorCode)
+		}
+
+		message = jsonresp.ErrorMessage
+
+		return nil, utils.GenerateErrorResponse(&code, message), nil
+
+	}
+
+	workspace.Details = make(map[string]interface{})
+	switch t := jsonresp.Details.(type) {
+	default:
+		workspace.Details["data"] = t
+	case map[string]interface{}:
+		workspace.Details = jsonresp.Details.(map[string]interface{})
+	case map[string]string:
+		workspace.Details = jsonresp.Details.(map[string]interface{})
+	}
+
+	workspace.Status = jsonresp.Status
+	workspace.ProcessingType = "Extension"
+
+	return &workspace, nil, nil
+}
+
+func checkParamsOk(workspaceID *string, extensionPath *string) error {
 	if workspaceID == nil {
-		w.Logger.Error("executeExtension", errors.New("workspaceID is nil"))
-		return
+		err := errors.New("workspaceID is nil")
+		return err
 	}
 	if extensionPath == nil {
-		w.Logger.Error("executeExtension", errors.New("extensionPath is nil"))
-		return
+		err := errors.New("extensionPath is nil")
+		return err
+	}
+	return nil
+}
+
+func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *string) (*models.ServiceManagerWorkspaceResponse, *models.Error, error) {
+	if err := checkParamsOk(workspaceID, extensionPath); err != nil {
+		return nil, nil, err
 	}
 	w.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "extension Path ": extensionPath})
+
 	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID); success {
 		w.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
 		w.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
 
-		if outputFile != nil {
-			if *w.Config.DEV_MODE != "true" {
-				// clean up if not running in dev mode
-				defer os.Remove(outputFile.Name())
-			}
-			if fileStat, err := os.Stat(outputFile.Name()); err == nil { // checking the file size of the extension output
-				if fileStat.Size() > 0 {
-					file, e := ioutil.ReadFile(outputFile.Name())
-					if e != nil {
-						w.Logger.Info("executeExtension", lager.Data{"File error while reading extension output file ": e})
-						w.Logger.Error("executeExtension", e)
-						workspace.Status = common.PROCESSING_STATUS_FAILED
-					}
-					err := json.Unmarshal(file, &workspace)
-					if err != nil {
-						w.Logger.Info("executeExtension", lager.Data{"Failed to parse the extension output": ""})
-						w.Logger.Error("executeExtension", err)
-					}
-					w.Logger.Info("executeExtension", lager.Data{"extension processing status ": workspace.Status})
-				} else {
-					// file size of extension output file is not greater than 0
-					workspace.Status = common.PROCESSING_STATUS_FAILED
-					w.Logger.Debug("executeExtension", lager.Data{"extension execution failed": success})
-				}
-			} else {
-				w.Logger.Info("executeExtension", lager.Data{"File error while reading extension output file ": err})
-				w.Logger.Error("executeExtension", err)
-			}
+		fileContent, err := utils.ReadOutputFile(outputFile, *w.Config.DEV_MODE != "true")
+		if err != nil {
+			return nil, nil, errors.New(fmt.Sprintf("Error reading response from extension: %s", err.Error()))
 		}
+		return marshalResponseFromMessage(fileContent)
+
 	} else {
-		// extension couldn't be executed
-		workspace.Status = common.PROCESSING_STATUS_FAILED
-		w.Logger.Debug("executeExtension", lager.Data{"extension execution failed": success})
+		// extension couldn't be executed, returned an error or timedout
+		//first we check for timeout (success=false,  output==nil)
+		if output == nil {
+			return nil, utils.GenerateErrorResponse(&utils.HTTP_408, utils.ERR_TIMEOUT), nil
+		}
+		//else it means that the extension did not return a zero code	 ("success = false, output != nil)
+		err := errors.New(*output)
+		return nil, nil, err
 	}
-	workspace.ProcessingType = common.PROCESSING_TYPE_EXTENSION
-	w.Logger.Debug("executeExtension", lager.Data{"Updated workspace processing type to ": common.PROCESSING_TYPE_EXTENSION})
 }
 
 // CheckExtensions checks for workspace extensions
@@ -102,50 +133,56 @@ func (w *CSMWorkspace) CheckExtensions() {
 	w.Logger.Info("CheckExtensions", lager.Data{"Workspaces Delete extension ": file})
 }
 
+func (w *CSMWorkspace) executeRequest(workspaceID string, requestType string, filename *string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
+	var modelserr *models.Error
+	var workspace *models.ServiceManagerWorkspaceResponse
+	var err error
+
+	workspace, modelserr, err = w.executeExtension(&workspaceID, filename)
+
+	if err != nil {
+		w.Logger.Error(requestType, err)
+		modelserr = utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())
+	}
+	return workspace, modelserr
+}
+
 // GetWorkspace get workspaces
-func (w *CSMWorkspace) GetWorkspace(workspaceID string) *models.ServiceManagerWorkspaceResponse {
+func (w *CSMWorkspace) GetWorkspace(workspaceID string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
+
 	w.Logger.Info("GetWorkspace", lager.Data{"workspaceID": workspaceID})
-	workspace := models.ServiceManagerWorkspaceResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
-	}
 	exists, filename := w.getWorkspaceGetExtension(*w.Config.MANAGER_HOME)
-	w.Logger.Info("GetWorkspace", lager.Data{"exists": exists, "filename": filename})
-	if exists && filename != nil {
-		w.executeExtension(&workspaceID, filename, &workspace)
-	} else {
-		w.Logger.Info("GetWorkspace", lager.Data{"extension not found ": exists})
+
+	if !exists || filename == nil {
+		w.Logger.Info("GetWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
 	}
-	return &workspace
+	return w.executeRequest(workspaceID, "GetWorkspace", filename)
+
 }
 
 // CreateWorkspace create workspaces
-func (w *CSMWorkspace) CreateWorkspace(workspaceCreate *models.ServiceManagerWorkspaceCreateRequest) *models.ServiceManagerWorkspaceResponse {
-	w.Logger.Info("CreateWorkspace", lager.Data{"workspaceID": workspaceCreate.WorkspaceID})
-	workspace := models.ServiceManagerWorkspaceResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
-	}
+func (w *CSMWorkspace) CreateWorkspace(workspaceID string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
+	w.Logger.Info("CreateWorkspace", lager.Data{"workspaceID": workspaceID})
 	exists, filename := w.getWorkspaceCreateExtension(*w.Config.MANAGER_HOME)
-	if exists && filename != nil {
-		w.executeExtension(&workspaceCreate.WorkspaceID, filename, &workspace)
-	} else {
-		w.Logger.Info("CreateWorkspace", lager.Data{"extension not found ": exists})
-	}
 
-	return &workspace
+	if !exists || filename == nil {
+		w.Logger.Info("CreateWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
+	}
+	return w.executeRequest(workspaceID, "CreateWorkspace", filename)
 }
 
 // DeleteWorkspace delete workspaces
-func (w *CSMWorkspace) DeleteWorkspace(workspaceID string) *models.ServiceManagerWorkspaceResponse {
-	w.Logger.Info("CreateWorkspace", lager.Data{"workspaceID": workspaceID})
-	workspace := models.ServiceManagerWorkspaceResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
-	}
-	exists, filename := w.getWorkspaceDeleteExtension(*w.Config.MANAGER_HOME)
-	if exists && filename != nil {
-		w.executeExtension(&workspaceID, filename, &workspace)
-	} else {
-		w.Logger.Info("CreateWorkspace", lager.Data{"extension not found": exists})
-	}
+func (w *CSMWorkspace) DeleteWorkspace(workspaceID string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
 
-	return &workspace
+	w.Logger.Info("DeleteWorkspace", lager.Data{"workspaceID": workspaceID})
+	exists, filename := w.getWorkspaceDeleteExtension(*w.Config.MANAGER_HOME)
+
+	if !exists || filename == nil {
+		w.Logger.Info("DeleteWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
+
+	}
+	return w.executeRequest(workspaceID, "DeleteWorkspace", filename)
 }

@@ -24,21 +24,25 @@ write_success_output () {
 		"password" : "${NewPassword}",
 		"database" : "d${INSTANCE_ID}"
 	}
+	
 }
 EOF
 
 }
 
+# creates output file for failed execution
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
+	"error_code" : 500, 
+	"error_message" : "$1", 
 	"status": "failed"
 }
 EOF
-
 }
 
 NewUsername=`echo ${CREDENTIALS_ID} |  cut -c 1-15`
+
 
 mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "show databases" | grep "d${INSTANCE_ID}" > /dev/null 2>&1
 
@@ -46,7 +50,7 @@ if [ $? -eq 0 ]; then
 	mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "CREATE USER \"d${NewUsername}\"@\"%\" IDENTIFIED BY \"${NewPassword}\";FLUSH PRIVILEGES" > /dev/null 2>&1
 
 	if [ $? -ne 0 ]; then
-		write_failed_output
+		write_failed_output "user was not created"
 		exit 0
 	fi
 
@@ -59,11 +63,11 @@ if [ $? -eq 0 ]; then
 		if [ $? -eq 0 ]; then
 			write_success_output
 		else
-			write_failed_output
+			write_failed_output "could not grant rights"
 		fi
 	else
-		write_failed_output
+		write_failed_output "user not found after creation"
 	fi
 else
-    write_failed_output
+    write_failed_output "database not found"
 fi

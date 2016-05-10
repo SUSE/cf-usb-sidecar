@@ -1,9 +1,8 @@
 package connection
 
 import (
-	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -39,61 +38,87 @@ func (c *CSMConnection) getConnectionsDeleteExtension(homePath string) (bool, *s
 	return c.FileHelper.GetExtension(filepath.Join(homePath, "connection", "delete"))
 }
 
-func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, extensionPath *string, connection *models.ServiceManagerConnectionResponse) {
+//create ServiceManagerConnectionResponse from the json we received in file
+func marshalResponseFromMessage(message []byte) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
+	connection := utils.NewConnection()
+	jsonresp := utils.JsonResponse{}
+	if len(message) == 0 {
+		return nil, nil, errors.New("Empty response")
+	}
+	err := jsonresp.Unmarshal(message)
+
+	if err != nil {
+		return nil, nil, err
+	}
+	if strings.ToLower(jsonresp.Status) != "successful" { //the extension is giving us an error responses
+		var code int64
+		var message string
+		if jsonresp.ErrorCode == 0 {
+			code = utils.HTTP_500
+		} else {
+			code = int64(jsonresp.ErrorCode)
+		}
+
+		message = jsonresp.ErrorMessage
+
+		return nil, utils.GenerateErrorResponse(&code, message), nil
+
+	}
+
+	connection.Details = make(map[string]interface{})
+	switch t := jsonresp.Details.(type) {
+	default:
+		connection.Details["data"] = t
+	case map[string]interface{}:
+		connection.Details = jsonresp.Details.(map[string]interface{})
+	}
+	//connection.Details = jsonresp.Details.(map[string]interface{})
+	connection.Status = "successful"
+	connection.ProcessingType = "Extension"
+
+	return &connection, nil, nil
+}
+
+func checkParamsOk(workspaceID *string, connectionID *string, extensionPath *string) error {
 	if workspaceID == nil {
-		c.Logger.Error("executeExtension", errors.New("workspaceID is nil"))
-		return
+		err := errors.New("workspaceID is nil")
+		return err
 	}
 	if connectionID == nil {
-		c.Logger.Error("executeExtension", errors.New("connectionID is nil"))
-		return
+		err := errors.New("connectionID is nil")
+		return err
 	}
 	if extensionPath == nil {
-		c.Logger.Error("executeExtension", errors.New("extensionPath is nil"))
-		return
+		err := errors.New("extensionPath is nil")
+		return err
+	}
+	return nil
+}
+
+func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, extensionPath *string) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
+	if err := checkParamsOk(workspaceID, connectionID, extensionPath); err != nil {
+		return nil, nil, err
 	}
 	c.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "extension Path ": extensionPath})
 	if success, outputFile, output := c.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, *connectionID); success {
 		c.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
 		c.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
-		if outputFile != nil {
-			if *c.Config.DEV_MODE != "true" {
-				// clean up if not running in dev mode
-				defer os.Remove(outputFile.Name())
-			}
-			// checking the file size of the extension output
-			if fileStat, err := os.Stat(outputFile.Name()); err == nil && fileStat != nil {
-				if fileStat.Size() > 0 {
-					file, e := ioutil.ReadFile(outputFile.Name())
-					if e != nil {
-						c.Logger.Info("executeExtension", lager.Data{"File error while reading extension output file": e})
-						c.Logger.Error("executeExtension", e)
-						connection.Status = common.PROCESSING_STATUS_FAILED
-					}
-					err := json.Unmarshal(file, &connection)
-					if err != nil {
-						c.Logger.Info("executeExtension", lager.Data{"Failed to parse the extension output": ""})
-						c.Logger.Error("executeExtension", err)
-					}
-					c.Logger.Info("executeExtension", lager.Data{"extension processing status ": connection.Status})
-				} else {
-					// file size of extension output file is not greater than 0
-					connection.Status = common.PROCESSING_STATUS_FAILED
-					c.Logger.Debug("executeExtension", lager.Data{"extension output file is empty": success})
-				}
-			} else {
-				c.Logger.Info("executeExtension", lager.Data{"File error while reading extension output file ": err})
-				c.Logger.Error("executeExtension", err)
-			}
-		}
-	} else {
-		// extension couldn't be executed
-		connection.Status = common.PROCESSING_STATUS_FAILED
-		c.Logger.Debug("executeExtension", lager.Data{"extension execution failed ": success})
-	}
 
-	connection.ProcessingType = common.PROCESSING_TYPE_EXTENSION
-	c.Logger.Debug("executeExtension", lager.Data{"Updated workspace processing type to ": common.PROCESSING_TYPE_EXTENSION})
+		fileContent, err := utils.ReadOutputFile(outputFile, *c.Config.DEV_MODE != "true")
+		if err != nil {
+			return nil, nil, errors.New(fmt.Sprintf("Error reading response from extension: %s", err.Error()))
+		}
+		return marshalResponseFromMessage(fileContent)
+	} else {
+		// extension couldn't be executed, returned an error or timedout
+		//first we check for timeout (success=false,  output==nil)
+		if output == nil {
+			return nil, utils.GenerateErrorResponse(&utils.HTTP_408, utils.ERR_TIMEOUT), nil
+		}
+		//else it means that the extension did not return a zero code	 ("success = false, output != nil)
+		err := errors.New(*output)
+		return nil, nil, err
+	}
 }
 
 // CheckExtensions checks for workspace extensions
@@ -108,35 +133,45 @@ func (c *CSMConnection) CheckExtensions() {
 	c.Logger.Info("CheckExtensions", lager.Data{"Connections Delete extension ": file})
 }
 
-// GetConnection get connections
-func (c *CSMConnection) GetConnection(workspaceID string, connectionID string) *models.ServiceManagerConnectionResponse {
-	c.Logger.Info("GetConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
-	connection := models.ServiceManagerConnectionResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
+func (w *CSMConnection) executeRequest(workspaceID string, connectionID string, requestType string, filename *string) (*models.ServiceManagerConnectionResponse, *models.Error) {
+	var modelserr *models.Error
+	var connection *models.ServiceManagerConnectionResponse
+	var err error
+
+	connection, modelserr, err = w.executeExtension(&workspaceID, &connectionID, filename)
+
+	if err != nil {
+		w.Logger.Error(requestType, err)
+		modelserr = utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())
 	}
+	return connection, modelserr
+}
+
+// GetConnection get connections
+func (c *CSMConnection) GetConnection(workspaceID string, connectionID string) (*models.ServiceManagerConnectionResponse, *models.Error) {
+	c.Logger.Info("GetConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
 
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsGetExtension(*serviceManagerConfig.MANAGER_HOME)
-	if exists && filename != nil {
-		c.executeExtension(&workspaceID, &connectionID, filename, &connection)
-	} else {
-		c.Logger.Info("GetConnection", lager.Data{"extension not found ": exists})
+	if !exists || filename == nil {
+		c.Logger.Info("GetConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
 	}
-	return &connection
+	return c.executeRequest(workspaceID, connectionID, "GetConnection", filename)
 }
 
 // CreateConnection create connections
-func (c *CSMConnection) CreateConnection(workspaceID string, createConnection *models.ServiceManagerConnectionCreateRequest) *models.ServiceManagerConnectionResponse {
-	c.Logger.Info("CreateConnection", lager.Data{"workspaceID": workspaceID, "connectionID": createConnection.ConnectionID})
-	connection := models.ServiceManagerConnectionResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
-	}
+func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string) (*models.ServiceManagerConnectionResponse, *models.Error) {
+	c.Logger.Info("CreateConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
+
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsCreateExtension(*serviceManagerConfig.MANAGER_HOME)
-	if exists && filename != nil {
-		c.executeExtension(&workspaceID, &createConnection.ConnectionID, filename, &connection)
+	if !exists || filename == nil {
+		c.Logger.Info("CreateConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
 	} else if (!exists) && (serviceManagerConfig.PARAMETERS != nil) {
-		c.Logger.Info("GetConnection", lager.Data{"extension not found ": exists})
+		connection := utils.NewConnection()
+		c.Logger.Info("GetConnection", lager.Data{"Extension not found ": exists})
 		parametersNameList := strings.Split(*serviceManagerConfig.PARAMETERS, " ")
 		c.Logger.Info("GetConnection", lager.Data{"Parameter List ": parametersNameList})
 		connection.Details = make(map[string]interface{})
@@ -147,22 +182,21 @@ func (c *CSMConnection) CreateConnection(workspaceID string, createConnection *m
 			}
 		}
 		connection.ProcessingType = common.PROCESSING_TYPE_DEFAULT
+		return &connection, nil
+
 	}
-	return &connection
+	return c.executeRequest(workspaceID, connectionID, "CreateConnection", filename)
 }
 
 // DeleteConnection delete connections
-func (c *CSMConnection) DeleteConnection(workspaceID string, connectionID string) *models.ServiceManagerConnectionResponse {
+func (c *CSMConnection) DeleteConnection(workspaceID string, connectionID string) (*models.ServiceManagerConnectionResponse, *models.Error) {
 	c.Logger.Info("DeleteConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
-	connection := models.ServiceManagerConnectionResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
-	}
+
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsDeleteExtension(*serviceManagerConfig.MANAGER_HOME)
-	if exists && filename != nil {
-		c.executeExtension(&workspaceID, &connectionID, filename, &connection)
-	} else {
-		c.Logger.Info("DeleteConnection", lager.Data{"extension not found ": exists})
+	if !exists || filename == nil {
+		c.Logger.Info("DeleteConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
 	}
-	return &connection
+	return c.executeRequest(workspaceID, connectionID, "DeleteConnection", filename)
 }

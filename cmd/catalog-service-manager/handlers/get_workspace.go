@@ -10,5 +10,9 @@ import (
 
 func GetWorkspace(workspaceID string) middleware.Responder {
 	internalWorkspaces := csm_manager.GetWorkspace()
-	return workspace.NewGetWorkspaceOK().WithPayload(internalWorkspaces.GetWorkspace(workspaceID))
+	wksp, err := internalWorkspaces.GetWorkspace(workspaceID)
+	if err != nil {
+		return workspace.NewGetWorkspaceDefault(int(*err.Code)).WithPayload(err)
+	}
+	return workspace.NewGetWorkspaceOK().WithPayload(wksp)
 }

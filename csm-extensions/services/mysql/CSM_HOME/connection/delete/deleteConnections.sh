@@ -13,7 +13,10 @@ NewUsername=`echo ${CREDENTIALS_ID} |  cut -c 1-15`
 write_success_output () { 
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"status": "successful"
+	"status": "successful",
+	"details":{
+		"result":"user deleted"
+	}
 }
 EOF
 }
@@ -22,10 +25,19 @@ EOF
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
+	"error_code" : 500, 
+	"error_message" : "$1", 
 	"status": "failed"
 }
 EOF
 }
+
+mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "select * from mysql.user where User=\"d${NewUsername}\"" | grep ${NewUsername} > /dev/null 2>&1
+
+if [ $? -ne 0 ]; then
+	write_failed_output "User not found"
+	exit 0
+fi
 
 # delete user from mysql
 mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "DROP USER \"d${NewUsername}\"@\"%\"; FLUSH PRIVILEGES;" > /dev/null 2>&1
@@ -39,4 +51,4 @@ if [ $? -ne 0 ]; then
 	write_success_output
 	exit 0
 fi
-write_failed_output
+write_failed_output "User could not be deleted" 

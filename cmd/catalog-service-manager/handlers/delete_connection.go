@@ -9,6 +9,10 @@ import (
 
 func DeleteConnection(workspaceID string, connectionID string) middleware.Responder {
 	internalConnection := csm_manager.GetConnection()
-	internalConnection.DeleteConnection(workspaceID, connectionID)
+	_, err := internalConnection.DeleteConnection(workspaceID, connectionID)
+	if err != nil {
+		return connection.NewDeleteConnectionDefault(int(*err.Code)).WithPayload(err)
+	}
+
 	return connection.NewDeleteConnectionOK()
 }

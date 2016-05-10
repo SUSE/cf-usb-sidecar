@@ -13,7 +13,10 @@ NewUsername=`echo ${CREDENTIALS_ID} |  cut -c 1-15`
 write_success_output () { 
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"status": "successful"
+	"status": "successful",
+	"details":{
+		"result" : "user exists"	
+	}
 }
 EOF
 }
@@ -22,10 +25,13 @@ EOF
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
+	"error_code" : 404,
+	"error_message":"$1", 
 	"status": "failed"
 }
 EOF
 }
+
 
 # check if workspace/database exist
 mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "show databases" | grep "d${INSTANCE_ID}" > /dev/null 2>&1
@@ -36,6 +42,9 @@ if [ $? -eq 0 ]; then
 	if [ $? -eq 0 ]; then
 		write_success_output
 		exit 0
+	else
+		write_failed_output "User not found"
+		exit 0
 	fi
 fi
-write_failed_output
+write_failed_output "Wrong database"

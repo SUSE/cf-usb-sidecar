@@ -10,5 +10,10 @@ import (
 
 func CreateConnection(workspaceID string, connectionRequest *models.ServiceManagerConnectionCreateRequest) middleware.Responder {
 	internalConnection := csm_manager.GetConnection()
-	return connection.NewCreateConnectionCreated().WithPayload(internalConnection.CreateConnection(workspaceID, connectionRequest))
+	conn, err := internalConnection.CreateConnection(workspaceID, connectionRequest.ConnectionID)
+	if err != nil {
+		return connection.NewCreateConnectionDefault(int(*err.Code)).WithPayload(err)
+	}
+
+	return connection.NewCreateConnectionCreated().WithPayload(conn)
 }

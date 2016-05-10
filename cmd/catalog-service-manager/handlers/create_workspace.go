@@ -9,5 +9,9 @@ import (
 
 func CreateWorkspace(createRequest *models.ServiceManagerWorkspaceCreateRequest) middleware.Responder {
 	internalWorkspaces := csm_manager.GetWorkspace()
-	return workspace.NewCreateWorkspaceCreated().WithPayload(internalWorkspaces.CreateWorkspace(createRequest))
+	wksp, err := internalWorkspaces.CreateWorkspace(createRequest.WorkspaceID)
+	if err != nil {
+		return workspace.NewCreateWorkspaceDefault(int(*err.Code)).WithPayload(err)
+	}
+	return workspace.NewCreateWorkspaceCreated().WithPayload(wksp)
 }

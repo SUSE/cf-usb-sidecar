@@ -11,7 +11,10 @@ Password=${MYSQL_ROOT_PASSWORD}
 write_success_output () { 
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"status": "successful"
+	"status": "successful",
+	"details": {
+		"result":"database created"
+	}
 }
 EOF
 }
@@ -20,10 +23,22 @@ EOF
 write_failed_output(){
 	cat <<EOF > ${OUTPUT_FILE}
 {
-	"status": "failed"
+	"error_code":500,
+	"status": "failed",
+	"error_message":"$1"
 }
 EOF
 }
+
+# check if database already exists
+mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "show databases" | grep "d${INSTANCE_ID}" > /dev/null 2>&1
+
+if [ $? -eq 0 ]; then
+    write_failed_output "Database already exists"
+	exit 0
+fi
+
+sleep 1
 
 # create mysql workspace/database 
 mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p${Password} -e "create database d${INSTANCE_ID}" > /dev/null 2>&1
@@ -36,5 +51,5 @@ mysql -h ${MYSQL_SERVICE_HOST} -P ${MYSQL_SERVICE_PORT_MYSQL} -u ${Username} -p$
 if [ $? -eq 0 ]; then
     write_success_output
 else
-    write_failed_output
+    write_failed_output "database could not be created"
 fi

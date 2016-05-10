@@ -9,6 +9,9 @@ import (
 
 func DeleteWorkspace(workspaceID string) middleware.Responder {
 	internalWorkspaces := csm_manager.GetWorkspace()
-	internalWorkspaces.DeleteWorkspace(workspaceID)
+	_, err := internalWorkspaces.DeleteWorkspace(workspaceID)
+	if err != nil {
+		return workspace.NewDeleteWorkspaceDefault(int(*err.Code)).WithPayload(err)
+	}
 	return workspace.NewDeleteWorkspaceOK()
 }
