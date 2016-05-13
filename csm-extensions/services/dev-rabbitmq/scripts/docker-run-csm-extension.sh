@@ -1,13 +1,10 @@
 #!/bin/sh
 
-DOCKER_ENDPOINT="docker1"
-DOCKER_IMAGE="rabbit"
-DOCKER_IMAGE_VERSION="latest"
+DOCKER_IMAGE="rabbitmq"
+DOCKER_IMAGE_VERSION="3.6.0-management"
 CSM_LOG_LEVEL="debug"
 CSM_DEV_MODE="true"
 CSM_API_KEY="csm-auth-token"
-
-
 
 if [ ! -z ${DOCKER_HOST} ]
 then
@@ -16,6 +13,7 @@ else
     export DOCKER_HOST_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
 fi
 
+DOCKER_ENDPOINT=http://${DOCKER_HOST_IP}:4445
 
 docker run --name ${CSM_EXTENSION_IMAGE_NAME} \
 	-p 8094:8081 \

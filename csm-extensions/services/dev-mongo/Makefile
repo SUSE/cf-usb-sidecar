@@ -33,10 +33,14 @@ help:
 	@echo "  push-image           Push the extension docker image to registry"
 	@echo
 
-all:	clean-all build-image run
+all:	clean-all build-image run-db run
 
 build:
 	${CSM_EXTENSION_ROOT}/scripts/build.sh
+
+run-db:
+	@echo "$(OK_COLOR)==> Start Mongo DB container $(NO_COLOR)"
+	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-mongo-db.sh
 
 run:
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
