@@ -60,7 +60,7 @@ func (provisioner *PqProvisioner) connect() error {
 func (provisioner *PqProvisioner) CreateDatabase(dbname string) error {
 	err := provisioner.connect()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	// for pg driver, create database can not be executed in transaction
@@ -80,7 +80,7 @@ func (provisioner *PqProvisioner) CreateDatabase(dbname string) error {
 func (provisioner *PqProvisioner) DeleteDatabase(dbname string) error {
 	err := provisioner.connect()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	version, err := provisioner.getServerVersion()
@@ -115,7 +115,7 @@ func (provisioner *PqProvisioner) DeleteDatabase(dbname string) error {
 func (provisioner *PqProvisioner) DatabaseExists(dbname string) (bool, error) {
 	err := provisioner.connect()
 	if err != nil {
-		return false, nil
+		return false, err
 	}
 
 	res, err := provisioner.executeQueryRow(dbCountQuery, map[string]string{"Database": dbname})
@@ -133,7 +133,7 @@ func (provisioner *PqProvisioner) DatabaseExists(dbname string) (bool, error) {
 func (provisioner *PqProvisioner) CreateUser(dbname string, username string, password string) error {
 	err := provisioner.connect()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	err = provisioner.executeQueryTx([]string{createRoleQuery, grantAllPrivToRoleQuery}, map[string]string{"User": username, "Password": password, "Database": dbname})
@@ -147,7 +147,7 @@ func (provisioner *PqProvisioner) CreateUser(dbname string, username string, pas
 func (provisioner *PqProvisioner) DeleteUser(dbname string, username string) error {
 	err := provisioner.connect()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	err = provisioner.executeQueryTx([]string{revokeAllPrivFromRoleQuery, deleteRoleQuery}, map[string]string{"User": username, "Database": dbname})
@@ -161,7 +161,7 @@ func (provisioner *PqProvisioner) DeleteUser(dbname string, username string) err
 func (provisioner *PqProvisioner) UserExists(username string) (bool, error) {
 	err := provisioner.connect()
 	if err != nil {
-		return false, nil
+		return false, err
 	}
 
 	res, err := provisioner.executeQueryRow(userCountQuery, map[string]string{"User": username})

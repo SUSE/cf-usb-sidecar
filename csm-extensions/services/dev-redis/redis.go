@@ -76,7 +76,7 @@ func (e *redisExtension) DeleteWorkspace(workspaceID string) (*csm.CSMResponse, 
 }
 func (e *redisExtension) GetConnection(workspaceID, connectionID string) (*csm.CSMResponse, error) {
 
-	response := csm.CreateCSMResponse("")
+	response := csm.CreateCSMErrorResponse(404, "Connection does not exist")
 
 	return &response, nil
 }

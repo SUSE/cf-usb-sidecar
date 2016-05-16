@@ -6,13 +6,16 @@ WARN_CYN_COLOR=\033[33;01m
 
 .PHONY: clean-all clean build-image tools run
 
-export CSM_ROOT := $(shell echo ${GOPATH}/src/github.com/hpcloud/catalog-service-manager)
-export CSM_EXTENSION_ROOT := $(shell echo ${CSM_ROOT}/csm-extensions/services/dev-postgres)
-export CSM_EXTENSION_IMAGE_NAME := $(shell echo "csm-dev-postgres")
-export CSM_EXTENSION_IMAGE_TAG := $(shell echo "latest")
+export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-postgres
+export CSM_EXTENSION_IMAGE_NAME:=csm-dev-postgres
+export CSM_EXTENSION_IMAGE_TAG:=latest
 
-export CSM_EXTENSION_BUILD_IMAGE_NAME := $(shell echo "csm-dev-postgres-build")
+export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-postgres-build
 
+export CSM_EXTENSION_SVC_IMAGE_NAME:=postgres
+export CSM_EXTENSION_SVC_IMAGE_TAG:=9.4
+export CSM_EXTENSION_SVC_CONTAINER_NAME:=csm-dev-postgres-db
 
 default: help
 
@@ -57,7 +60,7 @@ test:	test-format
 clean-containers:
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh csm-dev-postgres-db
+	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_SVC_CONTAINER_NAME}
 
 # (required) clean docker images
 clean-images:

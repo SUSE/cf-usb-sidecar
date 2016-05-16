@@ -34,7 +34,7 @@ func (provisioner *RabbitHoleProvisioner) CreateContainer(containerName string) 
 		return err
 	}
 
-	err = provisioner.pullImage(provisioner.rabbitmqConfig.DockerImage, provisioner.rabbitmqConfig.ImageVersion)
+	err = provisioner.pullImage(provisioner.rabbitmqConfig.DockerImage, provisioner.rabbitmqConfig.ImageTag)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (provisioner *RabbitHoleProvisioner) CreateContainer(containerName string) 
 	hostConfig := dockerclient.HostConfig{PublishAllPorts: true}
 	createOpts := dockerclient.CreateContainerOptions{
 		Config: &dockerclient.Config{
-			Image: provisioner.rabbitmqConfig.DockerImage + ":" + provisioner.rabbitmqConfig.ImageVersion,
+			Image: provisioner.rabbitmqConfig.DockerImage + ":" + provisioner.rabbitmqConfig.ImageTag,
 			Env: []string{"RABBITMQ_DEFAULT_USER=" + admin_user,
 				"RABBITMQ_DEFAULT_PASS=" + admin_pass},
 		},
