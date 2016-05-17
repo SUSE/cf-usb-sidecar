@@ -80,7 +80,9 @@ func (e *rabbitmqExtension) DeleteConnection(workspaceID, connectionID string) (
 		return nil, err
 	}
 
-	err = e.prov.DeleteUser(workspaceID, username)
+	dbName := util.NormalizeGuid(workspaceID)
+
+	err = e.prov.DeleteUser(dbName, username)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +110,9 @@ func (e *rabbitmqExtension) GetConnection(workspaceID, connectionID string) (*cs
 		return nil, err
 	}
 
-	exists, err := e.prov.UserExists(workspaceID, username)
+	dbName := util.NormalizeGuid(workspaceID)
+
+	exists, err := e.prov.UserExists(dbName, username)
 	if err != nil {
 		return nil, err
 	}

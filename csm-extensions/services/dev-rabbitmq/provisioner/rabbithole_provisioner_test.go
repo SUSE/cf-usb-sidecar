@@ -21,7 +21,7 @@ func init() {
 	testRabbitmqProv.driverConfig = config.RabbitmqConfig{
 		DockerEndpoint: os.Getenv("DOCKER_ENDPOINT"),
 		DockerImage:    os.Getenv("RABBIT_DOCKER_IMAGE"),
-		ImageVersion:   os.Getenv("RABBIT_DOCKER_IMAGE_VERSION"),
+		ImageTag:       os.Getenv("RABBIT_DOCKER_IMAGE_TAG"),
 	}
 
 	testRabbitmqProv.rabbitmqProvisioner = NewRabbitHoleProvisioner(logger, testRabbitmqProv.driverConfig)
@@ -93,5 +93,5 @@ func TestRabbitholeProvisioner(t *testing.T) {
 }
 
 func envVarsOk() bool {
-	return testRabbitmqProv.driverConfig.DockerEndpoint != "" && testRabbitmqProv.driverConfig.DockerImage != "" && testRabbitmqProv.driverConfig.ImageVersion != ""
+	return testRabbitmqProv.driverConfig.DockerEndpoint != "" && testRabbitmqProv.driverConfig.DockerImage != "" && testRabbitmqProv.driverConfig.ImageTag != ""
 }

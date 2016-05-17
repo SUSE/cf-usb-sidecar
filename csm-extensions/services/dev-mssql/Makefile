@@ -6,12 +6,12 @@ WARN_CYN_COLOR=\033[33;01m
 
 .PHONY: clean-all clean build-image tools run
 
-export CSM_ROOT := $(shell echo ${GOPATH}/src/github.com/hpcloud/catalog-service-manager)
-export CSM_EXTENSION_ROOT := $(shell echo ${CSM_ROOT}/csm-extensions/services/dev-mssql)
-export CSM_EXTENSION_IMAGE_NAME := $(shell echo "csm-dev-mssql")
-export CSM_EXTENSION_IMAGE_TAG := $(shell echo "latest")
+export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-mssql
+export CSM_EXTENSION_IMAGE_NAME:=csm-dev-mssql
+export CSM_EXTENSION_IMAGE_TAG:=latest
 
-export CSM_EXTENSION_BUILD_IMAGE_NAME := $(shell echo "csm-dev-mssql-build")
+export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-mssql-build
 
 
 default: help

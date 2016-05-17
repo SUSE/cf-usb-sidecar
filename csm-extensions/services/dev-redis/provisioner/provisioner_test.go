@@ -20,7 +20,7 @@ func init() {
 	testRedisProv.driverConfig = config.RedisConfig{
 		DockerEndpoint: os.Getenv("DOCKER_ENDPOINT"),
 		DockerImage:    os.Getenv("REDIS_DOCKER_IMAGE"),
-		ImageVersion:   os.Getenv("REDIS_DOCKER_IMAGE_VERSION"),
+		ImageTag:       os.Getenv("REDIS_DOCKER_IMAGE_TAG"),
 	}
 
 	testRedisProv.redisProvisioner = NewRedisProvisioner(logger, testRedisProv.driverConfig)
@@ -66,5 +66,5 @@ func TestRedisProvisioner(t *testing.T) {
 }
 
 func envVarsOk() bool {
-	return testRedisProv.driverConfig.DockerEndpoint != "" && testRedisProv.driverConfig.DockerImage != "" && testRedisProv.driverConfig.ImageVersion != ""
+	return testRedisProv.driverConfig.DockerEndpoint != "" && testRedisProv.driverConfig.DockerImage != "" && testRedisProv.driverConfig.ImageTag != ""
 }

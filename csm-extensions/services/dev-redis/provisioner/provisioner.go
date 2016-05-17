@@ -32,7 +32,7 @@ func (provisioner *RedisProvisioner) CreateContainer(containerName string) error
 	if err != nil {
 		return err
 	}
-	err = provisioner.pullImage(provisioner.redisConfig.DockerImage, provisioner.redisConfig.ImageVersion)
+	err = provisioner.pullImage(provisioner.redisConfig.DockerImage, provisioner.redisConfig.ImageTag)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (provisioner *RedisProvisioner) CreateContainer(containerName string) error
 	hostConfig := dockerclient.HostConfig{PublishAllPorts: true}
 	createOpts := dockerclient.CreateContainerOptions{
 		Config: &dockerclient.Config{
-			Image: provisioner.redisConfig.DockerImage + ":" + provisioner.redisConfig.ImageVersion,
+			Image: provisioner.redisConfig.DockerImage + ":" + provisioner.redisConfig.ImageTag,
 			Cmd:   []string{"redis-server", fmt.Sprintf("--requirepass %s", pass)},
 		},
 		HostConfig: &hostConfig,

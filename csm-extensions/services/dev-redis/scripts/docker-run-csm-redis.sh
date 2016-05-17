@@ -2,4 +2,4 @@
 
 PORT="4446"
 
-docker run --privileged --name csm-dev-redis -e PORT=${PORT} -p ${PORT}:${PORT} -d jpetazzo/dind
+docker run --privileged --name ${CSM_EXTENSION_SVC_CONTAINER_NAME} -e PORT=${PORT} -p ${PORT}:${PORT} -d ${CSM_EXTENSION_SVC_IMAGE_NAME}:${CSM_EXTENSION_SVC_IMAGE_TAG}

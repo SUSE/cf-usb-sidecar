@@ -1,10 +1,10 @@
 package config
 
 type PostgresConfig struct {
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	Dbname   string `json:"dbname"`
-	Sslmode  string `json:"sslmode"`
+	User     string `env:"POSTGRES_USER"`
+	Password string `env:"POSTGRES_PASSWORD"`
+	Host     string `env:"POSTGRES_HOST"`
+	Port     string `env:"POSTGRES_PORT" envDefault:"5432"`
+	Dbname   string `env:"POSTGRES_DBNAME"`
+	Sslmode  string `env:"POSTGRES_SSLMODE"`
 }
