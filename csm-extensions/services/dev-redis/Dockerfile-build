@@ -1,0 +1,12 @@
+FROM catalog-service-manager:build
+
+COPY . /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis
+ENV GOPATH /go
+ENV GOBIN /go/bin
+WORKDIR /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis
+
+RUN make tools
+RUN make build
+RUN cp -r /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis/CSM_HOME /
+
+ENTRYPOINT ["/bin/sh","-c"]
