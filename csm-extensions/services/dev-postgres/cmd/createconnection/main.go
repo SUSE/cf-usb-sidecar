@@ -43,6 +43,7 @@ func main() {
 		if err != nil {
 			logger.Fatal("main", err)
 		}
+		os.Exit(0)
 	}
 
 	err = csmConnection.Write(*response)
