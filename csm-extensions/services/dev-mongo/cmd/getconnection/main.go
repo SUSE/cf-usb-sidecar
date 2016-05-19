@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo"
@@ -21,6 +22,11 @@ func main() {
 	if err != nil {
 		logger.Fatal("main", err)
 	}
+
+	if conf.Host == "" {
+		conf.Host = fmt.Sprintf("mongo.%s", conf.UcpDomainSuffix)
+	}
+
 	request, err := csm.GetCSMRequest(os.Args)
 	if err != nil {
 		logger.Error("main", err)

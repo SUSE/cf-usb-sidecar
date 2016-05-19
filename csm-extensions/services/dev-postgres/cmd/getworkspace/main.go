@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/provisioner"
+	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/pivotal-golang/lager"
 	"gopkg.in/caarlos0/env.v2"
 )
@@ -20,6 +21,10 @@ func main() {
 	err := env.Parse(&conf)
 	if err != nil {
 		logger.Fatal("main", err)
+	}
+
+	if conf.Host == "" {
+		conf.Host = fmt.Sprintf("postgres.%s", conf.UcpDomainSuffix)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)
