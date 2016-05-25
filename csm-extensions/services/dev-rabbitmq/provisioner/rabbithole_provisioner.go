@@ -295,6 +295,11 @@ func (provisioner *RabbitHoleProvisioner) getContainerState(containerName string
 }
 
 func (provisioner *RabbitHoleProvisioner) CreateUser(containerName, newUser, userPass string) (map[string]string, error) {
+	err := provisioner.connect()
+	if err != nil {
+		return nil, err
+	}
+
 	host, err := provisioner.getHost()
 	if err != nil {
 		return nil, err
