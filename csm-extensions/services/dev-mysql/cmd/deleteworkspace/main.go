@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/provisioner"
+	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/pivotal-golang/lager"
 	"gopkg.in/caarlos0/env.v2"
 )
@@ -21,6 +22,10 @@ func main() {
 	if err != nil {
 		logger.Fatal("main", err)
 		os.Exit(1)
+	}
+
+	if conf.Host == "" {
+		conf.Host = fmt.Sprintf("mysql.%s", conf.UcpDomainSuffix)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)

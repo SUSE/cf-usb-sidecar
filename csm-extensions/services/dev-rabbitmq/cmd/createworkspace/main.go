@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq/provisioner"
+	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/pivotal-golang/lager"
 	"gopkg.in/caarlos0/env.v2"
 )
@@ -21,6 +22,15 @@ func main() {
 	if err != nil {
 		logger.Fatal("main", err)
 	}
+
+	if conf.DockerEndpoint == "" {
+		if conf.DockerHost == "" {
+			conf.DockerHost = fmt.Sprintf("rabbitmq.%s", conf.UcpDomainSuffix)
+		}
+
+		conf.DockerEndpoint = fmt.Sprintf("http://%s:%s", conf.DockerHost, conf.DockerPort)
+	}
+
 	request, err := csm.GetCSMRequest(os.Args)
 	if err != nil {
 		logger.Fatal("main", err)

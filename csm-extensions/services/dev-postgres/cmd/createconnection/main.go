@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres"
@@ -20,6 +21,10 @@ func main() {
 	err := env.Parse(&conf)
 	if err != nil {
 		logger.Fatal("main", err)
+	}
+
+	if conf.Host == "" {
+		conf.Host = fmt.Sprintf("postgres.%s", conf.UcpDomainSuffix)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)
