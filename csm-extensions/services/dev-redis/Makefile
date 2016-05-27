@@ -16,6 +16,8 @@ export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-redis-build
 export CSM_EXTENSION_SVC_IMAGE_NAME:=jpetazzo/dind
 export CSM_EXTENSION_SVC_IMAGE_TAG:=latest
 export CSM_EXTENSION_SVC_CONTAINER_NAME:=csm-dev-redis-docker-host
+export CSM_EXTENSION_SVC_PORTS_START:=33000
+export CSM_EXTENSION_SVC_PORTS_END:=33020
 
 default: help
 
