@@ -16,6 +16,8 @@ export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-rabbitmq-build
 export CSM_EXTENSION_SVC_IMAGE_NAME:=jpetazzo/dind
 export CSM_EXTENSION_SVC_IMAGE_TAG:=latest
 export CSM_EXTENSION_SVC_CONTAINER_NAME:=csm-dev-rabbitmq-docker-host
+export CSM_EXTENSION_SVC_PORTS_START:=32000
+export CSM_EXTENSION_SVC_PORTS_END:=32020
 
 default: help
 

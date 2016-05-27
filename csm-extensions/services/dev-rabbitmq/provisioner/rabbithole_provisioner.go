@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq/config"
@@ -47,7 +49,19 @@ func (provisioner *RabbitHoleProvisioner) CreateContainer(containerName string) 
 	if err != nil {
 		return err
 	}
-	hostConfig := dockerclient.HostConfig{PublishAllPorts: true}
+
+	svcPort, mgmtPort, err := provisioner.findNextOpenPorts()
+	if err != nil {
+		return err
+	}
+
+	hostConfig := dockerclient.HostConfig{
+		PortBindings: map[dockerclient.Port][]dockerclient.PortBinding{
+			"5672/tcp":  {{HostIP: "", HostPort: strconv.Itoa(svcPort)}},
+			"15672/tcp": {{HostIP: "", HostPort: strconv.Itoa(mgmtPort)}},
+		},
+	}
+
 	createOpts := dockerclient.CreateContainerOptions{
 		Config: &dockerclient.Config{
 			Image: provisioner.rabbitmqConfig.DockerImage + ":" + provisioner.rabbitmqConfig.ImageTag,
@@ -226,11 +240,15 @@ func (provisioner *RabbitHoleProvisioner) getContainerId(containerName string) (
 	return container.ID, nil
 }
 
-func (provisioner *RabbitHoleProvisioner) getContainer(containerName string) (dockerclient.APIContainers, error) {
+func (provisioner *RabbitHoleProvisioner) getContainers() ([]dockerclient.APIContainers, error) {
 	opts := dockerclient.ListContainersOptions{
 		All: true,
 	}
-	containers, err := provisioner.client.ListContainers(opts)
+	return provisioner.client.ListContainers(opts)
+}
+
+func (provisioner *RabbitHoleProvisioner) getContainer(containerName string) (dockerclient.APIContainers, error) {
+	containers, err := provisioner.getContainers()
 	if err != nil {
 		return dockerclient.APIContainers{}, err
 	}
@@ -381,4 +399,70 @@ func (provisioner *RabbitHoleProvisioner) connect() error {
 
 	provisioner.connected = true
 	return nil
+}
+
+func (provisioner *RabbitHoleProvisioner) findNextOpenPorts() (int, int, error) {
+
+	startPort, err := strconv.Atoi(provisioner.rabbitmqConfig.RabbitServicesPortsStart)
+	if err != nil {
+		return 0, 0, err
+	}
+	endPort, err := strconv.Atoi(provisioner.rabbitmqConfig.RabbitServicesPortsEnd)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	containers, err := provisioner.getContainers()
+	if err != nil {
+		provisioner.logger.Debug(err.Error())
+		return 0, 0, err
+	}
+
+	ports := []int{}
+
+	for _, container := range containers {
+		for _, p := range container.Ports {
+			if p.PublicPort != 0 {
+				port := int(p.PublicPort)
+				if port > startPort || port < endPort {
+					ports = append(ports, port)
+				}
+			}
+		}
+	}
+
+	sort.Ints(ports)
+
+	svcPort := 0
+	mgmtPort := 0
+
+	freePort := startPort
+	usedPortsIndex := 0
+
+	for {
+		if freePort > endPort {
+			break
+		}
+
+		if len(ports) <= usedPortsIndex || ports[usedPortsIndex] > freePort {
+			if svcPort == 0 {
+				svcPort = freePort
+				freePort++
+			} else if mgmtPort == 0 {
+				mgmtPort = freePort
+				break
+			}
+		} else if ports[usedPortsIndex] < freePort {
+			usedPortsIndex++
+		} else if ports[usedPortsIndex] == freePort {
+			usedPortsIndex++
+			freePort++
+		}
+	}
+
+	if svcPort == 0 || mgmtPort == 0 {
+		return 0, 0, fmt.Errorf("Could not find any available ports")
+	}
+
+	return svcPort, mgmtPort, nil
 }
