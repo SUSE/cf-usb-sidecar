@@ -51,6 +51,7 @@ func (e *MongoProvisioner) IsDatabaseCreated(databaseName string) (bool, error) 
 		}
 	}
 	databases, err := e.Connection.DatabaseNames()
+
 	if err != nil {
 		return false, err
 	}
@@ -92,13 +93,12 @@ func (e *MongoProvisioner) CreateDatabase(databaseName string) error {
 		}
 	}
 	//this should create the db with empty users collection
-	coll := e.Connection.DB(databaseName).C("sample")
+	coll := e.Connection.DB(databaseName).C("_dummy")
 	coll.Insert(bson.M{"a": 1, "b": 2})
 
 	result := struct{ A, B int }{}
 
 	err := coll.Find(bson.M{"a": 1}).One(&result)
-	err = coll.DropCollection()
 	if err != nil {
 		return err
 	}
