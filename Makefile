@@ -10,7 +10,7 @@ ifndef CSM_API_KEY
 endif
 
 # List of files to be tested
-TESTLIST=$(shell go list ./... | grep -v examples | grep -v services)
+TESTLIST=$(shell go list ./... | grep -v examples | grep -v services | grep -v generated | grep -v scripts | grep -v csm_extensions)
 
 .PHONY: all clean build test release
 
@@ -75,7 +75,7 @@ build:	generate
 
 test: test-format
 	@echo "$(OK_COLOR)==> Running tests $(NO_COLOR)"
-	godep go test $(TESTLIST) | grep -v generated | grep -v cmd/catalog-service-manager/handlers | grep -v scripts 
+	godep go test $(TESTLIST)  
 
 tools:
 	@echo "$(OK_COLOR)==> Installing tools and go dependancies $(NO_COLOR)"
