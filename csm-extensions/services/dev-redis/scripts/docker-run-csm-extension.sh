@@ -4,7 +4,7 @@ DOCKER_IMAGE="redis"
 DOCKER_IMAGE_TAG="3.0.7"
 CSM_LOG_LEVEL="debug"
 CSM_DEV_MODE="true"
-CSM_API_KEY="csm-auth-token"
+CSM_API_KEY=${CSM_EXTENSION_TOKEN}
 
 if [ ! -z ${DOCKER_HOST} ]
 then
