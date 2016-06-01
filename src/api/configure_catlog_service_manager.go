@@ -11,6 +11,7 @@ import (
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations"
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations/connection"
+	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations/status"
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations/workspace"
 )
 
@@ -52,6 +53,10 @@ func ConfigureAPI(api *operations.CatlogServiceManagerAPI) http.Handler {
 
 	api.ConnectionGetConnectionHandler = connection.GetConnectionHandlerFunc(func(params connection.GetConnectionParams, principal interface{}) middleware.Responder {
 		return handlers.GetConnection(params.WorkspaceID, params.ConnectionID)
+	})
+
+	api.StatusStatusHandler = status.StatusHandlerFunc(func(principal interface{}) middleware.Responder {
+		return middleware.NotImplemented("operation status.Status has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {}

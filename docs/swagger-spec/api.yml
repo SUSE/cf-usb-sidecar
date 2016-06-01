@@ -25,6 +25,20 @@ security:
   - api_key: []
 
 paths:
+  /status: 
+    get: 
+      tags: ["status"]
+      operationId: status
+      description: "Retrieve status information"
+      responses: 
+        200: 
+          description: "Service health"
+          schema: 
+            $ref: "#/definitions/StatusResponse"
+        default: 
+          description: "generic error response"
+          schema: 
+            $ref: "#/definitions/Error"
   /workspaces:
     post:
       tags: ["workspace"]
@@ -233,7 +247,48 @@ definitions:
         additionalProperties:
           items:
             type: string
-
+  StatusResponse: 
+    type: object
+    required:
+      - status
+      - message
+    properties: 
+      processing_type:
+        type: string
+        enum: [ "none", "default", "extension"]
+        description: Processing type
+      status:
+        type: string
+        enum: [ "none", "unknown", "successful", "failed"]
+        description: "Status of the ping request. If the CSM implementation is confident that it can perform all functions correctly, it should return \"successful\". Otherwise, \"failed\""
+      message: 
+        type: string
+        description: "Contains any detail that informs the success or failure of the diagnostic that was performed"
+      diagnostics: 
+        type: array
+        description: "Optional array of diagnostics performed by the CSM during ping"
+        items: 
+          $ref: "#/definitions/StatusDiagnostic"
+  StatusDiagnostic: 
+    type: object
+    required: 
+      - status
+      - message
+      - name
+      - description
+    properties: 
+      status: 
+        type: string
+        description: "Status of the diagnostic"
+      message: 
+        type: string
+        description: "Contains any detail that informs the success or failure of the diagnostic that was perfomed."
+      name: 
+        type: string
+        description: "Name of the diagnostic (e.g. Credential verification)"
+      description: 
+        description: "Full description of the diagnostic (e.g. This diagnostic attempts to connect to a MySQL Server using the configured credentials)"
+        type: string
   Error:
     type: object
     required:
