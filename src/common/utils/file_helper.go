@@ -36,8 +36,8 @@ func (c CSMFileHelper) GetExtension(extPath string) (bool, *string) {
 
 	filename := filepath.Join(extPath, filepath.Base(extPath))
 
-	_, err1 := ioutil.ReadFile(filename)
-	if err1 != nil {
+	_, err := ioutil.ReadFile(filename)
+	if err != nil {
 		return false, nil
 	}
 
