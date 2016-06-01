@@ -37,7 +37,7 @@ help:
 run:	generate
 	godep go run cmd/catalog-service-manager/catalog-service-manager.go
 
-all: 	clean-all build 
+all: 	clean-all build
 
 clean:
 	@echo "$(OK_COLOR)==> Removing build artifacts$(NO_COLOR)"
@@ -56,10 +56,12 @@ clean-docker:
 
 generate-server:
 	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
+	rm -rf generated/CatalogServiceManager
 	scripts/generate-server.sh
 
 generate-client:
 	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
+	rm -rf generated/CatalogServiceManager-client
 	scripts/generate-csm-client.sh
 
 generate: generate-server generate-client
@@ -75,7 +77,7 @@ build:	generate
 
 test: test-format
 	@echo "$(OK_COLOR)==> Running tests $(NO_COLOR)"
-	godep go test $(TESTLIST)  
+	godep go test $(TESTLIST)
 
 tools:
 	@echo "$(OK_COLOR)==> Installing tools and go dependancies $(NO_COLOR)"
