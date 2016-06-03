@@ -39,13 +39,14 @@ help:
 all:	clean-all build-image run-db run
 
 build:
-	${CSM_EXTENSION_ROOT}/scripts/build.sh
+	@(export GO15VENDOREXPERIMENT=1; \
+	${CSM_EXTENSION_ROOT}/scripts/build.sh)
 
 run-db:
 	@echo "$(OK_COLOR)==> Start Mongo DB container $(NO_COLOR)"
 	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-mongo-db.sh
 
-run:
+run: build-image
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
 	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
 
@@ -65,7 +66,7 @@ test-integration: clean-all build-image run-db run
 	SERVER_IP=`ip route get 8.8.8.8 | cut -d" " -f8`;\
 	fi; \
 	export DOCKER_HOST_IP=$$SERVER_IP;\
-	echo "Testing against $$SERVER_IP:$(SERVER_PORT)...\n";\
+	echo "Testing against $$SERVER_IP:$(CSM_EXTENSION_PORT)...\n";\
 	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
 	until `curl http://$$SERVER_IP:$(CSM_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-csm-token: $(CSM_EXTENSION_TOKEN)" --fail --silent --output /dev/null`;\
 	do n=$$(( $$n + 1 )) ;\
