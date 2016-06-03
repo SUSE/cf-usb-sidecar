@@ -3,8 +3,10 @@ OK_COLOR=\033[32;01m
 OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
+TOKEN=csm-auth-token
+SERVER_PORT=8091
 
-.PHONY: clean-all clean build-image tools run
+.PHONY: clean-all clean build-image tools run test test-integration
 
 export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
 export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-mssql
@@ -43,11 +45,43 @@ run:
 	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
 
 test-format:
-	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
-	${CSM_ROOT}/scripts/testFmt.sh src
+	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
+	FILES=`find . -name "*.go" | grep -v vendor | grep -v Godeps`;\
+	${CSM_ROOT}/scripts/testFmt.sh "$$FILES")
 		
 # (required) run tests
 test:	test-format
+	@(go list ./... | grep -v vendor | go test -v)
+
+test-integration: all
+	@(if [ ! -z ${DOCKER_HOST} ]; then \
+	    SERVER_IP=`echo ${DOCKER_HOST} | cut -d "/" -f 3 | cut -d ":" -f 1`;\
+	else \
+	    SERVER_IP=`ip route get 8.8.8.8 | cut -d" " -f8`;\
+	fi; \
+	echo "Testing against $$SERVER_IP:$(SERVER_PORT)...\n";\
+	export TEST_SERVER_IP=$$SERVER_IP;\
+	export TEST_SERVER_PORT=$(SERVER_PORT);\
+	export TEST_SERVER_TOKEN=$(TOKEN);\
+	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
+	until `curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initialdbtestonly"}' -H "Content-Type: application/json" -H "x-csm-token: $(TOKEN)" --fail --silent --output /dev/null`;\
+	do n=$$(( $$n + 1 )) ;\
+		printf ".";\
+		if [ $$n -ge 20 ] ;\
+			then echo "\n$(ERROR_COLOR)==>Docker took to long to wakeup or incorect setup $(NO_COLOR) "; break ;\
+		fi ;\
+		sleep 1 ;\
+	done; \
+	`curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces/initialdbtestonly -X DELETE -H "Content-Type: application/json" -H "x-csm-token: $(TOKEN)" --fail --silent --output /dev/null`;\
+	echo "";\
+	if [ $$n -le 19 ]; then \
+		echo "$(OK_COLOR)==>Running integration tests:$(NO_COLOR) ";\
+		export GO15VENDOREXPERIMENT=1;\
+		go test ./tests -tags integration -v;\
+	else \
+		echo "$(ERROR_COLOR)==>Not running integration tests:$(NO_COLOR) ";\
+	fi)
+	${MAKE} clean-all
 
 # (required) clean containers
 clean-containers:
