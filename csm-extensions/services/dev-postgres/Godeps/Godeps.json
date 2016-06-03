@@ -1,17 +1,90 @@
 {
 	"ImportPath": "github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres",
 	"GoVersion": "go1.6",
-	"GodepVersion": "v62",
+	"GodepVersion": "v71",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
-			"Rev": "fb5604bbf828940caa57874d2177e5443f68e56c"
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.10.0-18-g6d9ae30",
+			"Rev": "6d9ae300aaf85d6acd2e5424081c7fcddb21dab8"
 		},
 		{
-			"ImportPath": "github.com/hpcloud/go-csm-lib/csm/status",
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/opts",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/archive",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/fileutils",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/homedir",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/idtools",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/ioutils",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/longpath",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/pools",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/promise",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/stdcopy",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/system",
+			"Comment": "v1.4.1-12294-g75109b3",
+			"Rev": "75109b32db4c23f469b57fb99300fc5d4a689dce"
+		},
+		{
+			"ImportPath": "github.com/docker/go-units",
+			"Comment": "v0.3.0-2-g09dda9d",
+			"Rev": "09dda9d4b0d748c57c14048906d3d094a58ec0c9"
+		},
+		{
+			"ImportPath": "github.com/fsouza/go-dockerclient",
+			"Rev": "366d38beae4ef61bcf52b53e0fc1eeef03c9aa04"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/go-cleanhttp",
+			"Rev": "ad28ea4487f05916463e2423a55166280e8254b5"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
 			"Rev": "fb5604bbf828940caa57874d2177e5443f68e56c"
 		},
 		{
@@ -118,6 +191,11 @@
 			"Rev": "b071aa62b69453e2389f0a81d4db8a466d228242"
 		},
 		{
+			"ImportPath": "github.com/opencontainers/runc/libcontainer/user",
+			"Comment": "v0.1.1-131-g57b9972",
+			"Rev": "57b997243d52f70a78cfea5e31ccb69f37450b5a"
+		},
+		{
 			"ImportPath": "github.com/pivotal-golang/lager",
 			"Rev": "81d18ed6a75f16276fed99134f0e8397ec2e91e2"
 		},
@@ -126,9 +204,21 @@
 			"Rev": "81d18ed6a75f16276fed99134f0e8397ec2e91e2"
 		},
 		{
+			"ImportPath": "github.com/pmezard/go-difflib/difflib",
+			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
+		},
+		{
 			"ImportPath": "github.com/stretchr/testify/assert",
 			"Comment": "v1.0-17-g089c718",
 			"Rev": "089c7181b8c728499929ff09b62d3fdd8df8adff"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "35b06af0720201bc2f326773a80767387544f8c4"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "b776ec39b3e54652e09028aaaaac9757f4f8211a"
 		},
 		{
 			"ImportPath": "gopkg.in/caarlos0/env.v2",
