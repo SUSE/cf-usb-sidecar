@@ -33,15 +33,15 @@ func (c CSMFileHelper) GetExtension(extPath string) (bool, *string) {
 	if _, err := os.Stat(extPath); os.IsNotExist(err) {
 		return false, nil
 	}
-	files, err := ioutil.ReadDir(extPath)
+
+	filename := filepath.Join(extPath, filepath.Base(extPath))
+
+	_, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return false, nil
 	}
-	for _, file := range files {
-		filename := filepath.Join(extPath, file.Name())
-		return true, &filename
-	}
-	return false, nil
+
+	return true, &filename
 }
 
 //RunExtension executes the extension
