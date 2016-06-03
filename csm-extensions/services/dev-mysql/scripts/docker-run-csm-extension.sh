@@ -18,7 +18,7 @@ fi
 
 
 docker run --name ${CSM_EXTENSION_IMAGE_NAME} \
-	-p 8081:8081 \
+	-p 0.0.0.0:8081:8081 \
 	-e MYSQL_USER=${MYSQL_USER} \
 	-e MYSQL_PASS=${MYSQL_PASS} \
 	-e MYSQL_HOST=${DOCKER_HOST_IP} \

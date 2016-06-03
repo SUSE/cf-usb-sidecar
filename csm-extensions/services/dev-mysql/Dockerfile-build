@@ -7,6 +7,4 @@ WORKDIR /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/servic
 
 RUN make tools
 RUN make build
-RUN cp -r /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/CSM_HOME /
-
-ENTRYPOINT ["/bin/sh","-c"]
+ENTRYPOINT cp -r /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/CSM_HOME/* /out/
