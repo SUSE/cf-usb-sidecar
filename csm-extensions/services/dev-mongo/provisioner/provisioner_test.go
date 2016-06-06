@@ -7,6 +7,7 @@ import (
 
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo/config"
 	"github.com/pivotal-golang/lager/lagertest"
+	"github.com/stretchr/testify/assert"
 )
 
 var logger *lagertest.TestLogger = lagertest.NewTestLogger("mongo-provisioner-test")
@@ -36,6 +37,8 @@ func init() {
 }
 
 func TestCreateDb(t *testing.T) {
+	assert := assert.New(t)
+
 	dbName := "test_createdb"
 	if mongoConConfig.Host == "" {
 		t.Skip("Skipping test as not all env variables are set:'MONGO_USER','MONGO_PASS','MONGO_HOST', 'MONGO_PORT'")
@@ -44,12 +47,11 @@ func TestCreateDb(t *testing.T) {
 	log.Println("Creating test database")
 	err := mongoConConfig.TestProvisioner.CreateDatabase(dbName)
 
-	if err != nil {
-		log.Fatalln("Error creating database ", err)
-	}
+	assert.Nil(err)
 }
 
 func TestCreateDbExists(t *testing.T) {
+	assert := assert.New(t)
 	dbName := "test_createdb"
 
 	if mongoConConfig.Host == "" {
@@ -58,17 +60,13 @@ func TestCreateDbExists(t *testing.T) {
 
 	log.Println("Testing if database exists")
 	created, err := mongoConConfig.TestProvisioner.IsDatabaseCreated(dbName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if created {
-		t.Log("Created true")
-	} else {
-		t.Log("Created false")
-	}
+	assert.Nil(err)
+	assert.True(created)
 }
 
 func TestCreateUser(t *testing.T) {
+	assert := assert.New(t)
+
 	dbName := "test_createdb"
 
 	if mongoConConfig.Host == "" {
@@ -77,12 +75,12 @@ func TestCreateUser(t *testing.T) {
 
 	log.Println("Creating test user")
 	err := mongoConConfig.TestProvisioner.CreateUser(dbName, "mytestUser", "mytestPass")
-	if err != nil {
-		t.Errorf("Error creating user %v", err)
-	}
+	assert.Nil(err)
 }
 
 func TestCreateUserExists(t *testing.T) {
+	assert := assert.New(t)
+
 	dbName := "test_createdb"
 
 	if mongoConConfig.Host == "" {
@@ -91,17 +89,13 @@ func TestCreateUserExists(t *testing.T) {
 
 	log.Println("Testing if user exists")
 	created, err := mongoConConfig.TestProvisioner.IsUserCreated(dbName, "mytestUser")
-	if err != nil {
-		t.Errorf("Error verifying user %v", err)
-	}
-	if created {
-		t.Log("test user is created")
-	} else {
-		t.Log("test user was not created")
-	}
+	assert.Nil(err)
+	assert.True(created)
 }
 
 func TestDeleteUser(t *testing.T) {
+	assert := assert.New(t)
+
 	dbName := "test_createdb"
 
 	if mongoConConfig.Host == "" {
@@ -110,12 +104,12 @@ func TestDeleteUser(t *testing.T) {
 
 	log.Println("Removing test user")
 	err := mongoConConfig.TestProvisioner.DeleteUser(dbName, "mytestUser")
-	if err != nil {
-		t.Errorf("Error deleting user %v", err)
-	}
+	assert.Nil(err)
 }
 
 func TestDeleteTheDatabase(t *testing.T) {
+	assert := assert.New(t)
+
 	if mongoConConfig.Host == "" {
 		t.Skip("Skipping test as not all env variables are set:'MONGO_USER','MONGO_PASS','MONGO_HOST', 'MONGO_PORT'")
 	}
@@ -124,7 +118,5 @@ func TestDeleteTheDatabase(t *testing.T) {
 	log.Println("Removing test database")
 
 	err := mongoConConfig.TestProvisioner.DeleteDatabase(dbName)
-	if err != nil {
-		t.Errorf("Error deleting database %v", err)
-	}
+	assert.Nil(err)
 }
