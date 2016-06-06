@@ -147,6 +147,14 @@ func (w *CSMConnection) executeRequest(workspaceID string, connectionID string, 
 	return connection, modelserr
 }
 
+func generateNoopResponse() *models.ServiceManagerConnectionResponse {
+	resp := models.ServiceManagerConnectionResponse{
+		ProcessingType: common.PROCESSING_TYPE_NONE,
+		Status:         common.PROCESSING_STATUS_NONE,
+	}
+	return &resp
+}
+
 // GetConnection get connections
 func (c *CSMConnection) GetConnection(workspaceID string, connectionID string) (*models.ServiceManagerConnectionResponse, *models.Error) {
 	c.Logger.Info("GetConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
@@ -155,7 +163,7 @@ func (c *CSMConnection) GetConnection(workspaceID string, connectionID string) (
 	exists, filename := c.getConnectionsGetExtension(*serviceManagerConfig.MANAGER_HOME)
 	if !exists || filename == nil {
 		c.Logger.Info("GetConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
+		return generateNoopResponse(), nil
 	}
 	return c.executeRequest(workspaceID, connectionID, "GetConnection", filename)
 }
@@ -166,10 +174,7 @@ func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string
 
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsCreateExtension(*serviceManagerConfig.MANAGER_HOME)
-	if !exists || filename == nil {
-		c.Logger.Info("CreateConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
-	} else if (!exists) && (serviceManagerConfig.PARAMETERS != nil) {
+	if (!exists) && (serviceManagerConfig.PARAMETERS != nil) {
 		connection := utils.NewConnection()
 		c.Logger.Info("GetConnection", lager.Data{"Extension not found ": exists})
 		parametersNameList := strings.Split(*serviceManagerConfig.PARAMETERS, " ")
@@ -182,8 +187,12 @@ func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string
 			}
 		}
 		connection.ProcessingType = common.PROCESSING_TYPE_DEFAULT
+		connection.Status = common.PROCESSING_STATUS_SUCCESSFUL
 		return &connection, nil
 
+	} else if !exists || filename == nil {
+		c.Logger.Info("CreateConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+		return generateNoopResponse(), nil
 	}
 	return c.executeRequest(workspaceID, connectionID, "CreateConnection", filename)
 }
@@ -196,7 +205,7 @@ func (c *CSMConnection) DeleteConnection(workspaceID string, connectionID string
 	exists, filename := c.getConnectionsDeleteExtension(*serviceManagerConfig.MANAGER_HOME)
 	if !exists || filename == nil {
 		c.Logger.Info("DeleteConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
+		return generateNoopResponse(), nil
 	}
 	return c.executeRequest(workspaceID, connectionID, "DeleteConnection", filename)
 }

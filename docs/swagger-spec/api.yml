@@ -172,7 +172,7 @@ definitions:
     properties:
       processing_type:
         type: string
-        enum: [ "None", "Default", "Extension"]
+        enum: [ "none", "default", "extension"]
         description: Processing type
       status:
         type: string
@@ -207,7 +207,7 @@ definitions:
     properties:
       processing_type:
         type: string
-        enum: [ "None", "Default", "Extension"]
+        enum: [ "none", "default", "extension"]
         description: Processing type
       status:
         type: string

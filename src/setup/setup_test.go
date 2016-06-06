@@ -133,7 +133,7 @@ func Test_Startup_RunExtensionSuccessful(t *testing.T) {
 	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_STARTUP_EXTENSION, []string{""}).Return(true, statusString)
 	_, csmSetup := setup(csmMockedFileExtension)
 	setupStatus := csmSetup.Startup()
-	assert.Equal(t, setupStatus, false)
+	assert.Equal(t, setupStatus, true)
 }
 
 func Test_Startup_RunExtensionFailed(t *testing.T) {
@@ -177,7 +177,7 @@ func Test_Startup_RunExtensionDeletedOuputFile(t *testing.T) {
 func Test_Startup_RunExtensionUnAccessibleFile(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_STARTUP_EXTENSION).Return(true, FAKE_STARTUP_EXTENSION)
-	status := "successful"
+	status := "failed"
 	statusString := getStatusString(&status, nil, nil)
 	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_STARTUP_EXTENSION, []string{""}).Return(true, "UnaccessibleOuputFile", statusString)
 	_, csmSetup := setup(csmMockedFileExtension)
@@ -200,7 +200,7 @@ func TestCheck_Shutdown(t *testing.T) {
 func Test_Shutdown_RunExtensionUnAccessibleFile(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_SHUTDOWN_EXTENSION).Return(true, FAKE_STARTUP_EXTENSION)
-	status := "successful"
+	status := "failed"
 	statusString := getStatusString(&status, nil, nil)
 	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_STARTUP_EXTENSION, []string{""}).Return(true, "UnaccessibleOuputFile", statusString)
 	_, csmSetup := setup(csmMockedFileExtension)

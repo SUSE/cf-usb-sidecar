@@ -122,9 +122,10 @@ func Test_GetConnection_NoExtension(t *testing.T) {
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_CONNECTION_EXTENSION).Return(false, nil, nil)
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
-	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Message, utils.ERR_EXTENSION_NOT_FOUND)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, connection.ProcessingType, "none")
+	assert.Equal(t, connection.Status, "none")
+
 }
 
 func Test_GetConnection_NullExtension(t *testing.T) {
@@ -132,9 +133,9 @@ func Test_GetConnection_NullExtension(t *testing.T) {
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_CONNECTION_EXTENSION).Return(false, "", "extension not found")
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
-	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Message, utils.ERR_EXTENSION_NOT_FOUND)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, connection.ProcessingType, "none")
+	assert.Equal(t, connection.Status, "none")
 }
 
 func Test_GetConnection_FailedToRunExtension(t *testing.T) {
@@ -227,8 +228,9 @@ func Test_GetConnection_RunExtensionUnAccessibleFile(t *testing.T) {
 func TestCheck_GetConnection(t *testing.T) {
 	_, csmConnection := setup(nil)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
-	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, connection.ProcessingType, "none")
+	assert.Equal(t, connection.Status, "none")
 }
 
 func TestCheck_CreateConnection(t *testing.T) {
@@ -246,7 +248,7 @@ func TestCheck_CreateConnection(t *testing.T) {
 	assert.Nil(t, modelserr)
 }
 
-func TestCheck_CreateConnectionFailure(t *testing.T) {
+func TestCheck_CreateConnectionDefault(t *testing.T) {
 	os.Setenv("test-param", "test-value")
 	os.Setenv("CSM_PARAMETERS", "test-param")
 	_, csmConnection := setup(nil)
@@ -256,17 +258,41 @@ func TestCheck_CreateConnectionFailure(t *testing.T) {
 		ConnectionID: connectionID,
 	}
 	connection, modelserr := csmConnection.CreateConnection("123", connectionCreate.ConnectionID)
-	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, connection.ProcessingType, "default")
+	assert.Equal(t, connection.Status, "successful")
+	assert.Equal(t, connection.Details["test-param"], "test-value")
 	os.Unsetenv("CSM_PARAMETERS")
 	os.Unsetenv("test-param")
+}
+
+func TestCheck_CreateConnectionDefaultMultipleParameters(t *testing.T) {
+	os.Setenv("test-param1", "test-value1")
+	os.Setenv("test-param2", "test-value2")
+	os.Setenv("CSM_PARAMETERS", "test-param1 test-param2")
+	_, csmConnection := setup(nil)
+
+	connectionID := "123"
+	connectionCreate := models.ServiceManagerConnectionCreateRequest{
+		ConnectionID: connectionID,
+	}
+	connection, modelserr := csmConnection.CreateConnection("123", connectionCreate.ConnectionID)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, connection.ProcessingType, "default")
+	assert.Equal(t, connection.Status, "successful")
+	assert.Equal(t, connection.Details["test-param1"], "test-value1")
+	assert.Equal(t, connection.Details["test-param2"], "test-value2")
+	os.Unsetenv("CSM_PARAMETERS")
+	os.Unsetenv("test-param1")
+	os.Unsetenv("test-param2")
 }
 
 func TestCheck_DeleteConnectionWithNone(t *testing.T) {
 	_, csmConnection := setup(nil)
 	connection, modelserr := csmConnection.DeleteConnection("123", "123")
-	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, connection.ProcessingType, "none")
+	assert.Equal(t, connection.Status, "none")
 }
 
 func TestCheck_DeleteConnection(t *testing.T) {

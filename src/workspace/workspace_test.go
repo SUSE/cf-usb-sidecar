@@ -119,8 +119,9 @@ func Test_GetWorkspace_NoExtension(t *testing.T) {
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(false, nil, nil)
 	_, csmWorkspace := setup(csmMockedFileExtension)
 	workspace, modelserr := csmWorkspace.GetWorkspace("123")
-	assert.Nil(t, workspace)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, workspace.ProcessingType, "none")
+	assert.Equal(t, workspace.Status, "none")
 }
 
 func Test_GetWorkspace_NullExtension(t *testing.T) {
@@ -128,9 +129,9 @@ func Test_GetWorkspace_NullExtension(t *testing.T) {
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_WORKSPACE_EXTENSION).Return(false, "", "extension not found")
 	_, csmWorkspace := setup(csmMockedFileExtension)
 	workspace, modelserr := csmWorkspace.GetWorkspace("123")
-	assert.Nil(t, workspace)
-	assert.Equal(t, modelserr.Message, utils.ERR_EXTENSION_NOT_FOUND)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, workspace.ProcessingType, "none")
+	assert.Equal(t, workspace.Status, "none")
 }
 
 func Test_GetWorkspace_FailedToRunExtension(t *testing.T) {
@@ -218,8 +219,9 @@ func Test_GetWorkspace_RunExtensionUnAccessibleFile(t *testing.T) {
 func TestCheck_GetWorkspace(t *testing.T) {
 	_, csmWorkspace := setup(nil)
 	workspace, modelserr := csmWorkspace.GetWorkspace("123")
-	assert.Nil(t, workspace)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, workspace.ProcessingType, "none")
+	assert.Equal(t, workspace.Status, "none")
 }
 
 func TestCheck_CreateWorkspace(t *testing.T) {
@@ -251,8 +253,9 @@ func Test_CreateWorkspaceUnAccessibleFile(t *testing.T) {
 func TestCheck_DeleteWorkspace(t *testing.T) {
 	_, csmWorkspace := setup(nil)
 	workspace, modelserr := csmWorkspace.DeleteWorkspace("123")
-	assert.Nil(t, workspace)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Nil(t, modelserr)
+	assert.Equal(t, workspace.ProcessingType, "none")
+	assert.Equal(t, workspace.Status, "none")
 }
 
 func Test_DeleteWorkspaceUnAccessibleFile(t *testing.T) {

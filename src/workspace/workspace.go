@@ -38,6 +38,14 @@ func (w *CSMWorkspace) getWorkspaceDeleteExtension(homePath string) (bool, *stri
 	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace", "delete"))
 }
 
+func generateNoopResponse() *models.ServiceManagerWorkspaceResponse {
+	resp := models.ServiceManagerWorkspaceResponse{
+		ProcessingType: common.PROCESSING_TYPE_NONE,
+		Status:         common.PROCESSING_STATUS_NONE,
+	}
+	return &resp
+}
+
 //create ServiceManagerWorkspaceResponse from the json we received in file
 func marshalResponseFromMessage(message []byte) (*models.ServiceManagerWorkspaceResponse, *models.Error, error) {
 	workspace := utils.NewWorkspace()
@@ -155,7 +163,7 @@ func (w *CSMWorkspace) GetWorkspace(workspaceID string) (*models.ServiceManagerW
 
 	if !exists || filename == nil {
 		w.Logger.Info("GetWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
+		return generateNoopResponse(), nil
 	}
 	return w.executeRequest(workspaceID, "GetWorkspace", filename)
 
@@ -168,7 +176,7 @@ func (w *CSMWorkspace) CreateWorkspace(workspaceID string) (*models.ServiceManag
 
 	if !exists || filename == nil {
 		w.Logger.Info("CreateWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
+		return generateNoopResponse(), nil
 	}
 	return w.executeRequest(workspaceID, "CreateWorkspace", filename)
 }
@@ -181,8 +189,7 @@ func (w *CSMWorkspace) DeleteWorkspace(workspaceID string) (*models.ServiceManag
 
 	if !exists || filename == nil {
 		w.Logger.Info("DeleteWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
-		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, utils.ERR_EXTENSION_NOT_FOUND)
-
+		return generateNoopResponse(), nil
 	}
 	return w.executeRequest(workspaceID, "DeleteWorkspace", filename)
 }
