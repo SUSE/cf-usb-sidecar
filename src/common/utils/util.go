@@ -54,6 +54,14 @@ func NewConnection() models.ServiceManagerConnectionResponse {
 	return workspace
 }
 
+func NewStatus() models.StatusResponse {
+	status := models.StatusResponse{
+		ProcessingType: &common.PROCESSING_TYPE_NONE,
+	}
+
+	return status
+}
+
 func GenerateErrorResponse(code *int64, message string) *models.Error {
 	errReturn := models.Error{Code: code, Message: message}
 	return &errReturn
