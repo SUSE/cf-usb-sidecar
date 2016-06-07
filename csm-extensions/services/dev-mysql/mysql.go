@@ -137,3 +137,16 @@ func (e *mysqlExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 
 	return &response, nil
 }
+
+func (e *mysqlExtension) GetStatus() (*csm.CSMResponse, error) {
+	response := csm.CSMResponse{}
+
+	_, err := e.prov.Query("SHOW DATABASES")
+	if err != nil {
+		response.Status = "failed"
+		response.ErrorMessage = err.Error()
+		return &response, err
+	}
+	response.Status = "successful"
+	return &response, nil
+}
