@@ -21,17 +21,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const WORKSPACE_ID = "test_workspace"
-const CONNECTION_ID = "test_connection"
+const (
+	WORKSPACE_ID  = "test_workspace"
+	CONNECTION_ID = "test_connection"
+)
 
-var transportHost string
-var transport *httpClient.Runtime
-var client *csmClient.CatlogServiceManager
-var authFunc swaggerClient.AuthInfoWriter
-var dockerContainerName string
-var csmExtensionHost string
-var csmExtensionToken string
-var csmExtensionPort string
+var (
+	transportHost       string
+	transport           *httpClient.Runtime
+	client              *csmClient.CatlogServiceManager
+	authFunc            swaggerClient.AuthInfoWriter
+	dockerContainerName string
+	csmExtensionHost    string
+	csmExtensionToken   string
+	csmExtensionPort    string
+)
 
 func initTest() {
 	dockerHost := os.Getenv("DOCKER_HOST")
@@ -97,11 +101,8 @@ func Test_FailGetWorkspace(t *testing.T) {
 	params := workspace.NewGetWorkspaceParams().WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Workspace.GetWorkspace(params, authFunc)
 
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	assert.NotNil(err)
+	assert.Error(err)
+	assert.Contains(err.Error(), "Workspace does not exist")
 	assert.Nil(response)
 }
 
@@ -117,11 +118,8 @@ func Test_FailGetConnection(t *testing.T) {
 	params := connection.NewGetConnectionParams().WithConnectionID(CONNECTION_ID)
 	response, err := client.Connection.GetConnection(params, authFunc)
 
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	assert.NotNil(err)
+	assert.Error(err)
+	assert.Contains(err.Error(), "connection was not found")
 	assert.Nil(response)
 }
 
@@ -139,11 +137,8 @@ func Test_CreateWorkspace(t *testing.T) {
 	}
 	params := workspace.NewCreateWorkspaceParams().WithCreateWorkspaceRequest(&createWorkspaceRequest)
 	response, err := client.Workspace.CreateWorkspace(params, authFunc)
-	if err != nil {
-		log.Println(err.Error())
-	}
 
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(response)
 
 	if response != nil {
@@ -164,11 +159,7 @@ func Test_GetWorkspace(t *testing.T) {
 	params := workspace.NewGetWorkspaceParams().WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Workspace.GetWorkspace(params, authFunc)
 
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(response)
 
 	if response != nil {
@@ -192,7 +183,7 @@ func Test_CreateConnection(t *testing.T) {
 	params := connection.NewCreateConnectionParams().WithWorkspaceID(WORKSPACE_ID).WithConnectionCreateRequest(&createConnectionRequest)
 	response, err := client.Connection.CreateConnection(params, authFunc)
 
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(response)
 
 	if response != nil {
@@ -213,7 +204,8 @@ func Test_GetConnection(t *testing.T) {
 	params := connection.NewGetConnectionParams().WithConnectionID(CONNECTION_ID).WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Connection.GetConnection(params, authFunc)
 
-	assert.NotNil(err)
+	assert.Error(err)
+	assert.Contains(err.Error(), "Connection does not exist")
 	assert.Nil(response)
 }
 
@@ -229,7 +221,7 @@ func Test_DeleteConnection(t *testing.T) {
 	params := connection.NewDeleteConnectionParams().WithConnectionID(CONNECTION_ID).WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Connection.DeleteConnection(params, authFunc)
 
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(response)
 }
 
@@ -245,7 +237,8 @@ func Test_GetConnectionAfterDelete(t *testing.T) {
 	params := connection.NewGetConnectionParams().WithConnectionID(CONNECTION_ID).WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Connection.GetConnection(params, authFunc)
 
-	assert.NotNil(err)
+	assert.Error(err)
+	assert.Contains(err.Error(), "Connection does not exist")
 	assert.Nil(response)
 }
 
@@ -260,11 +253,8 @@ func Test_DeleteWorkspace(t *testing.T) {
 
 	params := workspace.NewDeleteWorkspaceParams().WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Workspace.DeleteWorkspace(params, authFunc)
-	if err != nil {
-		log.Println(err.Error())
-	}
 
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(response)
 }
 
@@ -280,10 +270,7 @@ func Test_GetWorkspaceAfterDelete(t *testing.T) {
 	params := workspace.NewGetWorkspaceParams().WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Workspace.GetWorkspace(params, authFunc)
 
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	assert.NotNil(err)
+	assert.Error(err)
+	assert.Contains(err.Error(), "Workspace does not exist")
 	assert.Nil(response)
 }

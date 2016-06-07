@@ -68,5 +68,20 @@ func TestRedisProvisioner(t *testing.T) {
 }
 
 func envVarsOk() bool {
-	return testRedisProv.driverConfig.DockerEndpoint != "" && testRedisProv.driverConfig.DockerImage != "" && testRedisProv.driverConfig.ImageTag != "" && testRedisProv.driverConfig.RedisServicesPortsStart != "" && testRedisProv.driverConfig.RedisServicesPortsEnd != ""
+	if testRedisProv.driverConfig.DockerEndpoint == "" {
+		return false
+	}
+	if testRedisProv.driverConfig.DockerImage == "" {
+		return false
+	}
+	if testRedisProv.driverConfig.ImageTag == "" {
+		return false
+	}
+	if testRedisProv.driverConfig.RedisServicesPortsStart == "" {
+		return false
+	}
+	if testRedisProv.driverConfig.RedisServicesPortsEnd == "" {
+		return false
+	}
+	return true
 }
