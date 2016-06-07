@@ -283,27 +283,20 @@ func (provisioner *RedisProvisioner) findNextOpenPort() (int, error) {
 	}
 
 	sort.Ints(ports)
-
 	svcPort := 0
 
-	freePort := startPort
-	usedPortsIndex := 0
-
-	for {
-		if freePort > endPort {
-			break
-		}
-
-		if len(ports) <= usedPortsIndex || ports[usedPortsIndex] > freePort {
-			if svcPort == 0 {
-				svcPort = freePort
+	for p := startPort; p <= endPort; p++ {
+		used := false
+		for _, port := range ports {
+			if port == p {
+				used = true
 				break
 			}
-		} else if ports[usedPortsIndex] < freePort {
-			usedPortsIndex++
-		} else if ports[usedPortsIndex] == freePort {
-			usedPortsIndex++
-			freePort++
+		}
+
+		if used == false {
+			svcPort = p
+			break
 		}
 	}
 
