@@ -98,3 +98,16 @@ func (e *redisExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 
 	return &response, nil
 }
+
+func (e *redisExtension) GetStatus() (*csm.CSMResponse, error) {
+	response := csm.CSMResponse{}
+	_, err := e.prov.ContainerExists("test")
+
+	if err != nil {
+		response.Status = "failed"
+		response.ErrorMessage = err.Error()
+		return &response, err
+	}
+	response.Status = "successful"
+	return &response, nil
+}
