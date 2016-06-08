@@ -1,6 +1,5 @@
 #!/bin/sh
 
-echo "Using ${CSM_EXTENSION_ROOT}"
 go build -v -o ${CSM_EXTENSION_ROOT}/CSM_HOME/connection/create/create	./cmd/createconnection
 go build -v -o ${CSM_EXTENSION_ROOT}/CSM_HOME/connection/delete/delete	./cmd/deleteconnection
 go build -v -o ${CSM_EXTENSION_ROOT}/CSM_HOME/connection/get/get		./cmd/getconnection
