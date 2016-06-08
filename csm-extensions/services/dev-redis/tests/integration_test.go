@@ -3,7 +3,6 @@
 package redis
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -83,7 +82,7 @@ func checkPrerequisites() error {
 		return err
 	}
 	if !exists {
-		return errors.New(fmt.Sprintf("The %s docker container was not found. Please run make run and make run-db or just make all first!", dockerContainerName))
+		return fmt.Errorf("The %s docker container was not found. Please run make run and make run-db or just make all first!", dockerContainerName)
 	}
 
 	return nil
@@ -101,8 +100,9 @@ func Test_FailGetWorkspace(t *testing.T) {
 	params := workspace.NewGetWorkspaceParams().WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Workspace.GetWorkspace(params, authFunc)
 
-	assert.Error(err)
-	assert.Contains(err.Error(), "Workspace does not exist")
+	if assert.Error(err) {
+		assert.Contains(err.Error(), "Workspace does not exist")
+	}
 	assert.Nil(response)
 }
 
@@ -118,8 +118,9 @@ func Test_FailGetConnection(t *testing.T) {
 	params := connection.NewGetConnectionParams().WithConnectionID(CONNECTION_ID)
 	response, err := client.Connection.GetConnection(params, authFunc)
 
-	assert.Error(err)
-	assert.Contains(err.Error(), "connection was not found")
+	if assert.Error(err) {
+		assert.Contains(err.Error(), "connection was not found")
+	}
 	assert.Nil(response)
 }
 
@@ -139,9 +140,8 @@ func Test_CreateWorkspace(t *testing.T) {
 	response, err := client.Workspace.CreateWorkspace(params, authFunc)
 
 	assert.NoError(err)
-	assert.NotNil(response)
 
-	if response != nil {
+	if assert.NotNil(response) {
 		assert.Equal("Extension", response.Payload.ProcessingType)
 		assert.Equal("successful", response.Payload.Status)
 	}
@@ -160,9 +160,8 @@ func Test_GetWorkspace(t *testing.T) {
 	response, err := client.Workspace.GetWorkspace(params, authFunc)
 
 	assert.NoError(err)
-	assert.NotNil(response)
 
-	if response != nil {
+	if assert.NotNil(response) {
 		assert.Equal("Extension", response.Payload.ProcessingType)
 		assert.Equal("successful", response.Payload.Status)
 	}
@@ -184,9 +183,8 @@ func Test_CreateConnection(t *testing.T) {
 	response, err := client.Connection.CreateConnection(params, authFunc)
 
 	assert.NoError(err)
-	assert.NotNil(response)
 
-	if response != nil {
+	if assert.NotNil(response) {
 		assert.Equal("Extension", response.Payload.ProcessingType)
 		assert.Equal("successful", response.Payload.Status)
 	}
@@ -204,8 +202,9 @@ func Test_GetConnection(t *testing.T) {
 	params := connection.NewGetConnectionParams().WithConnectionID(CONNECTION_ID).WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Connection.GetConnection(params, authFunc)
 
-	assert.Error(err)
-	assert.Contains(err.Error(), "Connection does not exist")
+	if assert.Error(err) {
+		assert.Contains(err.Error(), "Connection does not exist")
+	}
 	assert.Nil(response)
 }
 
@@ -237,8 +236,9 @@ func Test_GetConnectionAfterDelete(t *testing.T) {
 	params := connection.NewGetConnectionParams().WithConnectionID(CONNECTION_ID).WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Connection.GetConnection(params, authFunc)
 
-	assert.Error(err)
-	assert.Contains(err.Error(), "Connection does not exist")
+	if assert.Error(err) {
+		assert.Contains(err.Error(), "Connection does not exist")
+	}
 	assert.Nil(response)
 }
 
@@ -270,7 +270,8 @@ func Test_GetWorkspaceAfterDelete(t *testing.T) {
 	params := workspace.NewGetWorkspaceParams().WithWorkspaceID(WORKSPACE_ID)
 	response, err := client.Workspace.GetWorkspace(params, authFunc)
 
-	assert.Error(err)
-	assert.Contains(err.Error(), "Workspace does not exist")
+	if assert.Error(err) {
+		assert.Contains(err.Error(), "Workspace does not exist")
+	}
 	assert.Nil(response)
 }
