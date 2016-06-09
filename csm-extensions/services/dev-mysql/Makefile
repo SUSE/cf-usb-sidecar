@@ -3,8 +3,10 @@ OK_COLOR=\033[32;01m
 OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
+TOKEN=csm-auth-token
+SERVER_PORT=8081
 
-.PHONY: clean-all clean build-image tools run run-db 
+.PHONY: clean-all clean build-image tools run run-db test test-integration
 
 export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
 export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-mysql
@@ -26,7 +28,7 @@ help:
 	@echo "                       build docker image and runs the extension container "
 	@echo "  build                build the extension binary"
 	@echo "  run                  run the csm docker container for extension"
-	@echo "  tools                Installs tools needed to run"
+	@echo "  run-db               run the db behind csm"
 	@echo "  test-format          Run the formatting tests"
 	@echo "  test                 Run the formatting tests"
 	@echo "  clean-containers     Remove all docker containers for extension"
@@ -36,7 +38,7 @@ help:
 	@echo "  push-image           Push the extension docker image to registry"
 	@echo
 
-all:	clean-all build-image tools run-db run
+all:	clean-all build-image run-db run
 
 build:
 	${CSM_EXTENSION_ROOT}/scripts/build.sh
@@ -50,11 +52,43 @@ run:
 	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
 
 test-format:
-	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
-	${CSM_ROOT}/scripts/testFmt.sh src
+	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
+	FILES=`find . -name "*.go" | grep -v vendor | grep -v Godeps`;\
+	${CSM_ROOT}/scripts/testFmt.sh "$$FILES")
 		
 # (required) run tests
-test:	test-format
+test:	test-format test-integration
+	@(go list ./... | grep -v vendor | go test -v)
+
+test-integration: clean-all build-image run-db run
+	@(if [ ! -z ${DOCKER_HOST} ]; then \
+	    SERVER_IP=`echo ${DOCKER_HOST} | cut -d "/" -f 3 | cut -d ":" -f 1`;\
+	else \
+	    SERVER_IP=`ip route get 8.8.8.8 | cut -d" " -f8`;\
+	fi; \
+	echo "Testing against $$SERVER_IP:$(SERVER_PORT)...\n";\
+	export TEST_SERVER_IP=$$SERVER_IP;\
+	export TEST_SERVER_PORT=$(SERVER_PORT);\
+	export TEST_SERVER_TOKEN=$(TOKEN);\
+	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
+	until `curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-csm-token: $(TOKEN)" --fail --silent --output /dev/null`;\
+	do n=$$(( $$n + 1 )) ;\
+		printf ".";\
+		if [ $$n -ge 30 ] ;\
+			then echo "\n$(ERROR_COLOR)==>Docker took to long to wakeup or incorect setup $(NO_COLOR) "; break ;\
+		fi ;\
+		sleep 1 ;\
+	done; echo "";\
+	if [ $$n -le 19 ]; then \
+		echo "$(OK_COLOR)==>Running integration tests:$(NO_COLOR) ";\
+		export GO15VENDOREXPERIMENT=1;\
+		go test ./tests -tags integration -v;\
+	else \
+		echo "$(ERROR_COLOR)==>Not running integration tests:$(NO_COLOR) ";\
+	fi)
+	${MAKE} clean-all
+	
+	
 
 # (required) clean containers
 clean-containers:
