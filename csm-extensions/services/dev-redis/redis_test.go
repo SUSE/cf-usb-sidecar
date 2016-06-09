@@ -3,9 +3,9 @@ package redis
 import (
 	"testing"
 
-	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis/config"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis/provisioner/provisionerfakes"
+	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"
 )
@@ -59,7 +59,7 @@ func Test_GetConnection(t *testing.T) {
 	response, err := redis.GetConnection(workspaceID, credentialsID)
 
 	assert.NotNil(response)
-	assert.Equal("successful", response.Status)
+	assert.Equal("failed", response.Status)
 	assert.NoError(err)
 }
 

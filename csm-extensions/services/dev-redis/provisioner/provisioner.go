@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -42,7 +43,17 @@ func (provisioner *RedisProvisioner) CreateContainer(containerName string) error
 		return err
 	}
 
-	hostConfig := dockerclient.HostConfig{PublishAllPorts: true}
+	svcPort, err := provisioner.findNextOpenPort()
+	if err != nil {
+		return err
+	}
+
+	hostConfig := dockerclient.HostConfig{
+		PortBindings: map[dockerclient.Port][]dockerclient.PortBinding{
+			"6379/tcp": {{HostIP: "", HostPort: strconv.Itoa(svcPort)}},
+		},
+	}
+
 	createOpts := dockerclient.CreateContainerOptions{
 		Config: &dockerclient.Config{
 			Image: provisioner.redisConfig.DockerImage + ":" + provisioner.redisConfig.ImageTag,
@@ -171,11 +182,15 @@ func (provisioner *RedisProvisioner) getContainerId(containerName string) (strin
 	return container.ID, nil
 }
 
-func (provisioner *RedisProvisioner) getContainer(containerName string) (dockerclient.APIContainers, error) {
+func (provisioner *RedisProvisioner) getContainers() ([]dockerclient.APIContainers, error) {
 	opts := dockerclient.ListContainersOptions{
 		All: true,
 	}
-	containers, err := provisioner.client.ListContainers(opts)
+	return provisioner.client.ListContainers(opts)
+}
+
+func (provisioner *RedisProvisioner) getContainer(containerName string) (dockerclient.APIContainers, error) {
+	containers, err := provisioner.getContainers()
 	if err != nil {
 		return dockerclient.APIContainers{}, err
 	}
@@ -235,4 +250,59 @@ func (provisioner *RedisProvisioner) getHost() (string, error) {
 	}
 
 	return host, nil
+}
+
+func (provisioner *RedisProvisioner) findNextOpenPort() (int, error) {
+
+	startPort, err := strconv.Atoi(provisioner.redisConfig.RedisServicesPortsStart)
+	if err != nil {
+		return 0, err
+	}
+	endPort, err := strconv.Atoi(provisioner.redisConfig.RedisServicesPortsEnd)
+	if err != nil {
+		return 0, err
+	}
+
+	containers, err := provisioner.getContainers()
+	if err != nil {
+		provisioner.logger.Debug(err.Error())
+		return 0, err
+	}
+
+	ports := []int{}
+
+	for _, container := range containers {
+		for _, p := range container.Ports {
+			if p.PublicPort != 0 {
+				port := int(p.PublicPort)
+				if port > startPort || port < endPort {
+					ports = append(ports, port)
+				}
+			}
+		}
+	}
+
+	sort.Ints(ports)
+	svcPort := 0
+
+	for p := startPort; p <= endPort; p++ {
+		used := false
+		for _, port := range ports {
+			if port == p {
+				used = true
+				break
+			}
+		}
+
+		if used == false {
+			svcPort = p
+			break
+		}
+	}
+
+	if svcPort == 0 {
+		return 0, fmt.Errorf("Could not find any available ports")
+	}
+
+	return svcPort, nil
 }

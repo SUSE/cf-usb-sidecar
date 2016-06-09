@@ -18,9 +18,11 @@ var testRedisProv = struct {
 
 func init() {
 	testRedisProv.driverConfig = config.RedisConfig{
-		DockerEndpoint: os.Getenv("DOCKER_ENDPOINT"),
-		DockerImage:    os.Getenv("REDIS_DOCKER_IMAGE"),
-		ImageTag:       os.Getenv("REDIS_DOCKER_IMAGE_TAG"),
+		DockerEndpoint:          os.Getenv("DOCKER_ENDPOINT"),
+		DockerImage:             os.Getenv("REDIS_DOCKER_IMAGE"),
+		ImageTag:                os.Getenv("REDIS_DOCKER_IMAGE_TAG"),
+		RedisServicesPortsStart: os.Getenv("REDIS_SERVICE_PORTS_POOL_START"),
+		RedisServicesPortsEnd:   os.Getenv("REDIS_SERVICE_PORTS_POOL_END"),
 	}
 
 	testRedisProv.redisProvisioner = NewRedisProvisioner(logger, testRedisProv.driverConfig)
@@ -66,5 +68,20 @@ func TestRedisProvisioner(t *testing.T) {
 }
 
 func envVarsOk() bool {
-	return testRedisProv.driverConfig.DockerEndpoint != "" && testRedisProv.driverConfig.DockerImage != "" && testRedisProv.driverConfig.ImageTag != ""
+	if testRedisProv.driverConfig.DockerEndpoint == "" {
+		return false
+	}
+	if testRedisProv.driverConfig.DockerImage == "" {
+		return false
+	}
+	if testRedisProv.driverConfig.ImageTag == "" {
+		return false
+	}
+	if testRedisProv.driverConfig.RedisServicesPortsStart == "" {
+		return false
+	}
+	if testRedisProv.driverConfig.RedisServicesPortsEnd == "" {
+		return false
+	}
+	return true
 }
