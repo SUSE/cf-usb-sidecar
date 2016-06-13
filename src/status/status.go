@@ -26,7 +26,7 @@ func NewCSMStatus(logger lager.Logger,
 	return &CSMStatus{Logger: logger.Session("CSM-Status"), Config: config, FileHelper: fileHelper}
 }
 
-func (w *CSMStatus) GetStatus() *models.StatusResponse {
+func (w *CSMStatus) GetStatus() (*models.StatusResponse, *models.Error) {
 	exists, filename := w.getStatusExtension(*w.Config.MANAGER_HOME)
 
 	if !exists || filename == nil {
@@ -37,10 +37,8 @@ func (w *CSMStatus) GetStatus() *models.StatusResponse {
 	return w.executeRequest("GetStatus", filename)
 }
 
-func (w *CSMStatus) statusExtentionNotFound(message string) *models.StatusResponse {
-	var status models.StatusResponse
-
-	status.ProcessingType = &common.PROCESSING_STATUS_NONE
+func (w *CSMStatus) statusExtentionNotFound(message string) (*models.StatusResponse, *models.Error) {
+	status := utils.NewStatus()
 
 	host := os.Getenv("HEALTHCHECK_HOST")
 	port := os.Getenv("HEALTHCHECK_PORT")
@@ -55,7 +53,7 @@ func (w *CSMStatus) statusExtentionNotFound(message string) *models.StatusRespon
 			status.Status = "failed"
 		}
 	}
-	return &status
+	return &status, nil
 }
 func (w *CSMStatus) getStatusExtension(homePath string) (bool, *string) {
 	return w.FileHelper.GetExtension(filepath.Join(homePath, "status"))
@@ -69,18 +67,14 @@ func (w *CSMStatus) checkParamsOk(extensionPath *string) error {
 	return nil
 }
 
-func (w *CSMStatus) executeRequest(requestType string, filename *string) *models.StatusResponse {
-	var status *models.StatusResponse
-	var err error
-
-	status, err = w.executeExtension(filename)
+func (w *CSMStatus) executeRequest(requestType string, filename *string) (*models.StatusResponse, *models.Error) {
+	status, err := w.executeExtension(filename)
 
 	if err != nil {
 		w.Logger.Error(requestType, err)
-		status.Status = "false"
-		status.Message = err.Error()
+		return nil, utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())
 	}
-	return status
+	return status, nil
 }
 
 func (w *CSMStatus) executeExtension(extensionPath *string) (*models.StatusResponse, error) {

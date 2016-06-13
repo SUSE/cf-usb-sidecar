@@ -11,7 +11,9 @@ import (
 func GetStatus() middleware.Responder {
 
 	internalWorkspaces := csm_manager.GetStatus()
-	statusResponse := internalWorkspaces.GetStatus()
-
+	statusResponse, err := internalWorkspaces.GetStatus()
+	if err != nil {
+		return status.NewStatusDefault(int(*err.Code)).WithPayload(err)
+	}
 	return status.NewStatusOK().WithPayload(statusResponse)
 }
