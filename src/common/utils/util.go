@@ -56,7 +56,7 @@ func NewConnection() models.ServiceManagerConnectionResponse {
 
 func NewStatus() models.StatusResponse {
 	status := models.StatusResponse{
-		ProcessingType: &common.PROCESSING_TYPE_NONE,
+		ProcessingType: common.PROCESSING_TYPE_NONE,
 	}
 
 	return status

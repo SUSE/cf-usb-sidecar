@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"os"
 	"path/filepath"
+	"strconv"
+	"time"
 
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
@@ -40,17 +41,28 @@ func (w *CSMStatus) GetStatus() (*models.StatusResponse, *models.Error) {
 func (w *CSMStatus) statusExtentionNotFound(message string) (*models.StatusResponse, *models.Error) {
 	status := utils.NewStatus()
 
-	host := os.Getenv("HEALTHCHECK_HOST")
-	port := os.Getenv("HEALTHCHECK_PORT")
-
-	if host == "" || port == "" {
+	if w.Config.HEALTHCHECK_HOST == nil || w.Config.HEALTHCHECK_PORT == nil {
 		status.Status = "successful"
 		status.Message = ""
 	} else {
-		_, err := net.Dial("tcp", fmt.Sprintf("%s:%s", host, port))
+		sTimeout := *w.Config.EXT_TIMEOUT
+
+		var timeout time.Duration
+
+		itimeout, err := strconv.Atoi(sTimeout)
+		if err != nil {
+			timeout = time.Duration(30) //default 30 secs
+		} else {
+			timeout = time.Duration(itimeout)
+		}
+
+		_, err = net.DialTimeout("tcp", fmt.Sprintf("%s:%s", *w.Config.HEALTHCHECK_HOST, *w.Config.HEALTHCHECK_PORT), timeout)
 		if err != nil {
 			status.Message = err.Error()
 			status.Status = "failed"
+		} else {
+			status.Status = "successful"
+			status.Message = ""
 		}
 	}
 	return &status, nil
@@ -119,7 +131,7 @@ func marshalResponseFromMessage(message []byte) (*models.StatusResponse, error) 
 
 	status.Status = jsonresp.Status
 	status.Message = fmt.Sprintf("%d - %s", jsonresp.ErrorCode, jsonresp.ErrorMessage)
-	status.ProcessingType = &common.PROCESSING_TYPE_EXTENSION
+	status.ProcessingType = common.PROCESSING_TYPE_EXTENSION
 
 	return &status, nil
 }

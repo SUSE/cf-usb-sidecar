@@ -252,6 +252,7 @@ definitions:
     required:
       - status
       - message
+      - processing_type
     properties: 
       processing_type:
         type: string
