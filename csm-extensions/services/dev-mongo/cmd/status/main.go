@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo"
@@ -24,7 +23,7 @@ func main() {
 	}
 
 	if conf.Host == "" {
-		conf.Host = fmt.Sprintf("mongo.%s", conf.UcpDomainSuffix)
+		logger.Fatal("MONGO_HOST environment variable is not set", nil)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)
@@ -37,7 +36,6 @@ func main() {
 	prov := provisioner.New(conf, logger)
 
 	extension := mongo.NewMongoExtension(prov, conf, logger)
-
 	response, err := extension.GetStatus()
 	if err != nil {
 		err := csmConnection.Write(*response)

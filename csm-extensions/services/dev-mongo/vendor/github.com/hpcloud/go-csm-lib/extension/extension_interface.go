@@ -11,4 +11,5 @@ type Extension interface {
 	DeleteWorkspace(wokspaceID string) (*csm.CSMResponse, error)
 	GetConnection(workspaceID, connectionID string) (*csm.CSMResponse, error)
 	GetWorkspace(workspaceID string) (*csm.CSMResponse, error)
+	GetStatus() (*csm.CSMResponse, error)
 }

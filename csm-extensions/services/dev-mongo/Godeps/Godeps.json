@@ -5,15 +5,15 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
-			"Rev": "fb5604bbf828940caa57874d2177e5443f68e56c"
+			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/extension",
-			"Rev": "fb5604bbf828940caa57874d2177e5443f68e56c"
+			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/util",
-			"Rev": "fb5604bbf828940caa57874d2177e5443f68e56c"
+			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",
