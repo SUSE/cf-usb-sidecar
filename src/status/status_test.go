@@ -120,7 +120,7 @@ func Test_GetStatus_NoExtension(t *testing.T) {
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, modelserr)
 	assert.Equal(t, response.ProcessingType, "none")
-	assert.Equal(t, response.Status, "failed")
+	assert.Equal(t, response.Status, "none")
 }
 
 func Test_GetStatus_NullExtension(t *testing.T) {
@@ -130,7 +130,7 @@ func Test_GetStatus_NullExtension(t *testing.T) {
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, modelserr)
 	assert.Equal(t, response.ProcessingType, "none")
-	assert.Equal(t, response.Status, "failed")
+	assert.Equal(t, response.Status, "none")
 }
 
 func Test_GetStatus_RunExtensionSuccessful(t *testing.T) {
@@ -209,5 +209,5 @@ func TestCheck_GetStatus(t *testing.T) {
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, modelserr)
 	assert.Equal(t, response.ProcessingType, "none")
-	assert.Equal(t, response.Status, "failed")
+	assert.Equal(t, response.Status, "none")
 }

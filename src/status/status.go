@@ -41,27 +41,27 @@ func (w *CSMStatus) GetStatus() (*models.StatusResponse, *models.Error) {
 func (w *CSMStatus) statusExtentionNotFound(message string) (*models.StatusResponse, *models.Error) {
 	status := utils.NewStatus()
 
-	if w.Config.HEALTHCHECK_HOST == nil || w.Config.HEALTHCHECK_PORT == nil {
-		status.Status = "successful"
+	if *w.Config.HEALTHCHECK_HOST == "" || *w.Config.HEALTHCHECK_PORT == "" {
+		status.Status = common.PROCESSING_STATUS_NONE
 		status.Message = ""
 	} else {
 		sTimeout := *w.Config.EXT_TIMEOUT
+		status.ProcessingType = common.PROCESSING_TYPE_DEFAULT
 
 		var timeout time.Duration
-
 		itimeout, err := strconv.Atoi(sTimeout)
 		if err != nil {
-			timeout = time.Duration(30) //default 30 secs
+			timeout = time.Duration(30) * time.Second //default 30 secs
 		} else {
-			timeout = time.Duration(itimeout)
+			timeout = time.Duration(itimeout) * time.Second
 		}
 
 		_, err = net.DialTimeout("tcp", fmt.Sprintf("%s:%s", *w.Config.HEALTHCHECK_HOST, *w.Config.HEALTHCHECK_PORT), timeout)
 		if err != nil {
 			status.Message = err.Error()
-			status.Status = "failed"
+			status.Status = common.PROCESSING_STATUS_FAILED
 		} else {
-			status.Status = "successful"
+			status.Status = common.PROCESSING_STATUS_SUCCESSFUL
 			status.Message = ""
 		}
 	}
