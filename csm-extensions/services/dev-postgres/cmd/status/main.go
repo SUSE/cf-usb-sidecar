@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres"
@@ -24,7 +23,7 @@ func main() {
 	}
 
 	if conf.Host == "" {
-		conf.Host = fmt.Sprintf("postgres.%s", conf.UcpDomainSuffix)
+		logger.Fatal("POSTGRES_HOST environment variable is not set", nil)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)
@@ -36,7 +35,6 @@ func main() {
 	prov := provisioner.NewPqProvisioner(logger, conf)
 
 	extension := postgres.NewPostgresExtension(prov, conf, logger)
-
 	response, err := extension.GetStatus()
 	if err != nil {
 		err := csmConnection.Write(*response)
