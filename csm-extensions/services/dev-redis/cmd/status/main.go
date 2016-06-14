@@ -25,7 +25,7 @@ func main() {
 
 	if conf.DockerEndpoint == "" {
 		if conf.DockerHost == "" {
-			conf.DockerHost = fmt.Sprintf("redis.%s", conf.UcpDomainSuffix)
+			logger.Fatal("DOCKER_ENDPOINT or DOCKER_HOST environment variables not set", nil)
 		}
 
 		conf.DockerEndpoint = fmt.Sprintf("http://%s:%s", conf.DockerHost, conf.DockerPort)
@@ -40,7 +40,6 @@ func main() {
 	prov := provisioner.NewRedisProvisioner(logger, conf)
 
 	extension := redis.NewRedisExtension(prov, conf, logger)
-
 	response, err := extension.GetStatus()
 	if err != nil {
 		err := csmConnection.Write(*response)
