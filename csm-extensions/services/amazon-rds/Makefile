@@ -61,6 +61,10 @@ test-format:
 # (required) run tests
 test:	test-format
 
+test-integration:
+	echo "$(WARN_CYN_COLOR)==>No Integration tests $(NO_COLOR) ";n=0;\
+
+
 # (required) clean containers
 clean-containers:
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_RDS_BUILD_IMAGE_NAME}

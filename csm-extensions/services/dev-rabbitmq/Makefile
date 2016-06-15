@@ -57,7 +57,7 @@ test-format:
 	go list ./... | grep -v vendor | grep -v Godeps | gofmt -l
 
 # (required) run tests
-test: test-format test-integration
+test: test-format
 	@(export GO15VENDOREXPERIMENT=1; \
 	go list ./... | grep -v vendor | go test -v)
 	

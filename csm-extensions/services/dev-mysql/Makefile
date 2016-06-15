@@ -57,7 +57,7 @@ test-format:
 	${CSM_ROOT}/scripts/testFmt.sh "$$FILES")
 		
 # (required) run tests
-test:	test-format test-integration
+test:	test-format
 	@(go list ./... | grep -v vendor | go test -v)
 
 test-integration: clean-all build-image run-db run

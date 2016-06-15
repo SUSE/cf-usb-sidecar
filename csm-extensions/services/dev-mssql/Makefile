@@ -53,7 +53,10 @@ test-format:
 test:	test-format
 	@(go list ./... | grep -v vendor | go test -v)
 
-test-integration: all
+test-integration:
+	echo "$(WARN_CYN_COLOR)==>Use test-integration-manual target to run integration tests for dev-mssql $(NO_COLOR) ";n=0;\
+
+test-integration-manual: all
 	@(if [ ! -z ${DOCKER_HOST} ]; then \
 	    SERVER_IP=`echo ${DOCKER_HOST} | cut -d "/" -f 3 | cut -d ":" -f 1`;\
 	else \

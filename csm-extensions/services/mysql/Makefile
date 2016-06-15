@@ -56,6 +56,8 @@ test-format:
 	
 # (required) 
 test:	test-format
+
+test-integration:
 	${CSM_MYSQL_EXTENSION_ROOT}/scripts/run_int_test.sh
 	
 # (required) clean containers

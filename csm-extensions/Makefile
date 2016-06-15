@@ -32,6 +32,9 @@ help:
 test:
 	scripts/run_services_make_target.sh  test
 
+test-integration:
+	scripts/run_services_make_target.sh  test-integration
+
 clean-containers:
 	scripts/run_services_make_target.sh  clean-containers
 	

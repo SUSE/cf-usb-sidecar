@@ -7,6 +7,8 @@ CSM_SERVICES=$GOPATH/src/github.com/hpcloud/catalog-service-manager/csm-extensio
 . ${CSM_ROOT}/scripts/colors.sh
 
 BUILT_SERVICES=""
+FAILED_SERVICES=""
+command_status=0
 
 cd  $GOPATH/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services
 for serviceDir in `find . -maxdepth 1 -mindepth 1 -type d `
@@ -17,7 +19,14 @@ do
     if [ -f Makefile ]
     then
         make $TARGET
-        BUILT_SERVICES="${BUILT_SERVICES}${serviceDir} "
+        service_command_status=$?
+        if [ ${service_command_status} -ne 0 ];
+        then
+            command_status=${service_command_status}
+            FAILED_SERVICES="${FAILED_SERVICES}${serviceDir} "
+        else
+            BUILT_SERVICES="${BUILT_SERVICES}${serviceDir} "
+        fi
     else
         echo "Error: Makefile not found for Service ${PWD##*/}"
         exit 1
@@ -26,3 +35,8 @@ do
 done
 
 echo "${OK_COLOR} ---> Finished building ${BUILT_SERVICES} ${NO_COLOR} "
+
+if [ ${command_status} -ne 0 ]; then
+echo "${ERROR_COLOR} ---> Failed Services ${FAILED_SERVICES} ${NO_COLOR} "
+
+fi
