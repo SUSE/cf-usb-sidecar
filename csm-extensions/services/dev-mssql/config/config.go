@@ -6,5 +6,4 @@ type MssqlConfig struct {
 	Host               string `env:"MSSQL_HOST"`
 	Port               string `env:"MSSQL_PORT" envDefault:"1433"`
 	DbIdentifierPrefix string `env:"MSSQL_DBPREFIX" envDefault:"d"`
-	UcpDomainSuffix    string `env:"UCP_SERVICE_DOMAIN_SUFFIX"`
 }
