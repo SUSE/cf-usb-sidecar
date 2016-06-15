@@ -6,3 +6,4 @@ go build -v -o ${CSM_EXTENSION_ROOT}/CSM_HOME/connection/get/get		./cmd/getconne
 go build -v -o ${CSM_EXTENSION_ROOT}/CSM_HOME/workspace/create/create	./cmd/createworkspace
 go build -v -o ${CSM_EXTENSION_ROOT}/CSM_HOME/workspace/delete/delete	./cmd/deleteworkspace
 go build -v -o ${CSM_EXTENSION_ROOT}/CSM_HOME/workspace/get/get		./cmd/getworkspace
+mkdir -p ${CSM_EXTENSION_ROOT}/CSM_HOME/bin/ && cp ./scripts/run.sh ${CSM_EXTENSION_ROOT}/CSM_HOME/bin/
