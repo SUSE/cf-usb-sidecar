@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql"
@@ -25,7 +24,7 @@ func main() {
 	}
 
 	if conf.Host == "" {
-		conf.Host = fmt.Sprintf("mysql.%s", conf.UcpDomainSuffix)
+		logger.Fatal("MYSQL_HOST environment variable is not set", nil)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)
