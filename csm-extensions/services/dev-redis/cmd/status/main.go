@@ -43,7 +43,7 @@ func main() {
 
 	response, err := extension.GetStatus()
 	if err != nil {
-		err := csmConnection.WriteError(err)
+		err := csmConnection.Write(*response)
 		if err != nil {
 			logger.Fatal("main", err)
 		}
