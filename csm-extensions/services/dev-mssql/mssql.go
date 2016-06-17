@@ -140,3 +140,16 @@ func (e *mssqlExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 
 	return &response, nil
 }
+
+func (e *mssqlExtension) GetStatus() (*csm.CSMResponse, error) {
+	response := csm.CSMResponse{}
+	_, err := e.prov.IsDatabaseCreated("test")
+
+	if err != nil {
+		response.Status = "failed"
+		response.ErrorMessage = err.Error()
+		return &response, err
+	}
+	response.Status = "successful"
+	return &response, nil
+}
