@@ -142,3 +142,16 @@ func (e *postgresExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, 
 
 	return &response, nil
 }
+
+func (e *postgresExtension) GetStatus() (*csm.CSMResponse, error) {
+	response := csm.CSMResponse{}
+	_, err := e.prov.DatabaseExists("test")
+
+	if err != nil {
+		response.Status = "failed"
+		response.ErrorMessage = err.Error()
+		return &response, err
+	}
+	response.Status = "successful"
+	return &response, nil
+}
