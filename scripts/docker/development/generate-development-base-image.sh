@@ -37,7 +37,7 @@ then
 	
 	if [ "$force_rebuild" != "rebuild-image" ]
 	then
-		docker images | grep catalog-service-manager | grep development | awk '{print $3}' | xargs -L 1 docker rmi -f > /dev/null 2>&1
+		docker images | grep catalog-service-manager | grep development | awk '{print $3}' | xargs -n 1 docker rmi -f > /dev/null 2>&1
 		sleep 5
 	fi	
 fi

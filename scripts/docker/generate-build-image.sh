@@ -31,7 +31,7 @@ then
 	if [ "$force_rebuild" == "rebuild-image" ]
 	then
 		echo "${OK_GREEN_COLOR}==> Removing old catalog-service-manager:build images ..${NO_COLOR}"
-		docker images | grep catalog-service-manager | grep build | awk '{print $3}' | xargs -L 1 docker rmi -f > /dev/null 2>&1
+		docker images | grep catalog-service-manager | grep build | awk '{print $3}' | xargs -n 1 docker rmi -f > /dev/null 2>&1
 		sleep 5
 	fi	
 fi
