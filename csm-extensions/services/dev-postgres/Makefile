@@ -59,7 +59,8 @@ test-format:
 	
 # (required) run tests
 test: test-format
-	@(go list ./... | grep -v vendor | go test -v)
+	@(export GO15VENDOREXPERIMENT=1; \
+	go list ./... | grep -v vendor | go test -v)
 
 test-integration: all
 	@(if [ ! -z ${DOCKER_HOST} ]; then \
