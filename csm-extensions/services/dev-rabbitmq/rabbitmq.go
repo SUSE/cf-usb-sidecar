@@ -145,3 +145,16 @@ func (e *rabbitmqExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, 
 
 	return &response, nil
 }
+
+func (e *rabbitmqExtension) GetStatus() (*csm.CSMResponse, error) {
+	response := csm.CSMResponse{}
+
+	_, err := e.prov.ContainerExists("test")
+	if err != nil {
+		response.Status = "failed"
+		response.ErrorMessage = err.Error()
+		return &response, err
+	}
+	response.Status = "successful"
+	return &response, nil
+}
