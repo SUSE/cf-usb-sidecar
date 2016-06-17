@@ -21,8 +21,9 @@ func GetCSMRequest(args []string) (*CSMRequest, error) {
 
 	request := CSMRequest{}
 	request.OutputPath = args[1]
-	request.WorkspaceID = args[2]
-
+	if len(args) == 3 {
+		request.WorkspaceID = args[2]
+	}
 	if len(args) == 4 {
 		request.ConnectionID = args[3]
 	}
