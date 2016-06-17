@@ -7,6 +7,7 @@ import (
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"
 	internalConnection "github.com/hpcloud/catalog-service-manager/src/connection"
 	internalSetup "github.com/hpcloud/catalog-service-manager/src/setup"
+	internalStatus "github.com/hpcloud/catalog-service-manager/src/status"
 	internalWorkspaces "github.com/hpcloud/catalog-service-manager/src/workspace"
 	"github.com/pivotal-golang/lager"
 )
@@ -15,6 +16,7 @@ var (
 	csmSetup      *internalSetup.CSMSetup
 	csmWorkspace  *internalWorkspaces.CSMWorkspace
 	csmConnection *internalConnection.CSMConnection
+	csmStatus     *internalStatus.CSMStatus
 
 	config *common.ServiceManagerConfiguration
 	logger lager.Logger
@@ -30,6 +32,7 @@ func InitServiceCatalogManager() {
 	}
 	csmSetup = internalSetup.NewCSMSetup(logger, config, fileHelper)
 	csmWorkspace = internalWorkspaces.NewCSMWorkspace(logger, config, fileHelper)
+	csmStatus = internalStatus.NewCSMStatus(logger, config, fileHelper)
 	csmConnection = internalConnection.NewCSMConnection(logger, config, fileHelper)
 
 	logInitDetails(logger, config)
@@ -41,6 +44,11 @@ func InitServiceCatalogManager() {
 // GetSetup returns the CSMSetup object
 func GetSetup() *internalSetup.CSMSetup {
 	return csmSetup
+}
+
+//GetStatus returns the CSMStatus object
+func GetStatus() *internalStatus.CSMStatus {
+	return csmStatus
 }
 
 // GetWorkspace returns the CSMWorkspace object

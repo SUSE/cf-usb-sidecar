@@ -51,10 +51,10 @@ then
 	docker ps -a | grep csm-release-build | awk '{print $1}' | xargs docker rm 
 	
 	echo "${OK_GREEN_COLOR}==> Removing catalog-service-manager:release-build images  ${NO_COLOR}"
-	docker images | grep catalog-service-manager | grep release-build | awk '{print $3}' | xargs -L 1 docker rmi -f 
+	docker images | grep catalog-service-manager | grep release-build | awk '{print $3}' | xargs -n 1 docker rmi -f 
 	
 	echo "${OK_GREEN_COLOR}==> Removing old catalog-service-manager:release images  ${NO_COLOR}"
-	docker images | grep catalog-service-manager | grep release | awk '{print $3}' | xargs -L 1 docker rmi -f 
+	docker images | grep catalog-service-manager | grep release | awk '{print $3}' | xargs -n 1 docker rmi -f 
 	
 	sleep 5
 	echo ""

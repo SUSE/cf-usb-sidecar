@@ -51,7 +51,8 @@ test-format:
 		
 # (required) run tests
 test:	test-format
-	@(go list ./... | grep -v vendor | go test -v)
+	@(export GO15VENDOREXPERIMENT=1; \
+	go list ./... | grep -v vendor | go test -v)
 
 test-integration:
 	echo "$(WARN_CYN_COLOR)==>Use test-integration-manual target to run integration tests for dev-mssql $(NO_COLOR) ";n=0;\

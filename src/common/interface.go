@@ -22,3 +22,7 @@ type CSMConnectionInterface interface {
 	CreateConnection(workspaceID string, createConnection *models.ServiceManagerConnectionCreateRequest) *models.ServiceManagerConnectionResponse
 	DeleteConnection(workspaceID string, connectionID string) *models.ServiceManagerConnectionResponse
 }
+
+type CSMStatusInterface interface {
+	GetStatus() *models.StatusResponse
+}

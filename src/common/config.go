@@ -13,6 +13,8 @@ type ServiceManagerConfiguration struct {
 	API_KEY           *string
 	EXT_TIMEOUT       *string
 	EXT_TIMEOUT_ERROR *string
+	HEALTHCHECK_HOST  *string
+	HEALTHCHECK_PORT  *string
 }
 
 var paramDefaultList = map[string]string{
@@ -22,6 +24,8 @@ var paramDefaultList = map[string]string{
 	"CSM_DEV_MODE":          "false",
 	"CSM_EXT_TIMEOUT":       "30",
 	"CSM_EXT_TIMEOUT_ERROR": "2",
+	"HEALTHCHECK_HOST":      "",
+	"HEALTHCHECK_PORT":      "",
 }
 
 // NewServiceManagerConfiguration : Creates object of ServiceManagerConfiguration
@@ -34,6 +38,8 @@ func NewServiceManagerConfiguration() *ServiceManagerConfiguration {
 	config.API_KEY = config.getConfigFromEnv("CSM_API_KEY")
 	config.EXT_TIMEOUT = config.getConfigFromEnv("CSM_EXT_TIMEOUT")
 	config.EXT_TIMEOUT_ERROR = config.getConfigFromEnv("CSM_EXT_TIMEOUT_ERROR")
+	config.HEALTHCHECK_HOST = config.getConfigFromEnv("HEALTHCHECK_HOST")
+	config.HEALTHCHECK_PORT = config.getConfigFromEnv("HEALTHCHECK_PORT")
 
 	return &config
 }
