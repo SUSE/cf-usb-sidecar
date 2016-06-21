@@ -1,29 +1,32 @@
 {
 	"ImportPath": "github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres",
-	"GoVersion": "go1.6",
+	"GoVersion": "go1.5",
 	"GodepVersion": "v74",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
-			"Rev": "fb5604bbf828940caa57874d2177e5443f68e56c"
+			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/extension",
-			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
+			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/util",
-			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
+			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
-			"Comment": "go1.0-cutoff-60-gffe986a",
-			"Rev": "ffe986aba3e6cfcded8b06615965941408891ef0"
+			"Comment": "go1.0-cutoff-96-gee1442b",
+			"Rev": "ee1442bda7bd1b6a84e913bdb421cb1874ec629d"
 		},
 		{
 			"ImportPath": "github.com/lib/pq/oid",
-			"Comment": "go1.0-cutoff-60-gffe986a",
-			"Rev": "ffe986aba3e6cfcded8b06615965941408891ef0"
+			"Comment": "go1.0-cutoff-96-gee1442b",
+			"Rev": "ee1442bda7bd1b6a84e913bdb421cb1874ec629d"
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",
@@ -122,6 +125,11 @@
 			"ImportPath": "github.com/stretchr/testify/assert",
 			"Comment": "v1.0-17-g089c718",
 			"Rev": "089c7181b8c728499929ff09b62d3fdd8df8adff"
+		},
+		{
+			"ImportPath": "gopkg.in/caarlos0/env.v2",
+			"Comment": "v2.0",
+			"Rev": "65331f179c42e3ffe33457b69bee55472a779cd6"
 		}
 	]
 }
