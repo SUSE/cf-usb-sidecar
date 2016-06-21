@@ -82,16 +82,15 @@ func (provisioner *RabbitHoleProvisioner) CreateContainer(containerName string) 
 		return err
 	}
 
-	retry := 1
-	for retry < CONTAINER_START_TIMEOUT {
+	for i := 0; i < CONTAINER_START_TIMEOUT; i++ {
 		state, err := provisioner.getContainerState(containerName)
 		if err != nil {
-			return err
+			provisioner.logger.Debug("create-container", lager.Data{"err": err.Error()})
+			continue
 		}
 		if state.Running {
 			break
 		}
-		retry++
 	}
 
 	return nil
@@ -125,8 +124,12 @@ func (provisioner *RabbitHoleProvisioner) ContainerExists(containerName string) 
 		return false, err
 	}
 
-	_, err = provisioner.getContainer(containerName)
+	container, err := provisioner.getContainer(containerName)
 	if err != nil {
+		return false, err
+	}
+
+	if container == nil {
 		return false, nil
 	}
 
@@ -237,6 +240,10 @@ func (provisioner *RabbitHoleProvisioner) getContainerId(containerName string) (
 	if err != nil {
 		return "", err
 	}
+
+	if container == nil {
+		return "", fmt.Errorf("Could not find container %s", containerName)
+	}
 	return container.ID, nil
 }
 
@@ -247,21 +254,21 @@ func (provisioner *RabbitHoleProvisioner) getContainers() ([]dockerclient.APICon
 	return provisioner.client.ListContainers(opts)
 }
 
-func (provisioner *RabbitHoleProvisioner) getContainer(containerName string) (dockerclient.APIContainers, error) {
+func (provisioner *RabbitHoleProvisioner) getContainer(containerName string) (*dockerclient.APIContainers, error) {
 	containers, err := provisioner.getContainers()
 	if err != nil {
-		return dockerclient.APIContainers{}, err
+		return nil, err
 	}
 
 	for _, c := range containers {
 		for _, n := range c.Names {
 			if strings.TrimPrefix(n, "/") == containerName {
-				return c, nil
+				return &c, nil
 			}
 		}
 	}
 
-	return dockerclient.APIContainers{}, fmt.Errorf("Container %s not found", containerName)
+	return nil, nil
 }
 
 func (provisioner *RabbitHoleProvisioner) inspectContainer(containerId string) (*dockerclient.Container, error) {
@@ -302,12 +309,16 @@ func (provisioner *RabbitHoleProvisioner) getAdminCredentials(containerName stri
 func (provisioner *RabbitHoleProvisioner) getContainerState(containerName string) (dockerclient.State, error) {
 	container, err := provisioner.getContainer(containerName)
 	if err != nil {
-		return dockerclient.State{}, nil
+		return dockerclient.State{}, err
+	}
+
+	if container == nil {
+		return dockerclient.State{}, fmt.Errorf("Container %s does not exist", containerName)
 	}
 
 	c, err := provisioner.inspectContainer(container.ID)
 	if err != nil {
-		return dockerclient.State{}, nil
+		return dockerclient.State{}, err
 	}
 	return c.State, nil
 }
