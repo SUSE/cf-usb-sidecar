@@ -19,10 +19,11 @@ const ERR_EXTENSION_NOT_FOUND string = "extension not found"
 const ERR_TIMEOUT string = "Timeout while executing the extension. The extension did not respond in a reasonable ammount of time."
 
 type JsonResponse struct {
-	ErrorCode    int         `json:"error_code,omitempty"`
-	ErrorMessage string      `json:"error_message,omitempty"`
-	Details      interface{} `json:"details,omitempty"`
-	Status       string      `json:"status"`
+	ErrorCode    int                        `json:"error_code,omitempty"`
+	ErrorMessage string                     `json:"error_message,omitempty"`
+	Details      interface{}                `json:"details,omitempty"`
+	Status       string                     `json:"status"`
+	Diagnostics  []*models.StatusDiagnostic `json:"diagnostics,omitempty"`
 }
 
 func (j *JsonResponse) Unmarshal(value []byte) error {

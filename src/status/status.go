@@ -130,8 +130,9 @@ func marshalResponseFromMessage(message []byte) (*models.StatusResponse, error) 
 	}
 
 	status.Status = jsonresp.Status
-	status.Message = fmt.Sprintf("%d - %s", jsonresp.ErrorCode, jsonresp.ErrorMessage)
+	status.Message = jsonresp.ErrorMessage
 	status.ProcessingType = common.PROCESSING_TYPE_EXTENSION
+	status.Diagnostics = jsonresp.Diagnostics
 
 	return &status, nil
 }
