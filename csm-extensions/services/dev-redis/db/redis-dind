@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+{
+    echo "sleeping for 5 seconds"
+    sleep 5
+    docker load -i /root/redis.tgz
+} &
+
+
+dockerd-entrypoint.sh
