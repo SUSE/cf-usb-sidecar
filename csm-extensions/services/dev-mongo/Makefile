@@ -24,14 +24,13 @@ export CSM_EXTENSION_IMAGE_TAG:=latest
 
 export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-mongo-build
 
-export CSM_EXTENSION_SVC_IMAGE_NAME:=tutum/mongodb
-export CSM_EXTENSION_SVC_IMAGE_TAG:=3.0
+export CSM_EXTENSION_SVC_IMAGE_NAME:=stackato/mongo
+export CSM_EXTENSION_SVC_IMAGE_TAG:=latest
 export CSM_EXTENSION_SVC_CONTAINER_NAME:=csm-dev-mongo-db
 export CSM_EXTENSION_TOKEN:=csm-auth-token
 export CSM_EXTENSION_PORT:=8092
 
-.PHONY: clean-all clean build-image tools run test test-integration
-
+.PHONY: clean-all clean build-image tools run build-db run-db test test-integration publish-image
 
 default: help
 
@@ -42,21 +41,27 @@ help:
 	@echo "                       build docker image and runs the extension container "
 	@echo "  build                build the extension binary"
 	@echo "  run                  run the csm docker container for extension"
+	@echo "  run-db               run the db behind csm"
 	@echo "  tools                Installs tools needed to run"
 	@echo "  test-format          Run the formatting tests"
 	@echo "  test                 Run the formatting tests"
 	@echo "  clean-containers     Remove all docker containers for extension"
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
+	@echo "  build-db	      Build database docker image"
 	@echo "  build-image          Build extension docker image"
 	@echo "  publish-image        Publish csm-dev-mongo docker image to registry"
 	@echo
 
-all:	clean-all build-image run-db run
+all:	clean-all build-image build-db run-db run
 
 build:
 	@(export GO15VENDOREXPERIMENT=1; \
 	${CSM_EXTENSION_ROOT}/scripts/build.sh)
+
+build-db:
+	@echo "$(OK_COLOR)==> Building database image $(NO_COLOR)"
+	${CSM_EXTENSION_ROOT}/scripts/build-db.sh
 
 run-db:
 	@echo "$(OK_COLOR)==> Start Mongo DB container $(NO_COLOR)"
@@ -75,7 +80,7 @@ test:	test-format
 	@(export GO15VENDOREXPERIMENT=1; \
 	go list ./... | grep -v vendor | go test -v)
 	
-test-integration: clean-all build-image run-db run
+test-integration: clean-all build-image build-db run-db run
 	@(if [ ! -z ${DOCKER_HOST} ]; then \
 	SERVER_IP=`echo ${DOCKER_HOST} | cut -d "/" -f 3 | cut -d ":" -f 1`;\
 	else \
@@ -111,6 +116,7 @@ clean-containers:
 clean-images:
 	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_IMAGE_NAME}
 	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
