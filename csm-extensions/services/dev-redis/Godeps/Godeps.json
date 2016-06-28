@@ -1,7 +1,10 @@
 {
 	"ImportPath": "github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis",
-	"GoVersion": "go1.6",
-	"GodepVersion": "v66",
+	"GoVersion": "go1.5",
+	"GodepVersion": "v74",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/fsouza/go-dockerclient",
@@ -69,15 +72,15 @@
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
-			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
+			"Rev": "4f226cf1cdd1022b982ab95d44041cd466aee37d"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/extension",
-			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
+			"Rev": "4f226cf1cdd1022b982ab95d44041cd466aee37d"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/util",
-			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
+			"Rev": "4f226cf1cdd1022b982ab95d44041cd466aee37d"
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",
@@ -176,6 +179,11 @@
 			"ImportPath": "github.com/stretchr/testify/assert",
 			"Comment": "v1.0-17-g089c718",
 			"Rev": "089c7181b8c728499929ff09b62d3fdd8df8adff"
+		},
+		{
+			"ImportPath": "gopkg.in/caarlos0/env.v2",
+			"Comment": "v2.0",
+			"Rev": "65331f179c42e3ffe33457b69bee55472a779cd6"
 		}
 	]
 }

@@ -4,7 +4,7 @@ OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
-.PHONY: clean-all clean build-image tools run test test-integration
+.PHONY: clean-all clean build-image build-db tools run test test-integration
 
 export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
 export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-redis
@@ -13,8 +13,9 @@ export CSM_EXTENSION_IMAGE_TAG:=latest
 
 export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-redis-build
 
-export CSM_EXTENSION_SVC_IMAGE_NAME:=jpetazzo/dind
+export CSM_EXTENSION_SVC_IMAGE_NAME:=stackato/dind-redis
 export CSM_EXTENSION_SVC_IMAGE_TAG:=latest
+export CSM_EXTENSION_SVC_VERSION:=3.0.7
 export CSM_EXTENSION_SVC_CONTAINER_NAME:=csm-dev-redis-docker-host
 export CSM_EXTENSION_SVC_PORTS_START:=33000
 export CSM_EXTENSION_SVC_PORTS_END:=33020
@@ -37,10 +38,11 @@ help:
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
+	@echo "  build-db	      Build database docker image"
 	@echo "  push-image           Push the extension docker image to registry"
 	@echo
 
-all:	clean-all build-image run-db run
+all:	clean-all build-image build-db run-db run
 
 build:
 	@(export GO15VENDOREXPERIMENT=1; \
@@ -54,6 +56,10 @@ run: build-image
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
 	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
 
+build-db: 
+	@echo "$(OK_COLOR)==> Building database image $(NO_COLOR)"
+	${CSM_EXTENSION_ROOT}/scripts/build-db.sh
+
 test-format:
 	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
 	go list ./... | grep -v vendor | grep -v Godeps | gofmt -l
@@ -63,7 +69,7 @@ test: test-format
 	@(export GO15VENDOREXPERIMENT=1; \
 	go list ./... | grep -v vendor | go test -v)
 	
-test-integration: clean-all build-image run-db run
+test-integration: clean-all build-image build-db run-db run
 	@(if [ ! -z ${DOCKER_HOST} ]; then \
 	SERVER_IP=`echo ${DOCKER_HOST} | cut -d "/" -f 3 | cut -d ":" -f 1`;\
 	else \
@@ -75,7 +81,7 @@ test-integration: clean-all build-image run-db run
 	until `curl http://$$SERVER_IP:$(CSM_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-csm-token: $(CSM_EXTENSION_TOKEN)" --fail --silent --output /dev/null`;\
 	do n=$$(( $$n + 1 )) ;\
 	printf ".";\
-	if [ $$n -ge 20 ] ;\
+	if [ $$n -ge 60 ] ;\
 	then echo "\n$(ERROR_COLOR)==>Docker took to long to wakeup or incorect setup $(NO_COLOR) "; break ;\
 	fi ;\
 	sleep 1 ;\
@@ -99,6 +105,7 @@ clean-containers:
 clean-images:
 	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_IMAGE_NAME}
 	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
