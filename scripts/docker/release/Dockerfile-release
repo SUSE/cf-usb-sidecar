@@ -1,4 +1,4 @@
-FROM golang:1.5-alpine
+FROM alpine:3.3
 
 RUN mkdir -p /catalog-service-manager/bin/
 
