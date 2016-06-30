@@ -6,8 +6,21 @@ WARN_CYN_COLOR=\033[33;01m
 
 .PHONY: clean-all clean build-image build-db tools run test test-integration
 
+ifndef DOCKER_REPOSITORY
+	export DOCKER_REPOSITORY:=catalog-service-manager
+endif
+
 export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
 export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-rabbitmq
+
+ifeq ($(strip $(VERSION)),)
+	export VERSION := $(shell ${CSM_ROOT}/scripts/build_version.sh "VERSION")
+endif
+
+ifeq ($(strip $(APP_VERSION_TAG)),)
+	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${CSM_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+endif
+
 export CSM_EXTENSION_IMAGE_NAME:=csm-dev-rabbitmq
 export CSM_EXTENSION_IMAGE_TAG:=latest
 export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-rabbitmq-build
@@ -19,6 +32,8 @@ export CSM_EXTENSION_SVC_PORTS_START:=32000
 export CSM_EXTENSION_SVC_PORTS_END:=32020
 export CSM_EXTENSION_TOKEN:=csm-auth-token
 export CSM_EXTENSION_PORT:=8094
+
+.PHONY: clean-all clean build-image tools run test test-integration
 
 default: help
 
@@ -37,7 +52,7 @@ help:
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
 	@echo "  build-db	      Build database docker image"
-	@echo "  push-image           Push the extension docker image to registry"
+	@echo "  publish-image        Publish csm-dev-rabbitmq docker image to registry"
 	@echo
 
 all:	clean-all build-image build-db run-db run
@@ -118,8 +133,5 @@ build-image:
 
 
 # (required) push image to docker registry
-push-image:
-	docker tag -f dev-rabbitmq:latest $(REGISTRY_LOCATION)/catalog/dev-rabbitmq:$(APP_VERSION_TAG)
-	docker tag -f dev-rabbitmq:latest $(REGISTRY_LOCATION)/catalog/dev-rabbitmq:latest
-	docker push $(REGISTRY_LOCATION)/catalog/dev-rabbitmq:$(APP_VERSION_TAG)
-	docker push $(REGISTRY_LOCATION)/catalog/dev-rabbitmq:latest
+publish-image:
+	IMAGE_NAME=${CSM_EXTENSION_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh

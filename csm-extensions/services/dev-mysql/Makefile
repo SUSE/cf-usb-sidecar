@@ -6,10 +6,21 @@ WARN_CYN_COLOR=\033[33;01m
 TOKEN=csm-auth-token
 SERVER_PORT=8081
 
-.PHONY: clean-all clean build-image tools run run-db test test-integration
+ifndef DOCKER_REPOSITORY
+	export DOCKER_REPOSITORY:=catalog-service-manager
+endif
 
 export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
 export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-mysql
+
+ifeq ($(strip $(VERSION)),)
+	export VERSION := $(shell ${CSM_ROOT}/scripts/build_version.sh "VERSION")
+endif
+
+ifeq ($(strip $(APP_VERSION_TAG)),)
+	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${CSM_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+endif
+
 export CSM_EXTENSION_IMAGE_NAME:=csm-dev-mysql
 export CSM_EXTENSION_IMAGE_TAG:=latest
 
@@ -18,6 +29,8 @@ export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-mysql-build
 export CSM_EXTENSION_SVC_IMAGE_NAME:=mysql
 export CSM_EXTENSION_SVC_IMAGE_TAG:=5.5
 export CSM_EXTENSION_SVC_CONTAINER_NAME:=csm-dev-mysql-db
+
+.PHONY: clean-all clean build-image tools run run-db test test-integration
 
 default: help
 
@@ -35,7 +48,7 @@ help:
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
-	@echo "  push-image           Push the extension docker image to registry"
+	@echo "  publish-image        Publish csm-dev-mysql docker image to registry"
 	@echo
 
 all:	clean-all build-image run-db run
@@ -115,8 +128,5 @@ build-image:
 
 
 # (required) push image to docker registry
-push-image:
-	docker tag -f dev-mysql:latest $(REGISTRY_LOCATION)/catalog/dev-mysql:$(APP_VERSION_TAG)
-	docker tag -f dev-mysql:latest $(REGISTRY_LOCATION)/catalog/dev-mysql:latest
-	docker push $(REGISTRY_LOCATION)/catalog/dev-mysql:$(APP_VERSION_TAG)
-	docker push $(REGISTRY_LOCATION)/catalog/dev-mysql:latest
+publish-image:
+	IMAGE_NAME=${CSM_EXTENSION_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh

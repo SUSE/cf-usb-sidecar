@@ -21,7 +21,7 @@ This contains helper scripts for running various make commands
 
 ### Dockerfile
 This is the docker file which is used to create CSM-MySQL container image. This
-1. Takes catalog-service-manager:base as the base image
+1. Takes catalog-service-manager:latest as the base image
 2. Installs mysql-client on the image so that shell scripts can use that client to talk to remote mysql (running on seperate container)
 2. Copies all the extensions from CSM_HOME into the container at appropriate location
 3. Sets the necessary environment variables

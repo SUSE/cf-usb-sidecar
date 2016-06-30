@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t ${CSM_RDS_IMAGE_NAME}:${CSM_RDS_IMAGE_TAG} --rm -f Dockerfile .
+docker build -t ${CSM_EXTENSION_IMAGE_NAME}:${CSM_EXTENSION_IMAGE_TAG} --rm -f Dockerfile .

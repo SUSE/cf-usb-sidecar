@@ -5,14 +5,18 @@ ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
 ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=service-catalog
-endif
-
-ifndef REGISTRY_LOCATION
-	export REGISTRY_LOCATION:=docker-registry.helion.space:443
+	export DOCKER_REPOSITORY:=catalog-service-manager
 endif
 
 export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+
+ifeq ($(strip $(VERSION)),)
+	export VERSION := $(shell ${CSM_ROOT}/scripts/build_version.sh "VERSION")
+endif
+
+ifeq ($(strip $(APP_VERSION_TAG)),)
+	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${CSM_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+endif
 
 .PHONY: clean-all test clean-containers clean-images clean-all build-docker-image push-docker-image
 
@@ -47,5 +51,5 @@ clean-all:
 build-image:
 	scripts/run_services_make_target.sh  build-image
 
-push-image:
-	scripts/run_services_make_target.sh  push-image
+publish-image:
+	scripts/run_services_make_target.sh  publish-image

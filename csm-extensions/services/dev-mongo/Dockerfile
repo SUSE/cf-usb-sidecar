@@ -1,4 +1,4 @@
-FROM catalog-service-manager:base
+FROM csm:latest
 
 COPY ./CSM_HOME /catalog-service-manager
 RUN chmod +x /catalog-service-manager/bin/run.sh

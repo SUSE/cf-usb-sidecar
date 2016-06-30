@@ -4,10 +4,21 @@ OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
-.PHONY: clean-all clean build-image build-db tools run test test-integration
+ifndef DOCKER_REPOSITORY
+	export DOCKER_REPOSITORY:=catalog-service-manager
+endif
 
 export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
 export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-redis
+
+ifeq ($(strip $(VERSION)),)
+	export VERSION := $(shell ${CSM_ROOT}/scripts/build_version.sh "VERSION")
+endif
+
+ifeq ($(strip $(APP_VERSION_TAG)),)
+	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${CSM_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+endif
+
 export CSM_EXTENSION_IMAGE_NAME:=csm-dev-redis
 export CSM_EXTENSION_IMAGE_TAG:=latest
 
@@ -21,6 +32,8 @@ export CSM_EXTENSION_SVC_PORTS_START:=33000
 export CSM_EXTENSION_SVC_PORTS_END:=33020
 export CSM_EXTENSION_TOKEN:=csm-auth-token
 export CSM_EXTENSION_PORT:=8095
+
+.PHONY: clean-all clean build-image tools run test test-integration
 
 default: help
 
@@ -39,7 +52,7 @@ help:
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
 	@echo "  build-db	      Build database docker image"
-	@echo "  push-image           Push the extension docker image to registry"
+	@echo "  publish-image        Publish csm-dev-redis docker image to registry"
 	@echo
 
 all:	clean-all build-image build-db run-db run
@@ -63,7 +76,7 @@ build-db:
 test-format:
 	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
 	go list ./... | grep -v vendor | grep -v Godeps | gofmt -l
-		
+
 # (required) run tests
 test: test-format
 	@(export GO15VENDOREXPERIMENT=1; \
@@ -111,7 +124,7 @@ clean-images:
 clean-all:	clean-containers clean-images
 
 # (required) build docker image for service
-build-image:	
+build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
 	${CSM_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
@@ -120,8 +133,5 @@ build-image:
 
 
 # (required) push image to docker registry
-push-image:
-	docker tag -f dev-redis:latest $(REGISTRY_LOCATION)/catalog/dev-redis:$(APP_VERSION_TAG)
-	docker tag -f dev-redis:latest $(REGISTRY_LOCATION)/catalog/dev-redis:latest
-	docker push $(REGISTRY_LOCATION)/catalog/dev-redis:$(APP_VERSION_TAG)
-	docker push $(REGISTRY_LOCATION)/catalog/dev-redis:latest
+publish-image:
+	IMAGE_NAME=${CSM_EXTENSION_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh

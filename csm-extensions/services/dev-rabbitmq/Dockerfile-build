@@ -1,4 +1,4 @@
-FROM catalog-service-manager:build
+FROM csm-buildbase:latest
 
 COPY . /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq
 ENV GOPATH /go

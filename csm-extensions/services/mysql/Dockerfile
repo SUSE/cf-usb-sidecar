@@ -1,4 +1,4 @@
-FROM catalog-service-manager:base
+FROM csm:latest
 
 RUN apk --no-cache add mysql-client
 

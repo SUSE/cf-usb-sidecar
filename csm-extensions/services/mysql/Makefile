@@ -5,17 +5,22 @@ ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
 ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=service-catalog
-endif
-
-ifndef REGISTRY_LOCATION
-	export REGISTRY_LOCATION:=docker-registry.helion.space:443
+	export DOCKER_REPOSITORY:=catalog-service-manager
 endif
 
 export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
 export CSM_MYSQL_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/mysql
-export CSM_MYSQL_IMAGE_NAME:=csm-mysql
-export CSM_MYSQL_IMAGE_TAG:=latest
+
+ifeq ($(strip $(VERSION)),)
+	export VERSION := $(shell ${CSM_ROOT}/scripts/build_version.sh "VERSION")
+endif
+
+ifeq ($(strip $(APP_VERSION_TAG)),)
+	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${CSM_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+endif
+
+export CSM_EXTENSION_IMAGE_NAME:=csm-mysql
+export CSM_EXTENSION_IMAGE_TAG:=latest
 
 .PHONY: all clean build test release
 
@@ -35,8 +40,7 @@ help:
 	@echo "  clean-images         Remove all docker images for csm-mysql"
 	@echo "  clean-all            Remove docker container and images for csm-mysql"
 	@echo "  build-image          Build csm-mysql docker image "
-	@echo "  push-image           Push the csm-mysql docker image to registry"
-
+	@echo "  publish-image        Publish csm-mysql docker image to registry"
 	@echo
 
 
@@ -53,13 +57,13 @@ tools:
 test-format:
 	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
 	${CSM_ROOT}/scripts/testFmt.sh tests
-	
-# (required) 
+
+# (required)
 test:	test-format
 
 test-integration:
 	${CSM_MYSQL_EXTENSION_ROOT}/scripts/run_int_test.sh
-	
+
 # (required) clean containers
 clean-containers:
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh csm-mysql-db
@@ -75,13 +79,8 @@ clean-all: clean-containers clean-images
 # (required) build docker image for service
 build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
-	docker build -t ${CSM_MYSQL_IMAGE_NAME}:${CSM_MYSQL_IMAGE_TAG} --rm -f ${CSM_MYSQL_EXTENSION_ROOT}/Dockerfile .
+	docker build -t ${CSM_EXTENSION_IMAGE_NAME}:${CSM_EXTENSION_IMAGE_TAG} --rm -f ${CSM_MYSQL_EXTENSION_ROOT}/Dockerfile .
 
 # (required) push image to docker registry
-push-image:
-	docker tag -f ${CSM_MYSQL_IMAGE_NAME}:${CSM_MYSQL_IMAGE_TAG} ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${CSM_MYSQL_IMAGE_NAME}:${CSM_MYSQL_IMAGE_TAG}
-	docker push ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${CSM_MYSQL_IMAGE_NAME}:${CSM_MYSQL_IMAGE_TAG}
-ifdef APP_VERSION_TAG
-	docker tag -f ${CSM_MYSQL_IMAGE_NAME}:${CSM_MYSQL_IMAGE_TAG} ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${CSM_MYSQL_IMAGE_NAME}:$(APP_VERSION_TAG)
-	docker push ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${CSM_MYSQL_IMAGE_NAME}:$(APP_VERSION_TAG)
-endif
+publish-image:
+	IMAGE_NAME=${CSM_EXTENSION_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh
