@@ -105,7 +105,9 @@ func (e *redisExtension) GetStatus() (*csm.CSMResponse, error) {
 
 	if err != nil {
 		response.Status = "failed"
-		response.ErrorMessage = err.Error()
+		response.ErrorMessage = "Could not connect to redis docker host"
+		response.Diagnostics = append(response.Diagnostics, &csm.StatusDiagnostic{Name: "Database", Message: err.Error(), Description: "Server reply", Status: "failed"})
+
 		return &response, err
 	}
 	response.Status = "successful"

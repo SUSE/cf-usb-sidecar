@@ -1,23 +1,26 @@
 {
 	"ImportPath": "github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mssql",
-	"GoVersion": "go1.6",
+	"GoVersion": "go1.5",
 	"GodepVersion": "v74",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/denisenkom/go-mssqldb",
-			"Rev": "fda4305a1f654b663adcb5f1971b4bd7740198ce"
+			"Rev": "e291d7fd2204827b9964304c46ec21c330573faf"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
-			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
+			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/extension",
-			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
+			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/util",
-			"Rev": "e22d5e46b96dfef57b27ef5819f2cc71a6a288e5"
+			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",
@@ -119,7 +122,12 @@
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/md4",
-			"Rev": "575fdbe86e5dd89229707ebec0575ce7d088a4a6"
+			"Rev": "77f4136a99ffb5ecdbdd0226bd5cb146cf56bc0e"
+		},
+		{
+			"ImportPath": "gopkg.in/caarlos0/env.v2",
+			"Comment": "v2.0",
+			"Rev": "65331f179c42e3ffe33457b69bee55472a779cd6"
 		}
 	]
 }

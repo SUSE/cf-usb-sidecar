@@ -133,8 +133,12 @@ func (provisioner *RedisProvisioner) ContainerExists(containerName string) (bool
 		return false, err
 	}
 
-	_, err = provisioner.getContainer(containerName)
+	container, err := provisioner.getContainer(containerName)
 	if err != nil {
+		return false, err
+	}
+
+	if container == nil {
 		return false, nil
 	}
 
@@ -179,6 +183,11 @@ func (provisioner *RedisProvisioner) getContainerId(containerName string) (strin
 	if err != nil {
 		return "", err
 	}
+
+	if container == nil {
+		return "", fmt.Errorf("Could not find container %s", containerName)
+	}
+
 	return container.ID, nil
 }
 
@@ -189,21 +198,21 @@ func (provisioner *RedisProvisioner) getContainers() ([]dockerclient.APIContaine
 	return provisioner.client.ListContainers(opts)
 }
 
-func (provisioner *RedisProvisioner) getContainer(containerName string) (dockerclient.APIContainers, error) {
+func (provisioner *RedisProvisioner) getContainer(containerName string) (*dockerclient.APIContainers, error) {
 	containers, err := provisioner.getContainers()
 	if err != nil {
-		return dockerclient.APIContainers{}, err
+		return nil, err
 	}
 
 	for _, c := range containers {
 		for _, n := range c.Names {
 			if strings.TrimPrefix(n, "/") == containerName {
-				return c, nil
+				return &c, nil
 			}
 		}
 	}
 
-	return dockerclient.APIContainers{}, fmt.Errorf("Container %s not found", containerName)
+	return nil, nil
 }
 
 func (provisioner *RedisProvisioner) connect() error {

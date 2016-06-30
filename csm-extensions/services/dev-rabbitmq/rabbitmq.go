@@ -152,7 +152,8 @@ func (e *rabbitmqExtension) GetStatus() (*csm.CSMResponse, error) {
 	_, err := e.prov.ContainerExists("test")
 	if err != nil {
 		response.Status = "failed"
-		response.ErrorMessage = err.Error()
+		response.ErrorMessage = "Could not connect to rabbitmq docker host"
+		response.Diagnostics = append(response.Diagnostics, &csm.StatusDiagnostic{Name: "Database", Message: err.Error(), Description: "Server reply", Status: "failed"})
 		return &response, err
 	}
 	response.Status = "successful"
