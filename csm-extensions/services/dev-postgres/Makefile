@@ -27,11 +27,10 @@ export CSM_EXTENSION_IMAGE_TAG:=latest
 
 export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-postgres-build
 
-export CSM_EXTENSION_SVC_IMAGE_NAME:=postgres
-export CSM_EXTENSION_SVC_IMAGE_TAG:=9.4
-export CSM_EXTENSION_SVC_CONTAINER_NAME:=csm-dev-postgres-db
+export CSM_EXTENSION_SVC_IMAGE_NAME:=csm-dev-postgres-db
+export CSM_EXTENSION_SVC_IMAGE_TAG:=latest
 
-.PHONY: clean-all clean build-image tools run
+.PHONY: clean-all clean build-image tools run build-service-image run-db test test-integration
 
 default: help
 
@@ -50,9 +49,11 @@ help:
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
 	@echo "  publish-image        Publish csm-dev-postgres docker image to registry"
+	@echo "  run-db               run the db behind csm"
+	@echo "  build-service-image  Build database docker image"
 	@echo
 
-all:	clean-all build-image run-db run
+all:	clean-all build-image build-service-image run-db run
 
 build:
 	${CSM_EXTENSION_ROOT}/scripts/build.sh
@@ -60,6 +61,10 @@ build:
 run-db:
 	@echo "$(OK_COLOR)==> Start Postgres DB container $(NO_COLOR)"
 	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-postgres-db.sh
+
+build-service-image:
+	@echo "$(OK_COLOR)==> Building database image $(NO_COLOR)"
+	${CSM_EXTENSION_ROOT}/scripts/build-db.sh
 
 run:
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
@@ -75,7 +80,7 @@ test: test-format
 	@(export GO15VENDOREXPERIMENT=1; \
 	go list ./... | grep -v vendor | go test -v)
 
-test-integration: all
+test-integration: clean-all build-image build-service-image run-db run
 	@(if [ ! -z ${DOCKER_HOST} ]; then \
 	    SERVER_IP=`echo ${DOCKER_HOST} | cut -d "/" -f 3 | cut -d ":" -f 1`;\
 	else \
@@ -107,12 +112,13 @@ test-integration: all
 clean-containers:
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_SVC_CONTAINER_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker images
 clean-images:
 	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_IMAGE_NAME}
 	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
@@ -129,3 +135,4 @@ build-image:
 # (required) push image to docker registry
 publish-image:
 	IMAGE_NAME=${CSM_EXTENSION_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh
+	IMAGE_NAME=${CSM_EXTENSION_SVC_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_SVC_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh
