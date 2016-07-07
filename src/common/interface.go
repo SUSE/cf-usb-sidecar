@@ -19,7 +19,7 @@ type CSMWorkspaceInterface interface {
 type CSMConnectionInterface interface {
 	CheckExtensions()
 	GetConnection(workspaceID string, connectionID string) *models.ServiceManagerConnectionResponse
-	CreateConnection(workspaceID string, createConnection *models.ServiceManagerConnectionCreateRequest) *models.ServiceManagerConnectionResponse
+	CreateConnection(workspaceID string, createConnection *models.ServiceManagerConnectionCreateRequest, Details map[string]interface{}) *models.ServiceManagerConnectionResponse
 	DeleteConnection(workspaceID string, connectionID string) *models.ServiceManagerConnectionResponse
 }
 

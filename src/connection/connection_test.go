@@ -141,7 +141,7 @@ func Test_GetConnection_NullExtension(t *testing.T) {
 func Test_GetConnection_FailedToRunExtension(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_CONNECTION_EXTENSION).Return(true, FAKE_GET_CONNECTION_EXTENSION)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123"}).Return(false, nil, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(false, nil, nil)
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
@@ -155,7 +155,7 @@ func Test_GetConnection_RunExtensionSuccessful(t *testing.T) {
 	status := "successful"
 	processingType := "Extension"
 	statusString := getStatusString(&status, &processingType, nil)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, statusString, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(true, statusString, nil)
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, modelserr)
@@ -169,7 +169,7 @@ func Test_GetConnection_RunExtensionFailed(t *testing.T) {
 	status := "failed"
 	processingType := "Extension"
 	statusString := getStatusString(&status, &processingType, nil)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123"}).Return(false, statusString, "An error")
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(false, statusString, "An error")
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Equal(t, &utils.HTTP_500, modelserr.Code)
@@ -181,7 +181,7 @@ func Test_GetConnection_RunExtensionIncorrectJsonOutput(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_CONNECTION_EXTENSION).Return(true, FAKE_GET_CONNECTION_EXTENSION)
 
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, "Incorrect", nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(true, "Incorrect", nil)
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
@@ -193,7 +193,7 @@ func Test_GetConnection_RunExtensionEmptyOuput(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_CONNECTION_EXTENSION).Return(true, FAKE_GET_CONNECTION_EXTENSION)
 
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, " ", nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(true, " ", nil)
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
@@ -205,7 +205,7 @@ func Test_GetConnection_RunExtensionDeletedOuputFile(t *testing.T) {
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_CONNECTION_EXTENSION).Return(true, FAKE_GET_CONNECTION_EXTENSION)
 
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, "DeletedOutputFile", nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(true, "DeletedOutputFile", nil)
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
@@ -217,7 +217,7 @@ func Test_GetConnection_RunExtensionUnAccessibleFile(t *testing.T) {
 	t.Skip()
 	csmMockedFileExtension := MockedFileExtension{}
 	csmMockedFileExtension.On("GetExtension", DEFAULT_GET_CONNECTION_EXTENSION).Return(true, FAKE_GET_CONNECTION_EXTENSION)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, "UnaccessibleOuputFile", nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(true, "UnaccessibleOuputFile", nil)
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
@@ -239,12 +239,16 @@ func TestCheck_CreateConnection(t *testing.T) {
 	status := "successful"
 	processingType := "Extension"
 	statusString := getStatusString(&status, &processingType, nil)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_CREATE_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, statusString, nil)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_CREATE_CONNECTION_EXTENSION, []string{"123", "123", "{\"custom-api-request-token\":\"Custom-key\"}"}).Return(true, statusString, nil)
 	_, csmConnection := setup(csmMockedFileExtension)
 
 	connectionID := "123"
-	connection, modelserr := csmConnection.CreateConnection("123", connectionID)
+	details := make(map[string]interface{})
+	details["custom-api-request-token"] = "Custom-key"
+	connection, modelserr := csmConnection.CreateConnection("123", connectionID, details)
 	assert.Equal(t, connection.ProcessingType, "Extension")
+	assert.NotNil(t, connection.Details, "Details should not be nil")
+	assert.Equal(t, "Custom-key", connection.Details["custom-api-request-token"])
 	assert.Nil(t, modelserr)
 }
 
@@ -254,10 +258,11 @@ func TestCheck_CreateConnectionDefault(t *testing.T) {
 	_, csmConnection := setup(nil)
 
 	connectionID := "123"
+	details := make(map[string]interface{})
 	connectionCreate := models.ServiceManagerConnectionCreateRequest{
 		ConnectionID: connectionID,
-	}
-	connection, modelserr := csmConnection.CreateConnection("123", connectionCreate.ConnectionID)
+		Details:      details}
+	connection, modelserr := csmConnection.CreateConnection("123", connectionCreate.ConnectionID, connectionCreate.Details)
 	assert.Nil(t, modelserr)
 	assert.Equal(t, connection.ProcessingType, "default")
 	assert.Equal(t, connection.Status, "successful")
@@ -273,10 +278,11 @@ func TestCheck_CreateConnectionDefaultMultipleParameters(t *testing.T) {
 	_, csmConnection := setup(nil)
 
 	connectionID := "123"
+	details := make(map[string]interface{})
 	connectionCreate := models.ServiceManagerConnectionCreateRequest{
 		ConnectionID: connectionID,
-	}
-	connection, modelserr := csmConnection.CreateConnection("123", connectionCreate.ConnectionID)
+		Details:      details}
+	connection, modelserr := csmConnection.CreateConnection("123", connectionCreate.ConnectionID, connectionCreate.Details)
 	assert.Nil(t, modelserr)
 	assert.Equal(t, connection.ProcessingType, "default")
 	assert.Equal(t, connection.Status, "successful")
@@ -301,7 +307,7 @@ func TestCheck_DeleteConnection(t *testing.T) {
 	status := "successful"
 	processingType := "Extension"
 	statusString := getStatusString(&status, &processingType, nil)
-	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_DELETE_CONNECTION_EXTENSION, []string{"123", "123"}).Return(true, statusString)
+	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_DELETE_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(true, statusString)
 	_, csmConnection := setup(csmMockedFileExtension)
 
 	// _, csmConnection := setup(nil)

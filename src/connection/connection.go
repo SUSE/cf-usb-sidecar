@@ -1,6 +1,7 @@
 package connection
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -95,12 +96,19 @@ func checkParamsOk(workspaceID *string, connectionID *string, extensionPath *str
 	return nil
 }
 
-func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, extensionPath *string) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
+func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, details map[string]interface{}, extensionPath *string) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
 	if err := checkParamsOk(workspaceID, connectionID, extensionPath); err != nil {
 		return nil, nil, err
 	}
-	c.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "extension Path ": extensionPath})
-	if success, outputFile, output := c.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, *connectionID); success {
+
+	detailsJSON, err := json.Marshal(details)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	detailsStr := string(detailsJSON)
+	c.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "extension Path ": extensionPath, "details": details})
+	if success, outputFile, output := c.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, *connectionID, detailsStr); success {
 		c.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
 		c.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
 
@@ -133,17 +141,21 @@ func (c *CSMConnection) CheckExtensions() {
 	c.Logger.Info("CheckExtensions", lager.Data{"Connections Delete extension ": file})
 }
 
-func (w *CSMConnection) executeRequest(workspaceID string, connectionID string, requestType string, filename *string) (*models.ServiceManagerConnectionResponse, *models.Error) {
+func (w *CSMConnection) executeRequest(workspaceID string, connectionID string, details map[string]interface{}, requestType string, filename *string) (*models.ServiceManagerConnectionResponse, *models.Error) {
 	var modelserr *models.Error
 	var connection *models.ServiceManagerConnectionResponse
 	var err error
 
-	connection, modelserr, err = w.executeExtension(&workspaceID, &connectionID, filename)
-
+	connection, modelserr, err = w.executeExtension(&workspaceID, &connectionID, details, filename)
 	if err != nil {
 		w.Logger.Error(requestType, err)
 		modelserr = utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())
 	}
+
+	if connection != nil {
+		connection.Details = details
+	}
+
 	return connection, modelserr
 }
 
@@ -165,12 +177,12 @@ func (c *CSMConnection) GetConnection(workspaceID string, connectionID string) (
 		c.Logger.Info("GetConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
 		return generateNoopResponse(), nil
 	}
-	return c.executeRequest(workspaceID, connectionID, "GetConnection", filename)
+	return c.executeRequest(workspaceID, connectionID, make(map[string]interface{}), "GetConnection", filename)
 }
 
 // CreateConnection create connections
-func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string) (*models.ServiceManagerConnectionResponse, *models.Error) {
-	c.Logger.Info("CreateConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
+func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string, details map[string]interface{}) (*models.ServiceManagerConnectionResponse, *models.Error) {
+	c.Logger.Info("CreateConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "details": details})
 
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsCreateExtension(*serviceManagerConfig.MANAGER_HOME)
@@ -194,7 +206,7 @@ func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string
 		c.Logger.Info("CreateConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
 		return generateNoopResponse(), nil
 	}
-	return c.executeRequest(workspaceID, connectionID, "CreateConnection", filename)
+	return c.executeRequest(workspaceID, connectionID, details, "CreateConnection", filename)
 }
 
 // DeleteConnection delete connections
@@ -207,5 +219,5 @@ func (c *CSMConnection) DeleteConnection(workspaceID string, connectionID string
 		c.Logger.Info("DeleteConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
 		return generateNoopResponse(), nil
 	}
-	return c.executeRequest(workspaceID, connectionID, "DeleteConnection", filename)
+	return c.executeRequest(workspaceID, connectionID, make(map[string]interface{}), "DeleteConnection", filename)
 }
