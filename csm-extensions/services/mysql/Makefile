@@ -76,6 +76,10 @@ clean-images:
 # (required) clean docker containers and images
 clean-all: clean-containers clean-images
 
+# (required) builds the service image
+build-service-image:
+	echo "$(WARN_CYN_COLOR)==>No Service image available $(NO_COLOR) ";n=0;\
+
 # (required) build docker image for service
 build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"

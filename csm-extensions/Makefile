@@ -51,5 +51,8 @@ clean-all:
 build-image:
 	scripts/run_services_make_target.sh  build-image
 
+build-service-image:
+	scripts/run_services_make_target.sh build-service-image
+
 publish-image:
 	scripts/run_services_make_target.sh  publish-image
