@@ -30,7 +30,7 @@ help:
 	@echo "  clean-images         Remove docker images for all the service extensions"
 	@echo "  clean-all            Remove docker container and images for all the service extensions"
 	@echo "  build-image          Build docker image for all the service extensions"
-	@echo "  push-image           Push docker images to registry for all the service extensions"
+	@echo "  publish-image        Publish docker images to registry for all the service extensions"
 	@echo
 
 test:
