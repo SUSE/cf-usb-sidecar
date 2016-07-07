@@ -1,6 +1,7 @@
 package workspace
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -101,13 +102,20 @@ func checkParamsOk(workspaceID *string, extensionPath *string) error {
 	return nil
 }
 
-func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *string) (*models.ServiceManagerWorkspaceResponse, *models.Error, error) {
+func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *string, details map[string]interface{}) (*models.ServiceManagerWorkspaceResponse, *models.Error, error) {
 	if err := checkParamsOk(workspaceID, extensionPath); err != nil {
 		return nil, nil, err
 	}
-	w.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "extension Path ": extensionPath})
 
-	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID); success {
+	detailsJSON, err := json.Marshal(details)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	detailsStr := string(detailsJSON)
+	w.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "extension Path ": extensionPath, "details": details})
+
+	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, detailsStr); success {
 		w.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
 		w.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
 
@@ -141,17 +149,22 @@ func (w *CSMWorkspace) CheckExtensions() {
 	w.Logger.Info("CheckExtensions", lager.Data{"Workspaces Delete extension ": file})
 }
 
-func (w *CSMWorkspace) executeRequest(workspaceID string, requestType string, filename *string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
+func (w *CSMWorkspace) executeRequest(workspaceID string, requestType string, filename *string, details map[string]interface{}) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
 	var modelserr *models.Error
 	var workspace *models.ServiceManagerWorkspaceResponse
 	var err error
 
-	workspace, modelserr, err = w.executeExtension(&workspaceID, filename)
+	workspace, modelserr, err = w.executeExtension(&workspaceID, filename, details)
 
 	if err != nil {
 		w.Logger.Error(requestType, err)
 		modelserr = utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())
 	}
+
+	if workspace != nil {
+		workspace.Details = details
+	}
+
 	return workspace, modelserr
 }
 
@@ -165,20 +178,20 @@ func (w *CSMWorkspace) GetWorkspace(workspaceID string) (*models.ServiceManagerW
 		w.Logger.Info("GetWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
 		return generateNoopResponse(), nil
 	}
-	return w.executeRequest(workspaceID, "GetWorkspace", filename)
+	return w.executeRequest(workspaceID, "GetWorkspace", filename, make(map[string]interface{}))
 
 }
 
 // CreateWorkspace create workspaces
-func (w *CSMWorkspace) CreateWorkspace(workspaceID string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
-	w.Logger.Info("CreateWorkspace", lager.Data{"workspaceID": workspaceID})
+func (w *CSMWorkspace) CreateWorkspace(workspaceID string, details map[string]interface{}) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
+	w.Logger.Info("CreateWorkspace", lager.Data{"workspaceID": workspaceID, "details": details})
 	exists, filename := w.getWorkspaceCreateExtension(*w.Config.MANAGER_HOME)
 
 	if !exists || filename == nil {
 		w.Logger.Info("CreateWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
 		return generateNoopResponse(), nil
 	}
-	return w.executeRequest(workspaceID, "CreateWorkspace", filename)
+	return w.executeRequest(workspaceID, "CreateWorkspace", filename, details)
 }
 
 // DeleteWorkspace delete workspaces
@@ -191,5 +204,5 @@ func (w *CSMWorkspace) DeleteWorkspace(workspaceID string) (*models.ServiceManag
 		w.Logger.Info("DeleteWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
 		return generateNoopResponse(), nil
 	}
-	return w.executeRequest(workspaceID, "DeleteWorkspace", filename)
+	return w.executeRequest(workspaceID, "DeleteWorkspace", filename, make(map[string]interface{}))
 }
