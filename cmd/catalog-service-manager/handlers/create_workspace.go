@@ -9,7 +9,7 @@ import (
 
 func CreateWorkspace(createRequest *models.ServiceManagerWorkspaceCreateRequest) middleware.Responder {
 	internalWorkspaces := csm_manager.GetWorkspace()
-	wksp, err := internalWorkspaces.CreateWorkspace(createRequest.WorkspaceID)
+	wksp, err := internalWorkspaces.CreateWorkspace(createRequest.WorkspaceID, createRequest.Details)
 	if err != nil {
 		return workspace.NewCreateWorkspaceDefault(int(*err.Code)).WithPayload(err)
 	}
