@@ -101,12 +101,17 @@ func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *stri
 		return nil, nil, err
 	}
 
-	detailsJSON, err := json.Marshal(details)
-	if err != nil {
-		return nil, nil, err
+	detailsStr := ""
+
+	if details != nil {
+		detailsJSON, err := json.Marshal(details)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		detailsStr = string(detailsJSON)
 	}
 
-	detailsStr := string(detailsJSON)
 	c.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "extension Path ": extensionPath, "details": details})
 	if success, outputFile, output := c.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, *connectionID, detailsStr); success {
 		c.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
