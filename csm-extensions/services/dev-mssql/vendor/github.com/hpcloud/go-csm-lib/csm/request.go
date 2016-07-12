@@ -14,8 +14,9 @@ type CSMRequest struct {
 //1. the filepath of the output file
 //2. the workspace ID
 //3. the connection ID if present
+//4. the details JSON
 func GetCSMRequest(args []string) (*CSMRequest, error) {
-	if len(args) > 4 {
+	if len(args) > 5 {
 		return nil, errors.New("Invalid number of arguments")
 	}
 
