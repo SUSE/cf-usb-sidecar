@@ -1,7 +1,6 @@
 package provisioner
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"net/url"
@@ -32,11 +31,6 @@ func NewRabbitHoleProvisioner(logger lager.Logger, conf config.RabbitmqConfig) R
 
 func (provisioner *RabbitHoleProvisioner) CreateContainer(containerName string) error {
 	err := provisioner.connect()
-	if err != nil {
-		return err
-	}
-
-	err = provisioner.pullImage(provisioner.rabbitmqConfig.DockerImage, provisioner.rabbitmqConfig.ImageTag)
 	if err != nil {
 		return err
 	}
@@ -209,21 +203,6 @@ func (provisioner *RabbitHoleProvisioner) getClient() (*dockerclient.Client, err
 	}
 
 	return client, nil
-}
-
-func (provisioner *RabbitHoleProvisioner) pullImage(imageName, version string) error {
-	var buf bytes.Buffer
-	pullOpts := dockerclient.PullImageOptions{
-		Repository:   imageName,
-		Tag:          version,
-		OutputStream: &buf,
-	}
-
-	err := provisioner.client.PullImage(pullOpts, dockerclient.AuthConfiguration{})
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (provisioner *RabbitHoleProvisioner) findImage(imageName string) (*dockerclient.Image, error) {

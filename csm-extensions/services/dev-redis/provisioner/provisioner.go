@@ -1,7 +1,6 @@
 package provisioner
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"net/url"
@@ -30,10 +29,6 @@ func NewRedisProvisioner(logger lager.Logger, conf config.RedisConfig) RedisProv
 
 func (provisioner *RedisProvisioner) CreateContainer(containerName string) error {
 	err := provisioner.connect()
-	if err != nil {
-		return err
-	}
-	err = provisioner.pullImage(provisioner.redisConfig.DockerImage, provisioner.redisConfig.ImageTag)
 	if err != nil {
 		return err
 	}
@@ -152,21 +147,6 @@ func (provisioner *RedisProvisioner) getClient() (*dockerclient.Client, error) {
 	}
 
 	return client, nil
-}
-
-func (provisioner *RedisProvisioner) pullImage(imageName, version string) error {
-	var buf bytes.Buffer
-	pullOpts := dockerclient.PullImageOptions{
-		Repository:   imageName,
-		Tag:          version,
-		OutputStream: &buf,
-	}
-
-	err := provisioner.client.PullImage(pullOpts, dockerclient.AuthConfiguration{})
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (provisioner *RedisProvisioner) findImage(imageName string) (*dockerclient.Image, error) {
