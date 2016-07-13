@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -35,7 +36,6 @@ func (c CSMFileHelper) GetExtension(extPath string) (bool, *string) {
 	}
 
 	filename := filepath.Join(extPath, filepath.Base(extPath))
-
 	_, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return false, nil
@@ -51,6 +51,11 @@ func (c CSMFileHelper) RunExtension(extensionPath string, params ...string) (boo
 		cmdOut bytes.Buffer
 		cmdErr bytes.Buffer
 	)
+
+	//Remove empty params
+	paramsString := strings.Join(params, " ")
+	params = strings.Split(strings.TrimSpace(paramsString), " ")
+
 	cmd := fmt.Sprintf("%s %s", extensionPath, params)
 	c.Logger.Debug("RunExtension", lager.Data{"Running command : ": cmd})
 
@@ -183,6 +188,10 @@ func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...strin
 	outputFilePath := tmpfile.Name()
 
 	newParams := append([]string{outputFilePath}, params...)
+
+	//Remove empty params
+	paramsString := strings.Join(newParams, " ")
+	newParams = strings.Split(strings.TrimSpace(paramsString), " ")
 
 	cmd := fmt.Sprintf("%s %s", extensionPath, newParams)
 	c.Logger.Debug("RunExtension", lager.Data{"Running command : ": cmd})

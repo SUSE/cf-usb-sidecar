@@ -101,12 +101,17 @@ func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *stri
 		return nil, nil, err
 	}
 
-	detailsJSON, err := json.Marshal(details)
-	if err != nil {
-		return nil, nil, err
+	detailsStr := ""
+
+	if details != nil {
+		detailsJSON, err := json.Marshal(details)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		detailsStr = string(detailsJSON)
 	}
 
-	detailsStr := string(detailsJSON)
 	c.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "extension Path ": extensionPath, "details": details})
 	if success, outputFile, output := c.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, *connectionID, detailsStr); success {
 		c.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
@@ -141,19 +146,29 @@ func (c *CSMConnection) CheckExtensions() {
 	c.Logger.Info("CheckExtensions", lager.Data{"Connections Delete extension ": file})
 }
 
-func (w *CSMConnection) executeRequest(workspaceID string, connectionID string, details map[string]interface{}, requestType string, filename *string) (*models.ServiceManagerConnectionResponse, *models.Error) {
+func (c *CSMConnection) executeRequest(workspaceID string, connectionID string, details map[string]interface{}, requestType string, filename *string) (*models.ServiceManagerConnectionResponse, *models.Error) {
 	var modelserr *models.Error
 	var connection *models.ServiceManagerConnectionResponse
 	var err error
 
-	connection, modelserr, err = w.executeExtension(&workspaceID, &connectionID, details, filename)
+	connection, modelserr, err = c.executeExtension(&workspaceID, &connectionID, details, filename)
 	if err != nil {
-		w.Logger.Error(requestType, err)
+		c.Logger.Error(requestType, err)
 		modelserr = utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())
 	}
 
 	if connection != nil {
-		connection.Details = details
+		if connection.Details == nil {
+			connection.Details = details
+		} else {
+			//the "data" item is added if the response of the extension is a string or nil
+			if _, ok := connection.Details["data"]; ok {
+				//if the response is nil, set the details
+				if connection.Details["data"] == nil {
+					connection.Details = details
+				}
+			}
+		}
 	}
 
 	return connection, modelserr

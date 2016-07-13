@@ -12,15 +12,15 @@
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
-			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
+			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/extension",
-			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
+			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/util",
-			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
+			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",

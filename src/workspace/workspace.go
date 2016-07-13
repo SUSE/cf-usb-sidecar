@@ -107,12 +107,17 @@ func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *stri
 		return nil, nil, err
 	}
 
-	detailsJSON, err := json.Marshal(details)
-	if err != nil {
-		return nil, nil, err
+	detailsStr := ""
+
+	if details != nil {
+		detailsJSON, err := json.Marshal(details)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		detailsStr = string(detailsJSON)
 	}
 
-	detailsStr := string(detailsJSON)
 	w.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "extension Path ": extensionPath, "details": details})
 
 	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, detailsStr); success {
