@@ -22,7 +22,7 @@ func main() {
 	}
 
 	if conf.Host == "" {
-		logger.Fatal("MYSQL_HOST environment variable is not set", nil)
+		logger.Fatal("SERVICE_MYSQL_HOST environment variable is not set", nil)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)

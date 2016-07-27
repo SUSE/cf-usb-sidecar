@@ -23,7 +23,7 @@ func main() {
 	}
 
 	if conf.Host == "" {
-		logger.Fatal("POSTGRES_HOST environment variable is not set", nil)
+		logger.Fatal("SERVICE_POSTGRES_HOST environment variable is not set", nil)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)

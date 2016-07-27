@@ -21,10 +21,10 @@ var mongoConConfig = struct {
 }{}
 
 func init() {
-	mongoConConfig.User = os.Getenv("MONGO_USER")
-	mongoConConfig.Pass = os.Getenv("MONGO_PASS")
-	mongoConConfig.Host = os.Getenv("MONGO_HOST")
-	mongoConConfig.Port = os.Getenv("MONGO_PORT")
+	mongoConConfig.User = os.Getenv("SERVICE_MONGO_USER")
+	mongoConConfig.Pass = os.Getenv("SERVICE_MONGO_PASS")
+	mongoConConfig.Host = os.Getenv("SERVICE_MONGO_HOST")
+	mongoConConfig.Port = os.Getenv("SERVICE_MONGO_PORT")
 
 	mongo := config.MongoDriverConfig{
 		Host: mongoConConfig.Host,
@@ -41,7 +41,7 @@ func TestCreateDb(t *testing.T) {
 
 	dbName := "test_createdb"
 	if mongoConConfig.Host == "" {
-		t.Skip("Skipping test as not all env variables are set:'MONGO_USER','MONGO_PASS','MONGO_HOST', 'MONGO_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MONGO_USER','SERVICE_MONGO_PASS','SERVICE_MONGO_HOST', 'SERVICE_MONGO_PORT'")
 	}
 
 	log.Println("Creating test database")
@@ -55,7 +55,7 @@ func TestCreateDbExists(t *testing.T) {
 	dbName := "test_createdb"
 
 	if mongoConConfig.Host == "" {
-		t.Skip("Skipping test as not all env variables are set:'MONGO_USER','MONGO_PASS','MONGO_HOST', 'MONGO_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MONGO_USER','SERVICE_MONGO_PASS','SERVICE_MONGO_HOST', 'SERVICE_MONGO_PORT'")
 	}
 
 	log.Println("Testing if database exists")
@@ -70,7 +70,7 @@ func TestCreateUser(t *testing.T) {
 	dbName := "test_createdb"
 
 	if mongoConConfig.Host == "" {
-		t.Skip("Skipping test as not all env variables are set:'MONGO_USER','MONGO_PASS','MONGO_HOST', 'MONGO_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MONGO_USER','SERVICE_MONGO_PASS','SERVICE_MONGO_HOST', 'SERVICE_MONGO_PORT'")
 	}
 
 	log.Println("Creating test user")
@@ -84,7 +84,7 @@ func TestCreateUserExists(t *testing.T) {
 	dbName := "test_createdb"
 
 	if mongoConConfig.Host == "" {
-		t.Skip("Skipping test as not all env variables are set:'MONGO_USER','MONGO_PASS','MONGO_HOST', 'MONGO_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MONGO_USER','SERVICE_MONGO_PASS','SERVICE_MONGO_HOST', 'SERVICE_MONGO_PORT'")
 	}
 
 	log.Println("Testing if user exists")
@@ -99,7 +99,7 @@ func TestDeleteUser(t *testing.T) {
 	dbName := "test_createdb"
 
 	if mongoConConfig.Host == "" {
-		t.Skip("Skipping test as not all env variables are set:'MONGO_USER','MONGO_PASS','MONGO_HOST', 'MONGO_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MONGO_USER','SERVICE_MONGO_PASS','SERVICE_MONGO_HOST', 'SERVICE_MONGO_PORT'")
 	}
 
 	log.Println("Removing test user")
@@ -111,7 +111,7 @@ func TestDeleteTheDatabase(t *testing.T) {
 	assert := assert.New(t)
 
 	if mongoConConfig.Host == "" {
-		t.Skip("Skipping test as not all env variables are set:'MONGO_USER','MONGO_PASS','MONGO_HOST', 'MONGO_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MONGO_USER','SERVICE_MONGO_PASS','SERVICE_MONGO_HOST', 'SERVICE_MONGO_PORT'")
 	}
 
 	dbName := "test_createdb"

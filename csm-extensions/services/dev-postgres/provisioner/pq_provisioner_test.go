@@ -20,12 +20,12 @@ var testPostgresProv = struct {
 
 func init() {
 	testPostgresProv.postgresConfig = config.PostgresConfig{
-		User:     os.Getenv("POSTGRES_USER"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		Host:     os.Getenv("POSTGRES_HOST"),
-		Port:     os.Getenv("POSTGRES_PORT"),
-		Dbname:   os.Getenv("POSTGRES_DBNAME"),
-		Sslmode:  os.Getenv("POSTGRES_SSLMODE")}
+		User:     os.Getenv("SERVICE_POSTGRES_USER"),
+		Password: os.Getenv("SERVICE_POSTGRES_PASSWORD"),
+		Host:     os.Getenv("SERVICE_POSTGRES_HOST"),
+		Port:     os.Getenv("SERVICE_POSTGRES_PORT"),
+		Dbname:   os.Getenv("SERVICE_POSTGRES_DBNAME"),
+		Sslmode:  os.Getenv("SERVICE_POSTGRES_SSLMODE")}
 
 	testPostgresProv.postgresProvisioner = NewPqProvisioner(logger, testPostgresProv.postgresConfig)
 }
@@ -36,7 +36,7 @@ func TestPqProvisioner(t *testing.T) {
 	newDbName := "testcreatedb"
 
 	if !envVarsOk() {
-		t.Skip("Skipping test, not all env variables are set:'POSTGRES_USER','POSTGRES_PASSWORD','POSTGRES_HOST','POSTGRES_PORT','POSTGRES_DBNAME','POSTGRES_SSLMODE'")
+		t.Skip("Skipping test, not all env variables are set:'SERVICE_POSTGRES_USER','SERVICE_POSTGRES_PASSWORD','SERVICE_POSTGRES_HOST','SERVICE_POSTGRES_PORT','SERVICE_POSTGRES_DBNAME','SERVICE_POSTGRES_SSLMODE'")
 	}
 
 	// Create database

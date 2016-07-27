@@ -23,7 +23,7 @@ func main() {
 	}
 
 	if conf.Host == "" {
-		logger.Fatal("MONGO_HOST environment variable is not set", nil)
+		logger.Fatal("SERVICE_MONGO_HOST environment variable is not set", nil)
 	}
 
 	request, err := csm.GetCSMRequest(os.Args)

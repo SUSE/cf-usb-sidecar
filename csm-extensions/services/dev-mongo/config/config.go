@@ -1,8 +1,8 @@
 package config
 
 type MongoDriverConfig struct {
-	User string `env:"MONGO_USER"`
-	Pass string `env:"MONGO_PASS"`
-	Host string `env:"MONGO_HOST"`
-	Port string `env:"MONGO_PORT" envDefault:"27017"`
+	User string `env:"SERVICE_MONGO_USER"`
+	Pass string `env:"SERVICE_MONGO_PASS"`
+	Host string `env:"SERVICE_MONGO_HOST"`
+	Port string `env:"SERVICE_MONGO_PORT" envDefault:"27017"`
 }

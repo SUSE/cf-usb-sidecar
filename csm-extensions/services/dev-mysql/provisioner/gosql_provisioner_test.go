@@ -34,7 +34,7 @@ func getProvisioner() MySQLProvisioner {
 func TestCreateDb(t *testing.T) {
 	mysqlProvisioner := getProvisioner()
 	if mysqlProvisioner == nil {
-		t.Skip("Skipping test as not all env variables are set:'MYSQL_USER','MYSQL_PASS','MYSQL_HOST', 'MYSQL_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MYSQL_USER','SERVICE_MYSQL_PASS','SERVICE_MYSQL_HOST', 'SERVICE_MYSQL_PORT'")
 	}
 
 	dbName := "test_createdb"
@@ -50,7 +50,7 @@ func TestCreateDb(t *testing.T) {
 func TestCreateDbExists(t *testing.T) {
 	mysqlProvisioner := getProvisioner()
 	if mysqlProvisioner == nil {
-		t.Skip("Skipping test as not all env variables are set:'MYSQL_USER','MYSQL_PASS','MYSQL_HOST', 'MYSQL_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MYSQL_USER','SERVICE_MYSQL_PASS','SERVICE_MYSQL_HOST', 'SERVICE_MYSQL_PORT'")
 	}
 
 	dbName := "test_createdb"
@@ -70,7 +70,7 @@ func TestCreateDbExists(t *testing.T) {
 func TestCreateUser(t *testing.T) {
 	mysqlProvisioner := getProvisioner()
 	if mysqlProvisioner == nil {
-		t.Skip("Skipping test as not all env variables are set:'MYSQL_USER','MYSQL_PASS','MYSQL_HOST', 'MYSQL_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MYSQL_USER','SERVICE_MYSQL_PASS','SERVICE_MYSQL_HOST', 'SERVICE_MYSQL_PORT'")
 	}
 
 	dbName := "test_createdb"
@@ -85,7 +85,7 @@ func TestCreateUser(t *testing.T) {
 func TestCreateUserExists(t *testing.T) {
 	mysqlProvisioner := getProvisioner()
 	if mysqlProvisioner == nil {
-		t.Skip("Skipping test as not all env variables are set:'MYSQL_USER','MYSQL_PASS','MYSQL_HOST', 'MYSQL_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MYSQL_USER','SERVICE_MYSQL_PASS','SERVICE_MYSQL_HOST', 'SERVICE_MYSQL_PORT'")
 	}
 
 	log.Println("Testing if user exists")
@@ -103,7 +103,7 @@ func TestCreateUserExists(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	mysqlProvisioner := getProvisioner()
 	if mysqlProvisioner == nil {
-		t.Skip("Skipping test as not all env variables are set:'MYSQL_USER','MYSQL_PASS','MYSQL_HOST', 'MYSQL_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MYSQL_USER','SERVICE_MYSQL_PASS','SERVICE_MYSQL_HOST', 'SERVICE_MYSQL_PORT'")
 	}
 
 	log.Println("Removing test user")
@@ -116,7 +116,7 @@ func TestDeleteUser(t *testing.T) {
 func TestDeleteTheDatabase(t *testing.T) {
 	mysqlProvisioner := getProvisioner()
 	if mysqlProvisioner == nil {
-		t.Skip("Skipping test as not all env variables are set:'MYSQL_USER','MYSQL_PASS','MYSQL_HOST', 'MYSQL_PORT'")
+		t.Skip("Skipping test as not all env variables are set:'SERVICE_MYSQL_USER','SERVICE_MYSQL_PASS','SERVICE_MYSQL_HOST', 'SERVICE_MYSQL_PORT'")
 	}
 
 	dbName := "test_createdb"
