@@ -91,15 +91,17 @@ test-integration: clean-all build-image build-service-image run-db run
 	export DOCKER_HOST_IP=$$SERVER_IP;\
 	echo "Testing against $$SERVER_IP:$(CSM_EXTENSION_PORT)...\n";\
 	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
-	until `curl http://$$SERVER_IP:$(CSM_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-csm-token: $(CSM_EXTENSION_TOKEN)" --fail --silent --output /dev/null`;\
+	rez=`curl -i http://$$SERVER_IP:$(CSM_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-csm-token: $(CSM_EXTENSION_TOKEN)" --silent | grep successful` ; \
+	while [ -z "$$rez" ] ; \
 	do n=$$(( $$n + 1 )) ;\
 	printf ".";\
+	rez=`curl -i http://$$SERVER_IP:$(CSM_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-csm-token: $(CSM_EXTENSION_TOKEN)" --silent | grep successful` ; \
 	if [ $$n -ge 60 ] ;\
 	then echo "\n$(ERROR_COLOR)==>Docker took to long to wakeup or incorect setup $(NO_COLOR) "; break ;\
 	fi ;\
-	sleep 1 ;\
+	sleep 2 ;\
 	done; echo "";\
-	if [ $$n -le 19 ]; then \
+	if [ $$n -le 59 ]; then \
 	echo "$(OK_COLOR)==>Running integration tests:$(NO_COLOR) ";\
 	export GO15VENDOREXPERIMENT=1;\
 	go test ./tests -tags integration -v;\

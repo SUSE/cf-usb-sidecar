@@ -113,6 +113,7 @@ tools:
 	@echo "$(OK_COLOR)==> Installing tools and go dependancies $(NO_COLOR)"
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/tools/godep
+	go get github.com/fsouza/go-dockerclient
 
 	./scripts/tools/codegen.sh
 

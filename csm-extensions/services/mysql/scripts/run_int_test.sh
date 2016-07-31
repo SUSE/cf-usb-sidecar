@@ -1,9 +1,11 @@
 #!/bin/sh
 
-docker images | grep ${CSM_MYSQL_IMAGE_NAME} | grep ${CSM_MYSQL_IMAGE_TAG}
+export GO15VENDOREXPERIMENT=1
+
+docker images | grep ${CSM_EXTENSION_IMAGE_NAME} | grep ${CSM_EXTENSION_IMAGE_TAG}
 if [ $? -ne 0 ]
 then
-    echo "Error: Please run 'make build-image' to build docker image for ${CSM_MYSQL_IMAGE_NAME}"
+    echo "Error: Please run 'make build-image' to build docker image for ${CSM_EXTENSION_IMAGE_NAME}"
     exit 1
 fi
 
@@ -50,3 +52,4 @@ then
     sleep 5 #Wait for server to die
 fi
 exit $testStatus
+

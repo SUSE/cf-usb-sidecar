@@ -24,4 +24,4 @@ docker run --name csm-mysql \
        -e MYSQL_SERVICE_PORT_MYSQL=${MYSQL_SERVICE_PORT_MYSQL} \
        -e CSM_API_KEY=${CSM_API_KEY} \
        -e CSM_DEV_MODE=${CSM_DEV_MODE} \
-       -d ${CSM_MYSQL_IMAGE_NAME}:${CSM_MYSQL_IMAGE_TAG}
+       -d ${CSM_EXTENSION_IMAGE_NAME}:${CSM_EXTENSION_IMAGE_TAG}

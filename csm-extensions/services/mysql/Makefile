@@ -61,17 +61,22 @@ test-format:
 # (required)
 test:	test-format
 
-test-integration:
+# (required) build docker image for service
+build-image:
+	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
+	docker build -t ${CSM_EXTENSION_IMAGE_NAME}:${CSM_EXTENSION_IMAGE_TAG} --rm -f ${CSM_MYSQL_EXTENSION_ROOT}/Dockerfile .
+
+test-integration: build-image
 	${CSM_MYSQL_EXTENSION_ROOT}/scripts/run_int_test.sh
 
 # (required) clean containers
 clean-containers:
 	${CSM_ROOT}/scripts/docker/remove-docker-container.sh csm-mysql-db
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_MYSQL_IMAGE_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_IMAGE_NAME}
 
 # (required) clean docker images
 clean-images:
-	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_MYSQL_IMAGE_NAME}
+	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_IMAGE_NAME}
 
 # (required) clean docker containers and images
 clean-all: clean-containers clean-images
@@ -80,10 +85,6 @@ clean-all: clean-containers clean-images
 build-service-image:
 	echo "$(WARN_CYN_COLOR)==>No Service image available $(NO_COLOR) ";n=0;\
 
-# (required) build docker image for service
-build-image:
-	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
-	docker build -t ${CSM_EXTENSION_IMAGE_NAME}:${CSM_EXTENSION_IMAGE_TAG} --rm -f ${CSM_MYSQL_EXTENSION_ROOT}/Dockerfile .
 
 # (required) push image to docker registry
 publish-image:
