@@ -12,4 +12,4 @@ ENV TERM=xterm-256color
 
 ENV CSM_PARAMETERS "MYSQL_ROOT_PASSWORD"
 
-ENTRYPOINT /catalog-service-manager/bin/catalog-service-manager
+ENTRYPOINT ["/catalog-service-manager/bin/catalog-service-manager"]

@@ -10,4 +10,4 @@ COPY ./CSM_RDS_BIN/amazon-rds-mysql /catalog-service-manager/bin/amazon-rds-mysq
 #required for mysql-client to work correctly
 ENV TERM=xterm-256color
 
-ENTRYPOINT /catalog-service-manager/bin/catalog-service-manager
+ENTRYPOINT ["/catalog-service-manager/bin/catalog-service-manager"]
