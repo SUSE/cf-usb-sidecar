@@ -19,4 +19,4 @@ RUN mkdir -p /catalog-service-manager/connection/delete
 COPY CSM_BIN/catalog-service-manager /catalog-service-manager/bin/
 
 
-ENTRYPOINT /catalog-service-manager/bin/catalog-service-manager
+ENTRYPOINT ["/catalog-service-manager/bin/catalog-service-manager"]
