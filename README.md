@@ -93,7 +93,7 @@ export CSM_DEBUG=true
 ### DEV_MODE
 
 Set this environment variable if you want catalog service manager to keep the
-output output files written by the extensions. By default catalog service
+output files written by the extensions. By default catalog service
 manager runs with DEV_MODE set to off, and it always deletes the output file
 where extensions write their output. It is strongly recommended to not set this
 environment variable in your SDL (that you plan on adding to service catalog),
@@ -113,13 +113,108 @@ Set CSM_EXT_TIMEOUT environment variable to a value that represents the number o
 catalog service manager will wait for a response from the extension before 
 sending it a request to stop.
 
-The catalog service manager will wait for a gracefull stop a number of 
+The catalog service manager will wait for a graceful stop a number of 
 CSM_EXT_TIMEOUT_ERROR seconds. If in this interval the extension did not 
 stop, the manager will try to force stop the extension.
 
 ```
 export CSM_EXT_TIMEOUT=30
 export CSM_EXT_TIMEOUT_ERROR=2
+```
+
+### TLS_CERT_FILE and TLS_PRIVATE_KEY_FILE
+
+CSM will start with TLS automatically and use `TLS_CERT_FILE` and `TLS_PRIVATE_KEY_FILE` 
+environment variables that are set to the default location of `/etc/secrets/tls-cert-file` 
+and `/etc/secrets/tls-private-key-file`.
+
+The default location for these files is based on where HCP injects a file into the 
+container on create. If these files are not found then CSM will generate a self signed 
+certificate to use automatically.
+
+So if you want to inject your own certificates into the csm conatiner you can do so by 
+adding a parameter to the SDL like:
+
+```
+{
+  "name": "tls-private-key-file",
+  "description": "Private certificate string for TLS with endlines preserved with '\n'",
+  "example": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----",
+  "required": false,
+  "secret": true,
+  "default": null
+},
+{
+  "name": "tls-cert-file",
+  "description": "Public certificate string for TLS with endlines preserved with '\n'",
+  "example": "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----",
+  "required": false,
+  "secret": true,
+  "default": null
+}
+```
+
+You can also provide an automatic generation of the TLS certificates.
+
+```
+{
+  "name": "tls-private-ca-cert",
+  "description": "placeholder",
+  "example": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----",
+  "required": true,
+  "secret": true,
+  "generator": {
+    "id": "cacert",
+    "generate": {
+      "value_type": "private_key",
+      "key_length": 2048,
+      "type": "CACertificate"
+    }
+  }
+},
+{
+  "name": "tls-ca-cert",
+  "description": "placeholder",
+  "example": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
+  "required": true,
+  "secret": true,
+  "generator": {
+    "id": "cacert",
+    "generate": {
+      "value_type": "certificate",
+      "type": "CACertificate"
+    }
+  }
+},
+{
+  "name": "tls-private-key-file",
+  "description": "Private certificate string for TLS with endlines preserved with '\n'",
+  "example": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----",
+  "required": false,
+  "secret": true,
+  "generator": {
+    "id": "tls_cert",
+    "generate": {
+      "value_type": "private_key",
+      "key_length": 2048,
+      "type": "Certificate"
+    }
+  }
+},
+{
+  "name": "tls-cert-file",
+  "description": "Public certificate string for TLS with endlines preserved with '\n'",
+  "example": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
+  "required": false,
+  "secret": true,
+  "generator": {
+    "id": "tls_cert",
+    "generate": {
+      "value_type": "certificate",
+      "type": "Certificate"
+    }
+  }
+}
 ```
 
 ## Run the service
@@ -132,7 +227,7 @@ You can use make run to run the service on command line
 make run
 ```
 
-This will start service listening on port http://0.0.0.0:8081 on the machine
+This will start service listening on port https://0.0.0.0:8081 on the machine
 where you run this command. You can use above mentioned environment variables
 (CSM_HOME and CSM_DEBUG) to alter the behavior of the service. (specifically if
 you are debugging an issue or while writing new extensions )
@@ -189,37 +284,37 @@ then supply the token in a header called `x-csm-token` on each call.
 ### create workspace
 
 ```bash
-curl -X POST http://localhost:8081/workspaces -H "x-csm-token: csm-auth-token" -H "content-type: application/json" -d '{"workspace_id":"test_workspace"}'
+curl -k -X POST https://localhost:8081/workspaces -H "x-csm-token: csm-auth-token" -H "content-type: application/json" -d '{"workspace_id":"test_workspace"}'
 ```
 
 ### get workspace
 
 ```bash
-curl -X GET http://localhost:8081/workspaces/test_workspace -H "x-csm-token: csm-auth-token"
+curl -k -X GET https://localhost:8081/workspaces/test_workspace -H "x-csm-token: csm-auth-token"
 ```
 
 ### create credentials
 
 ```bash
-curl -X POST http://localhost:8081/workspaces/test_workspace/connections -H "x-csm-token: csm-auth-token" -H "content-type: application/json" -d '{"connection_id":"test_user"}'
+curl -k -X POST https://localhost:8081/workspaces/test_workspace/connections -H "x-csm-token: csm-auth-token" -H "content-type: application/json" -d '{"connection_id":"test_user"}'
 ```
 
 ### get credentials
 
 ```bash
-curl -X GET http://localhost:8081/workspaces/test_workspace/connections/test_user -H "x-csm-token: csm-auth-token"
+curl -k -X GET https://localhost:8081/workspaces/test_workspace/connections/test_user -H "x-csm-token: csm-auth-token"
 ```
 
 ### delete credentials
 
 ```bash
-curl -X DELETE http://localhost:8081/workspaces/test_workspace/connections/test_user -H "x-csm-token: csm-auth-token"
+curl -k -X DELETE https://localhost:8081/workspaces/test_workspace/connections/test_user -H "x-csm-token: csm-auth-token"
 ```
 
 ### delete workspace
 
 ```bash
-curl -X DELETE http://localhost:8081/workspaces/test_workspace -H "x-csm-token: csm-auth-token"
+curl -k -X DELETE https://localhost:8081/workspaces/test_workspace -H "x-csm-token: csm-auth-token"
 ```
 
 ## Docker Containers for Catalog Service Manager
@@ -269,7 +364,7 @@ on the container where we copy the build artifacts
 
 ```
 make release-base
-````
+```
 
 or if you want to run the script directly
 

@@ -9,14 +9,12 @@
         "**/debug.test": true,
         ".vscode": true,
         ".cover": true,
-        "catalog": true,
-        // Makefile gets messed up whenever I edit it from VS Code so not showing it in the list helps a lot
-        "Makefile": true
+        "catalog": true
     },
     "go.gopath": "${workspaceRoot}/Godeps/_workspace:${workspaceRoot}/../../../..",
     "files.autoSave": "onFocusChange",
     "editor.formatOnType": true,
     "go.useCodeSnippetsOnFunctionSuggest": true,
-    "go.formatTool": "gofmt",
+    "go.formatTool": "goimports",
     "go.formatOnSave": true
 }
