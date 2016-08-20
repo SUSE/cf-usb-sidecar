@@ -7,5 +7,12 @@ set -e
     docker load -i /root/rabbit.tgz
 } &
 
+{
+   for i in `seq 1 10`; 
+   do
+     sleep 60;
+     docker ps -a -q| xargs -n 1 docker start;
+   done 
+} &
 
 dockerd-entrypoint.sh
