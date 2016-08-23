@@ -2,10 +2,10 @@
 
 export GO15VENDOREXPERIMENT=1
 
-docker images | grep ${CSM_EXTENSION_IMAGE_NAME} | grep ${CSM_EXTENSION_IMAGE_TAG}
+docker images | grep ${SIDECAR_MYSQL_IMAGE_NAME} | grep ${SIDECAR_MYSQL_IMAGE_TAG}
 if [ $? -ne 0 ]
 then
-    echo "Error: Please run 'make build-image' to build docker image for ${CSM_EXTENSION_IMAGE_NAME}"
+    echo "Error: Please run 'make build-image' to build docker image for ${SIDECAR_MYSQL_IMAGE_NAME}"
     exit 1
 fi
 
@@ -16,10 +16,10 @@ else
     export DOCKER_HOST_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
 fi
 
-cd ${CSM_ROOT}
+cd ${SIDECAR_ROOT}
 make generate
 
-cd ${CSM_MYSQL_EXTENSION_ROOT}
+cd ${SIDECAR_MYSQL_EXTENSION_ROOT}
 # remove existing containers
 make clean-containers
 # start mysql container
@@ -44,10 +44,10 @@ nc -w 2 ${DOCKER_HOST_IP} 8081
 
 if [ $? -eq 0 ]
 then
-    cd ${CSM_MYSQL_EXTENSION_ROOT}/tests
+    cd ${SIDECAR_MYSQL_EXTENSION_ROOT}/tests
     go test ./... -integration=true -host=${DOCKER_HOST_IP} -port="8081" -v
     testStatus=$?
-    cd ${CSM_MYSQL_EXTENSION_ROOT}
+    cd ${SIDECAR_MYSQL_EXTENSION_ROOT}
     make clean-containers
     sleep 5 #Wait for server to die
 fi

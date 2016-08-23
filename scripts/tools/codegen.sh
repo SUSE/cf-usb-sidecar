@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ${CSM_ROOT}/scripts/colors.sh
+. ${SIDECAR_ROOT}/scripts/colors.sh
 
 echo "${OK_GREEN_COLOR}==> Setting up go-swagger ${NO_COLOR}"
 

@@ -38,7 +38,7 @@ make tools
 Catalog Service Manager reads it configuration/settings from environment
 variables.
 
-### CSM_PARAMETERS
+### SIDECAR_PARAMETERS
 
 This is the list of environment variables that Catalog Service Manager should
 read, this needs to be set if you are running catalog service manager in the
@@ -47,21 +47,21 @@ extensions are not present, catalog service manager reads this environment and r
 all the variables listed here. 
 
 ```
-export CSM_PARAMETERS="HOSTNAME USERNAME"
+export SIDECAR_PARAMETERS="HOSTNAME USERNAME"
 ```
 
-### CSM_API_KEY
+### SIDECAR_API_KEY
 
 This is a required environment variable that must be set when starting up the
-service. The CSM_API_KEY is used to authorize all requests to the service via an
+service. The SIDECAR_API_KEY is used to authorize all requests to the service via an
 authentication token. If this variable is not set, the service will not start
 up.
 
 ```
-export CSM_API_KEY="csm-auth-token"
+export SIDECAR_API_KEY="sidecar-auth-token"
 ```
 
-### CSM_HOME
+### SIDECAR_HOME
 
 This is the path of the CSM home directory, default value for this is
 /catalog-service-manager which is the path on the Catalog Service Manager's base
@@ -73,10 +73,10 @@ set this variable appropriately to point to the directory where your workspaces
 and connections extensions are located.
 
 ```
-export CSM_HOME=${GOPATH}/src/github.com/hpcloud/catalog-service-manager/examples/mysql
+export SIDECAR_HOME=${GOPATH}/src/github.com/hpcloud/catalog-service-manager/examples/mysql
 ```
 
-### CSM_DEBUG
+### SIDECAR_DEBUG
 
 Set this environment variable if you want catalog service manager to generate
 logs in Debug mode. By default catalog service manager runs with log level Info,
@@ -87,7 +87,7 @@ catalog), as debug logs may give our sensitive information which is a security
 risk.
 
 ```
-export CSM_DEBUG=true
+export SIDECAR_DEBUG=true
 ```
 
 ### DEV_MODE
@@ -104,22 +104,22 @@ these files may contain credentials to the service.
 export DEV_MODE=true
 ```
 
-### CSM_EXT_TIMEOUT and CSM_EXT_TIMEOUT_ERROR
+### SIDECAR_EXT_TIMEOUT and SIDECAR_EXT_TIMEOUT_ERROR
 
-* CSM_EXT_TIMEOUT has a default value of 30s
-* CSM_EXT_TIMEOUT_ERROR has a default value of 2s
+* SIDECAR_EXT_TIMEOUT has a default value of 30s
+* SIDECAR_EXT_TIMEOUT_ERROR has a default value of 2s
 
-Set CSM_EXT_TIMEOUT environment variable to a value that represents the number of seconds that the 
+Set SIDECAR_EXT_TIMEOUT environment variable to a value that represents the number of seconds that the 
 catalog service manager will wait for a response from the extension before 
 sending it a request to stop.
 
 The catalog service manager will wait for a graceful stop a number of 
-CSM_EXT_TIMEOUT_ERROR seconds. If in this interval the extension did not 
+SIDECAR_EXT_TIMEOUT_ERROR seconds. If in this interval the extension did not 
 stop, the manager will try to force stop the extension.
 
 ```
-export CSM_EXT_TIMEOUT=30
-export CSM_EXT_TIMEOUT_ERROR=2
+export SIDECAR_EXT_TIMEOUT=30
+export SIDECAR_EXT_TIMEOUT_ERROR=2
 ```
 
 ### TLS_CERT_FILE and TLS_PRIVATE_KEY_FILE
@@ -229,7 +229,7 @@ make run
 
 This will start service listening on port https://0.0.0.0:8081 on the machine
 where you run this command. You can use above mentioned environment variables
-(CSM_HOME and CSM_DEBUG) to alter the behavior of the service. (specifically if
+(SIDECAR_HOME and SIDECAR_DEBUG) to alter the behavior of the service. (specifically if
 you are debugging an issue or while writing new extensions )
 
 
@@ -257,7 +257,7 @@ mysql -h ${MY_DOCKER_HOST_IP} -P 3306 -u root -proot123
 2. Set following environment variables
 
 ```
-export CSM_HOME=`pwd`/examples/mysql/CSM_HOME
+export SIDECAR_HOME=`pwd`/examples/mysql/SIDECAR_HOME
 export MYSQL_SERVICE_HOST=`env | grep DOCKER_HOST | cut -d "/" -f 3 | cut -d ":" -f 1`
 export MYSQL_SERVICE_PORT_MYSQL=3306
 export MYSQL_ROOT_PASSWORD=root123
@@ -267,7 +267,7 @@ export MYSQL_ROOT_PASSWORD=root123
 
 
 ```
-export CSM_API_KEY=my-foo-bar-key
+export SIDECAR_API_KEY=my-foo-bar-key
 ```
 
 
@@ -279,42 +279,43 @@ make run
 ## Testing CSM Service
 
 If authorization was enabled with a CMS_API_KEY environment variable specified,
-then supply the token in a header called `x-csm-token` on each call.
+then supply the token in a header called `x-sidecar-token` on each call.
 
 ### create workspace
 
 ```bash
-curl -k -X POST https://localhost:8081/workspaces -H "x-csm-token: csm-auth-token" -H "content-type: application/json" -d '{"workspace_id":"test_workspace"}'
+curl -k -X POST http://localhost:8081/workspaces -H "x-sidecar-token: sidecar-auth-token" -H "content-type: application/json" -d '{"workspace_id":"test_workspace"}'
+
 ```
 
 ### get workspace
 
 ```bash
-curl -k -X GET https://localhost:8081/workspaces/test_workspace -H "x-csm-token: csm-auth-token"
+curl -k -X GET http://localhost:8081/workspaces/test_workspace -H "x-sidecar-token: sidecar-auth-token"
 ```
 
 ### create credentials
 
 ```bash
-curl -k -X POST https://localhost:8081/workspaces/test_workspace/connections -H "x-csm-token: csm-auth-token" -H "content-type: application/json" -d '{"connection_id":"test_user"}'
+curl -k -X POST http://localhost:8081/workspaces/test_workspace/connections -H "x-sidecar-token: sidecar-auth-token" -H "content-type: application/json" -d '{"connection_id":"test_user"}'
 ```
 
 ### get credentials
 
 ```bash
-curl -k -X GET https://localhost:8081/workspaces/test_workspace/connections/test_user -H "x-csm-token: csm-auth-token"
+curl -k -X GET http://localhost:8081/workspaces/test_workspace/connections/test_user -H "x-sidecar-token: sidecar-auth-token"
 ```
 
 ### delete credentials
 
 ```bash
-curl -k -X DELETE https://localhost:8081/workspaces/test_workspace/connections/test_user -H "x-csm-token: csm-auth-token"
+curl -k -X DELETE http://localhost:8081/workspaces/test_workspace/connections/test_user -H "x-sidecar-token: sidecar-auth-token"
 ```
 
 ### delete workspace
 
 ```bash
-curl -k -X DELETE https://localhost:8081/workspaces/test_workspace -H "x-csm-token: csm-auth-token"
+curl -k -X DELETE http://localhost:8081/workspaces/test_workspace -H "x-sidecar-token: sidecar-auth-token"
 ```
 
 ## Docker Containers for Catalog Service Manager

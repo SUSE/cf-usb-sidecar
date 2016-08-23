@@ -90,6 +90,7 @@ func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ..
 }
 
 func setup(cmsFileHelper utils.CSMFileHelperInterface) (*common.ServiceManagerConfiguration, *CSMStatus) {
+	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
 	config := common.NewServiceManagerConfiguration()
 	logger := common.NewLogger(strings.ToLower(*config.LOG_LEVEL))
 	if cmsFileHelper == nil {

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ${CSM_ROOT}/scripts/colors.sh
+. ${SIDECAR_ROOT}/scripts/colors.sh
 
 if [ -d generated/CatalogServiceManager ]
 then

@@ -18,11 +18,16 @@ schemes:
 securityDefinitions:
   api_key:
     type: apiKey
+    name: x-sidecar-token
+    in: header
+  old_api_key:
+    type: apiKey
     name: x-csm-token
     in: header
 
 security:
   - api_key: []
+  - old_api_key: []
 
 paths:
   /status: 
@@ -261,13 +266,13 @@ definitions:
       status:
         type: string
         enum: [ "none", "unknown", "successful", "failed"]
-        description: "Status of the ping request. If the CSM implementation is confident that it can perform all functions correctly, it should return \"successful\". Otherwise, \"failed\""
+        description: "Status of the ping request. If the SIDECAR implementation is confident that it can perform all functions correctly, it should return \"successful\". Otherwise, \"failed\""
       message: 
         type: string
         description: "Contains any detail that informs the success or failure of the diagnostic that was performed"
       diagnostics: 
         type: array
-        description: "Optional array of diagnostics performed by the CSM during ping"
+        description: "Optional array of diagnostics performed by the SIDECAR during ping"
         items: 
           $ref: "#/definitions/StatusDiagnostic"
   StatusDiagnostic: 

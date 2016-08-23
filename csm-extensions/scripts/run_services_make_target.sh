@@ -1,10 +1,10 @@
 #!/bin/sh
 
 TARGET=$1
-CSM_ROOT=$GOPATH/src/github.com/hpcloud/catalog-service-manager
-CSM_SERVICES=$GOPATH/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services
+SIDECAR_ROOT=$GOPATH/src/github.com/hpcloud/catalog-service-manager
+SIDECAR_SERVICES=$GOPATH/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services
 
-. ${CSM_ROOT}/scripts/colors.sh
+. ${SIDECAR_ROOT}/scripts/colors.sh
 
 BUILT_SERVICES=""
 FAILED_SERVICES=""

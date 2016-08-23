@@ -60,5 +60,5 @@ func init() {
 	transportHost := *host + ":" + strconv.Itoa(*port)
 	transport = httpClient.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
-	authFunc = httpClient.APIKeyAuth("x-csm-token", "header", "csm-auth-token")
+	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", "sidecar-auth-token")
 }

@@ -27,43 +27,43 @@ then
 	exit 1	
 fi
 
-CSM_BUILD_IMAGE_NAME=csm-release-build
-CSM_BUILD_IMAGE_TAG=latest
-CSM_BUILD_CONTAINER_NAME=csm-build
+SIDECAR_BUILD_IMAGE_NAME=sidecar-buildbase
+SIDECAR_BUILD_IMAGE_TAG=latest
+SIDECAR_BUILD_CONTAINER_NAME=sidecar-build
 
-CSM_BIN=${current_dir}/CSM_BIN
-mkdir -p ${CSM_BIN}
-rm -rf ${CSM_BIN}/catalog-service-manager
+SIDECAR_BIN=${current_dir}/SIDECAR_BIN
+mkdir -p ${SIDECAR_BIN}
+rm -rf ${SIDECAR_BIN}/catalog-service-manager
 
 echo "${OK_BG_COLOR}==> Building release-build image (to build catalog-service-manager binary).. ${NO_COLOR}"
 
-docker build -t ${CSM_BUILD_IMAGE_NAME}:${CSM_BUILD_IMAGE_TAG} --rm -f scripts/docker/release/Dockerfile-release-build .  
+docker build -t ${SIDECAR_BUILD_IMAGE_NAME}:${SIDECAR_BUILD_IMAGE_TAG} --rm -f scripts/docker/release/Dockerfile-release-build .  
 
-docker images | grep ${CSM_BUILD_IMAGE_NAME} | grep ${CSM_BUILD_IMAGE_TAG} > /dev/null 2>&1
+docker images | grep ${SIDECAR_BUILD_IMAGE_NAME} | grep ${SIDECAR_BUILD_IMAGE_TAG} > /dev/null 2>&1
 if [ $? -eq 0 ]
 then
 	echo "${OK_GREEN_COLOR}==> Copying CMS binary to the host ${NO_COLOR}"
-	docker run --name ${CSM_BUILD_CONTAINER_NAME} -v ${CSM_BIN}:/catalog-service-manager-bin/ ${CSM_BUILD_IMAGE_NAME}:${CSM_BUILD_IMAGE_TAG} 
+	docker run --name ${SIDECAR_BUILD_CONTAINER_NAME} -v ${SIDECAR_BIN}:/catalog-service-manager-bin/ ${SIDECAR_BUILD_IMAGE_NAME}:${SIDECAR_BUILD_IMAGE_TAG} 
 fi
 
-echo "${OK_GREEN_COLOR}==> Removing ${CSM_BUILD_IMAGE_NAME} container  ${NO_COLOR}"
-docker ps -a | grep ${CSM_BUILD_CONTAINER_NAME} | awk '{print $1}' | xargs -n 1  docker rm 
+echo "${OK_GREEN_COLOR}==> Removing ${SIDECAR_BUILD_IMAGE_NAME} container  ${NO_COLOR}"
+docker ps -a | grep ${SIDECAR_BUILD_CONTAINER_NAME} | awk '{print $1}' | xargs -n 1  docker rm 
 
 
-if [ -f ${CSM_BIN}/catalog-service-manager ]
+if [ -f ${SIDECAR_BIN}/catalog-service-manager ]
 then
 	echo "${OK_BG_COLOR}==> CSM binary is built successfuly ${NO_COLOR}"
 	echo ""	
-	echo "${OK_GREEN_COLOR}==> Removing ${CSM_BUILD_IMAGE_NAME}:${CSM_BUILD_IMAGE_TAG} images  ${NO_COLOR}"
-	docker images | grep ${CSM_BASE_IMAGE_NAME} | grep -v ${CSM_BUILD_BASE_IMAGE_NAME}  | grep ${CSM_BASE_IMAGE_TAG} | awk '{print $3}' | xargs -n 1 docker rmi -f 
+	echo "${OK_GREEN_COLOR}==> Removing ${SIDECAR_BUILD_IMAGE_NAME}:${SIDECAR_BUILD_IMAGE_TAG} images  ${NO_COLOR}"
+	docker images | grep ${SIDECAR_BASE_IMAGE_NAME} | grep -v ${SIDECAR_BUILD_BASE_IMAGE_NAME}  | grep ${SIDECAR_BASE_IMAGE_TAG} | awk '{print $3}' | xargs -n 1 docker rmi -f 
 	
 	sleep 5
 	echo ""
-	echo "${OK_GREEN_COLOR}==> Building ${CSM_BUILD_IMAGE_NAME}:release image ..  ${NO_COLOR}"
-	docker build -t ${CSM_BASE_IMAGE_NAME}:${CSM_BASE_IMAGE_TAG} --rm -f scripts/docker/release/Dockerfile-release . 
+	echo "${OK_GREEN_COLOR}==> Building ${SIDECAR_BUILD_IMAGE_NAME}:release image ..  ${NO_COLOR}"
+	docker build -t ${SIDECAR_BASE_IMAGE_NAME}:${SIDECAR_BASE_IMAGE_TAG} --rm -f scripts/docker/release/Dockerfile-release . 
 	
 	echo ""
 	echo ""
 	
-	echo "${OK_BG_COLOR}==> ${CSM_BASE_IMAGE_NAME}:${CSM_BASE_IMAGE_TAG} built successfuly ${NO_COLOR}"
+	echo "${OK_BG_COLOR}==> ${SIDECAR_BASE_IMAGE_NAME}:${SIDECAR_BASE_IMAGE_TAG} built successfuly ${NO_COLOR}"
 fi

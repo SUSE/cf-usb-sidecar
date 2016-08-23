@@ -20,28 +20,38 @@ type ServiceManagerConfiguration struct {
 }
 
 var paramDefaultList = map[string]string{
-	"CSM_HOME":              "/catalog-service-manager/",
-	"CSM_PARAMETERS":        "",
-	"CSM_LOG_LEVEL":         "info",
-	"CSM_DEV_MODE":          "false",
-	"CSM_EXT_TIMEOUT":       "30",
-	"CSM_EXT_TIMEOUT_ERROR": "2",
-	"HEALTHCHECK_HOST":      "",
-	"HEALTHCHECK_PORT":      "",
-	"TLS_CERT_FILE":         "/etc/secrets/tls-cert-file",
-	"TLS_PRIVATE_KEY_FILE":  "/etc/secrets/tls-private-key-file",
+	"SIDECAR_HOME":              "/catalog-service-manager/",
+	"SIDECAR_PARAMETERS":        "",
+	"SIDECAR_LOG_LEVEL":         "info",
+	"SIDECAR_DEV_MODE":          "false",
+	"SIDECAR_EXT_TIMEOUT":       "30",
+	"SIDECAR_EXT_TIMEOUT_ERROR": "2",
+	"HEALTHCHECK_HOST":          "",
+	"HEALTHCHECK_PORT":          "",
+	"TLS_CERT_FILE":             "/etc/secrets/tls-cert-file",
+	"TLS_PRIVATE_KEY_FILE":      "/etc/secrets/tls-private-key-file",
 }
 
 // NewServiceManagerConfiguration : Creates object of ServiceManagerConfiguration
 func NewServiceManagerConfiguration() *ServiceManagerConfiguration {
 	config := ServiceManagerConfiguration{}
-	config.PARAMETERS = config.getConfigFromEnv("CSM_PARAMETERS")
-	config.MANAGER_HOME = config.getConfigFromEnv("CSM_HOME")
-	config.LOG_LEVEL = config.getConfigFromEnv("CSM_LOG_LEVEL")
-	config.DEV_MODE = config.getConfigFromEnv("CSM_DEV_MODE")
-	config.API_KEY = config.getConfigFromEnv("CSM_API_KEY")
-	config.EXT_TIMEOUT = config.getConfigFromEnv("CSM_EXT_TIMEOUT")
-	config.EXT_TIMEOUT_ERROR = config.getConfigFromEnv("CSM_EXT_TIMEOUT_ERROR")
+	config.PARAMETERS = config.getConfigFromEnv("SIDECAR_PARAMETERS")
+	config.MANAGER_HOME = config.getConfigFromEnv("SIDECAR_HOME")
+	config.LOG_LEVEL = config.getConfigFromEnv("SIDECAR_LOG_LEVEL")
+	config.DEV_MODE = config.getConfigFromEnv("SIDECAR_DEV_MODE")
+	config.API_KEY = config.getConfigFromEnv("SIDECAR_API_KEY")
+	config.EXT_TIMEOUT = config.getConfigFromEnv("SIDECAR_EXT_TIMEOUT")
+	config.EXT_TIMEOUT_ERROR = config.getConfigFromEnv("SIDECAR_EXT_TIMEOUT_ERROR")
+	if *config.LOG_LEVEL == "" {
+		config.PARAMETERS = config.getConfigFromEnv("CSM_PARAMETERS")
+		config.MANAGER_HOME = config.getConfigFromEnv("CSM_HOME")
+		config.LOG_LEVEL = config.getConfigFromEnv("CSM_LOG_LEVEL")
+		config.DEV_MODE = config.getConfigFromEnv("CSM_DEV_MODE")
+		config.API_KEY = config.getConfigFromEnv("CSM_API_KEY")
+		config.EXT_TIMEOUT = config.getConfigFromEnv("CSM_EXT_TIMEOUT")
+		config.EXT_TIMEOUT_ERROR = config.getConfigFromEnv("CSM_EXT_TIMEOUT_ERROR")
+	}
+
 	config.HEALTHCHECK_HOST = config.getConfigFromEnv("HEALTHCHECK_HOST")
 	config.HEALTHCHECK_PORT = config.getConfigFromEnv("HEALTHCHECK_PORT")
 	config.TLS_CERT_FILE = config.getConfigFromEnv("TLS_CERT_FILE")

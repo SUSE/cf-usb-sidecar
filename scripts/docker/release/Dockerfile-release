@@ -16,7 +16,7 @@ RUN mkdir -p /catalog-service-manager/connection/get
 RUN mkdir -p /catalog-service-manager/connection/create 
 RUN mkdir -p /catalog-service-manager/connection/delete
 
-COPY CSM_BIN/catalog-service-manager /catalog-service-manager/bin/
+COPY SIDECAR_BIN/catalog-service-manager /catalog-service-manager/bin/
 
 
 ENTRYPOINT ["/catalog-service-manager/bin/catalog-service-manager"]

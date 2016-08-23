@@ -32,6 +32,8 @@ func ConfigureAPI(api *operations.CatlogServiceManagerAPI) http.Handler {
 
 	api.APIKeyAuth = handlers.ApiKeyAuth
 
+	api.OldAPIKeyAuth = handlers.OldApiKeyAuth
+
 	api.ConnectionCreateConnectionHandler = connection.CreateConnectionHandlerFunc(func(params connection.CreateConnectionParams, principal interface{}) middleware.Responder {
 		return handlers.CreateConnection(params.WorkspaceID, params.ConnectionCreateRequest)
 	})

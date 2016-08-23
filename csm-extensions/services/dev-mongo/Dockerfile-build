@@ -1,4 +1,4 @@
-FROM csm-buildbase:latest
+FROM sidecar-buildbase:latest
 
 COPY . /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo
 ENV GOPATH /go
@@ -8,4 +8,4 @@ WORKDIR /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/servic
 RUN make tools
 RUN make build
 
-ENTRYPOINT cp -r /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo/CSM_HOME/* /out/
+ENTRYPOINT cp -r /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo/SIDECAR_HOME/* /out/

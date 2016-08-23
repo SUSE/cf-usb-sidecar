@@ -4,10 +4,9 @@
    "vendor":"amazon",
    "components":[  
       {  
-         "name":"csm-side-car",
+         "name":"side-car",
          "version":"latest",
          "vendor":"amazon",
-         "external_name":"amazon-rds-mysql",
          "image":"192.168.99.101:5000/amazon-rds-mysql",
          "min_RAM_mb":512,
          "min_disk_gb":1,
@@ -26,7 +25,7 @@
          "max_instances":1,
          "service_ports":[  
             {  
-               "name":"csm",
+               "name":"sidecar",
                "protocol":"TCP",
                "source_port":8081,
                "target_port":8081,
@@ -62,7 +61,7 @@
                "name":"MYSQL_ROOT_PASSWORD"
             },
             {  
-               "name":"CSM_API_KEY"
+               "name":"SIDECAR_API_KEY"
             }
          ]
       }
@@ -145,10 +144,10 @@
          "secret":false
       },
       {  
-         "name":"CSM_API_KEY",
-         "description":"CSM_API_KEY",
-         "default":"csm-auth-token",
-         "example":"csm-auth-token",
+         "name":"SIDECAR_API_KEY",
+         "description":"SIDECAR_API_KEY",
+         "default":"sidecar-auth-token",
+         "example":"sidecar-auth-token",
          "data_type":"string",
          "required":true,
          "secret":false

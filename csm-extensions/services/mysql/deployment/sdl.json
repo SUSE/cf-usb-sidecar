@@ -11,7 +11,7 @@
             "required": true,
             "secret": false },
         {
-            "name": "CSM_PARAMETERS",
+            "name": "SIDECAR_PARAMETERS",
             "description": "List of parameters to be returned in the default get credentails call",
             "example": "MYSQL_ROOT_PASSWORD",
             "default": "MYSQL_ROOT_PASSWORD",
@@ -23,7 +23,6 @@
             "name": "mysql",
             "version": "5.6",
             "vendor": "mysql",
-            "external_name": "mysql",
             "image": "mysql/mysql-server:5.6",
             "min_RAM_mb": 512,
             "min_disk_gb": 1,
@@ -55,8 +54,7 @@
         {
             "name": "catalog-service-manager",
             "version": "latest",
-            "vendor": "HEP",
-            "external_name": "csm-side-car",
+            "vendor": "HPE",
             "image": "192.168.41.228:5000/csm-mysql-new",
             "min_RAM_mb": 512,
             "min_disk_gb": 1,
@@ -84,7 +82,7 @@
                     "name": "MYSQL_ROOT_PASSWORD"
                 },
                 {
-                    "name": "CSM_PARAMETERS"
+                    "name": "SIDECAR_PARAMETERS"
                 }
             ]
         }

@@ -46,8 +46,8 @@
          "value":"awsmysqlrds"
       },
       {  
-         "name":"CSM_API_KEY",
-         "value":"csm-auth-token"
+         "name":"SIDECAR_API_KEY",
+         "value":"sidecar-auth-token"
       }
    ]
 }

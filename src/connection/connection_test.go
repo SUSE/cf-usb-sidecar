@@ -94,6 +94,7 @@ func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ..
 }
 
 func setup(cmsFileHelper utils.CSMFileHelperInterface) (*common.ServiceManagerConfiguration, *CSMConnection) {
+	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
 	config := common.NewServiceManagerConfiguration()
 	logger := common.NewLogger(strings.ToLower(*config.LOG_LEVEL))
 	if cmsFileHelper == nil {
@@ -254,7 +255,7 @@ func TestCheck_CreateConnection(t *testing.T) {
 
 func TestCheck_CreateConnectionDefault(t *testing.T) {
 	os.Setenv("test-param", "test-value")
-	os.Setenv("CSM_PARAMETERS", "test-param")
+	os.Setenv("SIDECAR_PARAMETERS", "test-param")
 	_, csmConnection := setup(nil)
 
 	connectionID := "123"
@@ -267,14 +268,14 @@ func TestCheck_CreateConnectionDefault(t *testing.T) {
 	assert.Equal(t, connection.ProcessingType, "default")
 	assert.Equal(t, connection.Status, "successful")
 	assert.Equal(t, connection.Details["test-param"], "test-value")
-	os.Unsetenv("CSM_PARAMETERS")
+	os.Unsetenv("SIDECAR_PARAMETERS")
 	os.Unsetenv("test-param")
 }
 
 func TestCheck_CreateConnectionDefaultMultipleParameters(t *testing.T) {
 	os.Setenv("test-param1", "test-value1")
 	os.Setenv("test-param2", "test-value2")
-	os.Setenv("CSM_PARAMETERS", "test-param1 test-param2")
+	os.Setenv("SIDECAR_PARAMETERS", "test-param1 test-param2")
 	_, csmConnection := setup(nil)
 
 	connectionID := "123"
@@ -288,7 +289,7 @@ func TestCheck_CreateConnectionDefaultMultipleParameters(t *testing.T) {
 	assert.Equal(t, connection.Status, "successful")
 	assert.Equal(t, connection.Details["test-param1"], "test-value1")
 	assert.Equal(t, connection.Details["test-param2"], "test-value2")
-	os.Unsetenv("CSM_PARAMETERS")
+	os.Unsetenv("SIDECAR_PARAMETERS")
 	os.Unsetenv("test-param1")
 	os.Unsetenv("test-param2")
 }

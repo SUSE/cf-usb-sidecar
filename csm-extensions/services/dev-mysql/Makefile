@@ -3,31 +3,31 @@ OK_COLOR=\033[32;01m
 OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
-TOKEN=csm-auth-token
+TOKEN=sidecar-auth-token
 SERVER_PORT=8081
 
 ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=catalog-service-manager
+	export DOCKER_REPOSITORY:=hsm-sidecar
 endif
 
-export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
-export CSM_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/dev-mysql
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-mysql
 
 ifeq ($(strip $(VERSION)),)
-	export VERSION := $(shell ${CSM_ROOT}/scripts/build_version.sh "VERSION")
+	export VERSION := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "VERSION")
 endif
 
 ifeq ($(strip $(APP_VERSION_TAG)),)
-	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${CSM_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export CSM_EXTENSION_IMAGE_NAME:=csm-dev-mysql
-export CSM_EXTENSION_IMAGE_TAG:=latest
+export SIDECAR_EXTENSION_IMAGE_NAME:=sidecar-dev-mysql
+export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
-export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-dev-mysql-build
+export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mysql-build
 
-export CSM_EXTENSION_SVC_IMAGE_TAG:=latest
-export CSM_EXTENSION_SVC_IMAGE_NAME:=csm-dev-mysql-db
+export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=sidecar-dev-mysql-db
 
 .PHONY: clean-all clean build-image tools run build-service-image run-db test test-integration
 
@@ -54,24 +54,24 @@ help:
 all:	clean-all build-image build-service-image run-db run
 
 build:
-	${CSM_EXTENSION_ROOT}/scripts/build.sh
+	${SIDECAR_EXTENSION_ROOT}/scripts/build.sh
 
 build-service-image:
 	@echo "$(OK_COLOR)==> Building database image $(NO_COLOR)"
-	${CSM_EXTENSION_ROOT}/scripts/build-db.sh
+	${SIDECAR_EXTENSION_ROOT}/scripts/build-db.sh
 
 run-db:
 	@echo "$(OK_COLOR)==> Start MySQL DB container $(NO_COLOR)"
-	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-mysql-db.sh
+	${SIDECAR_EXTENSION_ROOT}/scripts/docker-run-csm-mysql-db.sh
 
 run:
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
-	${CSM_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
+	${SIDECAR_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
 
 test-format:
 	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
 	FILES=`find . -name "*.go" | grep -v vendor | grep -v Godeps`;\
-	${CSM_ROOT}/scripts/testFmt.sh "$$FILES")
+	${SIDECAR_ROOT}/scripts/testFmt.sh "$$FILES")
 		
 # (required) run tests
 test:	test-format
@@ -89,7 +89,7 @@ test-integration: clean-all build-image build-service-image run-db run
 	export TEST_SERVER_PORT=$(SERVER_PORT);\
 	export TEST_SERVER_TOKEN=$(TOKEN);\
 	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
-	until `curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-csm-token: $(TOKEN)" --fail --silent --output /dev/null`;\
+	until `curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
 	do n=$$(( $$n + 1 )) ;\
 		printf ".";\
 		if [ $$n -ge 30 ] ;\
@@ -110,15 +110,15 @@ test-integration: clean-all build-image build-service-image run-db run
 
 # (required) clean containers
 clean-containers:
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_SVC_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker images
 clean-images:
-	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_SVC_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
@@ -126,13 +126,13 @@ clean-all:	clean-containers clean-images
 # (required) build docker image for service
 build-image:	
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
-	${CSM_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
-	${CSM_ROOT}/scripts/dev-extensions/build-docker-image.sh
+	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/dev-extensions/build-docker-image.sh
 
 
 # (required) push image to docker registry
 publish-image:
-	IMAGE_NAME=${CSM_EXTENSION_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh
-	IMAGE_NAME=${CSM_EXTENSION_SVC_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_SVC_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh
+	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
+	IMAGE_NAME=${SIDECAR_EXTENSION_SVC_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_SVC_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh

@@ -25,7 +25,7 @@ const (
 	DockerIP     = "127.0.0.1"
 	WorkspaceID  = "test-onnllyy123"
 	ConnectionID = "testconnonnllyy123"
-	Token        = "csm-auth-token"
+	Token        = "sidecar-auth-token"
 )
 
 var (
@@ -66,7 +66,7 @@ func initializeTestAssets(t *testing.T) bool {
 	transportHost = host + ":" + strconv.Itoa(port)
 	transport = httpClient.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
-	authFunc = httpClient.APIKeyAuth("x-csm-token", "header", token)
+	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", token)
 	return true
 }
 

@@ -5,23 +5,23 @@ ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
 ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=catalog-service-manager
+	export DOCKER_REPOSITORY:=hsm-sidecar
 endif
 
-export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
-export CSM_RDS_EXTENSION_ROOT:=${CSM_ROOT}/csm-extensions/services/amazon-rds
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_RDS_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/amazon-rds
 
 ifeq ($(strip $(VERSION)),)
-	export VERSION := $(shell ${CSM_ROOT}/scripts/build_version.sh "VERSION")
+	export VERSION := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "VERSION")
 endif
 
 ifeq ($(strip $(APP_VERSION_TAG)),)
-	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${CSM_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export CSM_EXTENSION_IMAGE_NAME:=csm-rds-mysql
-export CSM_EXTENSION_IMAGE_TAG:=latest
-export CSM_EXTENSION_BUILD_IMAGE_NAME:=csm-rds-mysql-build
+export SIDECAR_EXTENSION_IMAGE_NAME:=sidecar-rds-mysql
+export SIDECAR_EXTENSION_IMAGE_TAG:=latest
+export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-rds-mysql-build
 
 
 .PHONY: clean-all clean build-image run-image tools
@@ -52,7 +52,7 @@ build:
 
 run:
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
-	${CSM_RDS_EXTENSION_ROOT}/scripts/docker-run-csm-mysql.sh
+	${SIDECAR_RDS_EXTENSION_ROOT}/scripts/docker-run-csm-mysql.sh
 
 tools:
 	go get github.com/aws/aws-sdk-go
@@ -62,7 +62,7 @@ tools:
 
 test-format:
 	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
-	${CSM_ROOT}/scripts/testFmt.sh src
+	${SIDECAR_ROOT}/scripts/testFmt.sh src
 		
 # (required) run tests
 test:	test-format
@@ -73,13 +73,13 @@ test-integration:
 
 # (required) clean containers
 clean-containers:
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 
 # (required) clean docker images
 clean-images:
-	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
@@ -91,13 +91,13 @@ build-service-image:
 # (required) build docker image for service
 build-image:	
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
-	${CSM_RDS_EXTENSION_ROOT}/scripts/build-csm-amazon-rds-binary.sh
-	${CSM_ROOT}/scripts/docker/remove-docker-container.sh ${CSM_EXTENSION_IMAGE_NAME}
-	${CSM_ROOT}/scripts/docker/remove-docker-image.sh ${CSM_EXTENSION_BUILD_IMAGE_NAME}
-	${CSM_RDS_EXTENSION_ROOT}/scripts/build-docker-image.sh
+	${SIDECAR_RDS_EXTENSION_ROOT}/scripts/build-csm-amazon-rds-binary.sh
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
+	${SIDECAR_RDS_EXTENSION_ROOT}/scripts/build-docker-image.sh
 
 
 # (required) push image to docker registry
 publish-image:
-	IMAGE_NAME=${CSM_EXTENSION_IMAGE_NAME} IMAGE_TAG=${CSM_EXTENSION_IMAGE_TAG} ${CSM_ROOT}/scripts/docker/publish-image.sh
+	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 	

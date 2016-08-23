@@ -26,13 +26,14 @@ func GetFileToRunPath(filename string) *string {
 /////////////////////
 ///////WARNING///////
 ////this can take quite a while
-////if you do not want to wait for (CSM_EXT_TIMEOUT + CSM_EXT_TIMEOUT_ERROR) secs, disable it
+////if you do not want to wait for (SIDECAR_EXT_TIMEOUT + SIDECAR_EXT_TIMEOUT_ERROR) secs, disable it
 ////////////////////
 func TestRunExtensionShouldKillAfterTimeout(t *testing.T) {
 	//t.Skip()
 
-	t.Log("Should die after (CSM_EXT_TIMEOUT + CSM_EXT_TIMEOUT_ERROR) secs with false and no string output")
-
+	t.Log("Should die after (SIDECAR_EXT_TIMEOUT + SIDECAR_EXT_TIMEOUT_ERROR) secs with false and no string output")
+	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
+	defer os.Unsetenv("SIDECAR_API_KEY")
 	logger := lager.NewLogger("test long running file")
 	config := common.NewServiceManagerConfiguration()
 	*config.EXT_TIMEOUT = "2"
@@ -76,7 +77,8 @@ func TestRunExtensionShouldKillAfterTimeout(t *testing.T) {
 func TestRunExtensionShouldFalse(t *testing.T) {
 
 	param := 10
-
+	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
+	defer os.Unsetenv("SIDECAR_API_KEY")
 	t.Log(fmt.Sprintf("Should  return an exitStatus %d ", param))
 
 	logger := lager.NewLogger("should fail file")
@@ -109,7 +111,8 @@ func TestRunExtensionShouldFalse(t *testing.T) {
 
 func TestRunExtensionShouldOk(t *testing.T) {
 	t.Log("Everything should be ok")
-
+	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
+	defer os.Unsetenv("SIDECAR_API_KEY")
 	logger := lager.NewLogger("ok file")
 	config := common.NewServiceManagerConfiguration()
 	csm := CSMFileHelper{Logger: logger, Config: config}

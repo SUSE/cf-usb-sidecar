@@ -1,5 +1,5 @@
 {
-	"title": "CSM Extension Output Schema",
+	"title": "Sidecar Extension Output Schema",
 	"type": "object",
 	"properties": {
 		"status": {

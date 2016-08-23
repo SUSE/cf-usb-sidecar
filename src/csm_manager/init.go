@@ -74,15 +74,15 @@ func GetLogger() lager.Logger {
 // logInitDetails logs the initialization details
 func logInitDetails(logger lager.Logger, config *common.ServiceManagerConfiguration) {
 	logger.Info("InitServiceCatalogManager", lager.Data{"Initialisizing ": "Catalog Service Manager"})
-	logger.Info("InitServiceCatalogManager", lager.Data{"CSM_LOG_LEVEL ": *config.LOG_LEVEL})
+	logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_LOG_LEVEL ": *config.LOG_LEVEL})
 	if *config.DEV_MODE == "true" {
 		// log this only if dev mode is enabled
 		// this is developer flag, this is not inteded to be available for production
-		logger.Info("InitServiceCatalogManager", lager.Data{"CSM_DEV_MODE ": *config.DEV_MODE})
+		logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_DEV_MODE ": *config.DEV_MODE})
 	}
-	logger.Info("InitServiceCatalogManager", lager.Data{"CSM_HOME ": *config.MANAGER_HOME})
-	logger.Info("InitServiceCatalogManager", lager.Data{"CSM_PARAMETERS ": *config.PARAMETERS})
-	logger.Info("InitServiceCatalogManager", lager.Data{"CSM_API_KEY ": *config.API_KEY})
+	logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_HOME ": *config.MANAGER_HOME})
+	logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_PARAMETERS ": *config.PARAMETERS})
+	logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_API_KEY ": *config.API_KEY})
 }
 
 // CheckExtension runs on setup, workspace and connection objects

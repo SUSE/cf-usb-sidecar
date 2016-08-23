@@ -18,23 +18,23 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) scripts/build_version.sh "APP_VERSION_TAG")
 endif
 # Set environment variables if they are not before starting.
-ifndef CSM_API_KEY
-	export CSM_API_KEY:=csm-auth-token
+ifndef SIDECAR_API_KEY
+	export SIDECAR_API_KEY:=sidecar-auth-token
 endif
 
 ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=catalog-service-manager
+	export DOCKER_REPOSITORY:=hsm-sidecar
 endif
 
-export CSM_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
-export CSM_BASE_IMAGE_NAME:=csm
-export CSM_BASE_IMAGE_TAG:=latest
-export CSM_BUILD_BASE_IMAGE_NAME:=csm-buildbase
-export CSM_BUILD_BASE_IMAGE_TAG:=latest
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_BASE_IMAGE_NAME:=sidecar
+export SIDECAR_BASE_IMAGE_TAG:=latest
+export SIDECAR_BUILD_BASE_IMAGE_NAME:=sidecar-buildbase
+export SIDECAR_BUILD_BASE_IMAGE_TAG:=latest
 
 
 # List of files to be tested
-TESTLIST=$(shell go list ./... | grep -v examples | grep -v services | grep -v generated | grep -v scripts | grep -v csm_extensions)
+TESTLIST=$(shell go list ./... | grep -v examples | grep -v services | grep -v generated | grep -v scripts | grep -v SIDECAR_extensions)
 
 .PHONY: run all clean clean-all clean-docker generate build test coverage tools build-image publish-image
 
@@ -74,10 +74,10 @@ clean-all: clean
 	rm -rf generated
 
 clean-docker:
-	scripts/docker/remove-docker-container.sh csm
-	scripts/docker/remove-docker-container.sh catalog-service-manager
-	scripts/docker/remove-docker-image.sh csm
-	scripts/docker/remove-docker-image.sh catalog-service-manager
+	scripts/docker/remove-docker-container.sh sidecar
+	scripts/docker/remove-docker-container.sh hsm
+	scripts/docker/remove-docker-image.sh hsm
+	scripts/docker/remove-docker-image.sh sidecar
 
 generate-server:
 	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
@@ -124,4 +124,4 @@ build-image: clean-all
 release-base: build-image
 
 publish-image:
-	IMAGE_NAME=${CSM_BASE_IMAGE_NAME} IMAGE_TAG=${CSM_BASE_IMAGE_TAG} scripts/docker/publish-image.sh
+	IMAGE_NAME=${SIDECAR_BASE_IMAGE_NAME} IMAGE_TAG=${SIDECAR_BASE_IMAGE_TAG} scripts/docker/publish-image.sh

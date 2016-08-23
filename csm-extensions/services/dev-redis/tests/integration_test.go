@@ -43,14 +43,14 @@ func initTest() {
 	} else {
 		csmExtensionHost = os.Getenv("DOCKER_HOST_IP")
 	}
-	csmExtensionToken = os.Getenv("CSM_EXTENSION_TOKEN")
-	dockerContainerName = os.Getenv("CSM_EXTENSION_IMAGE_NAME")
-	csmExtensionPort = os.Getenv("CSM_EXTENSION_PORT")
+	csmExtensionToken = os.Getenv("SIDECAR_EXTENSION_TOKEN")
+	dockerContainerName = os.Getenv("SIDECAR_EXTENSION_IMAGE_NAME")
+	csmExtensionPort = os.Getenv("SIDECAR_EXTENSION_PORT")
 
 	transportHost = fmt.Sprintf("%s:%s", csmExtensionHost, csmExtensionPort)
 	transport = httpClient.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
-	authFunc = httpClient.APIKeyAuth("x-csm-token", "header", csmExtensionToken)
+	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", csmExtensionToken)
 }
 
 func dockerContainerExists(client *docker.Client, containerName string) (bool, error) {

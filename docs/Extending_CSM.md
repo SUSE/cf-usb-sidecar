@@ -4,7 +4,7 @@ catalog-service-manager's docker image named catalog-service-manager:base can be
 
 By default all extensions are optional.
 
-Only Create connection action has a default implementation where CSM tries to read environment variable CSM_PARAMETERS. This environment variable is defined as list of ENV variables that CSM should expose in the create connections API. If this variable is not defined then even the create connection action is treated as NOP.
+Only Create connection action has a default implementation where CSM tries to read environment variable SIDECAR_PARAMETERS. This environment variable is defined as list of ENV variables that CSM should expose in the create connections API. If this variable is not defined then even the create connection action is treated as NOP.
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 

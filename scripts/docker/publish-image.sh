@@ -1,5 +1,5 @@
 #!/bin/sh
-. ${CSM_ROOT}/scripts/colors.sh
+. ${SIDECAR_ROOT}/scripts/colors.sh
 
 if [ -z ${REGISTRY_LOCATION} ]; then
 	echo "Cannot push images as REGISTRY_LOCATION is not set"
@@ -12,12 +12,12 @@ if [ -z ${REGISTRY_LOCATION} ]; then
 fi
 
 if [ -z ${IMAGE_NAME} ]; then
-	echo "Error: Please set value for environemtn variable CSM_IMAGE_NAME"
+	echo "Error: Please set value for environemtn variable SIDECAR_IMAGE_NAME"
 	exit 1
 fi
 
 if [ -z ${IMAGE_TAG} ]; then
-	echo "Error: Please set value for environemtn variable CSM_IMAGE_TAG"
+	echo "Error: Please set value for environemtn variable SIDECAR_IMAGE_TAG"
 	exit 1
 fi
 
@@ -31,14 +31,14 @@ if [ -z ${APP_VERSION_TAG} ]; then
 	exit 1
 fi
 
-docker images ${CSM_IMAGE_NAME} | grep ${IMAGE_TAG} > /dev/null
+docker images ${SIDECAR_IMAGE_NAME} | grep ${IMAGE_TAG} > /dev/null
 if [ $? -eq 0 ]; then
 	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}
 	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${APP_VERSION_TAG}
 	docker push ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}
 	docker push ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${APP_VERSION_TAG}
 else
-	echo "Error: Docker image ${CSM_IMAGE_NAME}:${IMAGE_TAG} not found"
+	echo "Error: Docker image ${SIDECAR_IMAGE_NAME}:${IMAGE_TAG} not found"
 	echo "Before running publish-image, please use 'make build-image' to build the docker image."
 	exit 1
 fi
