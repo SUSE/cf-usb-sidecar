@@ -3,6 +3,8 @@ FROM golang:1.6-alpine
 RUN apk --no-cache add --update git
 RUN apk --no-cache add --update mercurial
 RUN apk --no-cache add --update make
+RUN apk --no-cache add --update gcc
+RUN apk --no-cache add --update alpine-sdk
 COPY . /go/src/github.com/hpcloud/catalog-service-manager
 ENV GOPATH /go
 ENV GOBIN /go/bin
