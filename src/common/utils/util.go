@@ -16,7 +16,7 @@ var HTTP_500 int64 = 500
 var HTTP_408 int64 = 408
 
 const ERR_EXTENSION_NOT_FOUND string = "extension not found"
-const ERR_TIMEOUT string = "Timeout while executing the extension. The extension did not respond in a reasonable ammount of time."
+const ERR_TIMEOUT string = "Timeout while executing the extension. The extension did not respond in a reasonable amount of time."
 
 type JsonResponse struct {
 	ErrorCode    int                        `json:"error_code,omitempty"`
