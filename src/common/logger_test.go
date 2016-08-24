@@ -8,36 +8,36 @@ import (
 )
 
 func TestInfoNewLogger(t *testing.T) {
-	testObj := NewLogger("info")
+	testObj := NewLogger("info", "test-logger")
 
 	assert.NotNil(t, testObj, "Unexpected error.")
-	assert.Equal(t, reflect.TypeOf(testObj).String(), "*lager.logger", "Invalid object returned.")
+	assert.Equal(t, reflect.TypeOf(testObj).String(), "*logrus.Logger", "Invalid object returned.")
 }
 
 func TestDebugNewLogger(t *testing.T) {
-	testObj := NewLogger("debug")
+	testObj := NewLogger("debug", "test-logger")
 
 	assert.NotNil(t, testObj, "Unexpected error.")
-	assert.Equal(t, reflect.TypeOf(testObj).String(), "*lager.logger", "Invalid object returned.")
+	assert.Equal(t, reflect.TypeOf(testObj).String(), "*logrus.Logger", "Invalid object returned.")
 }
 
 func TestErrorNewLogger(t *testing.T) {
-	testObj := NewLogger("error")
+	testObj := NewLogger("error", "test-logger")
 
 	assert.NotNil(t, testObj, "Unexpected error.")
-	assert.Equal(t, reflect.TypeOf(testObj).String(), "*lager.logger", "Invalid object returned.")
+	assert.Equal(t, reflect.TypeOf(testObj).String(), "*logrus.Logger", "Invalid object returned.")
 }
 
 func TestFatalNewLogger(t *testing.T) {
-	testObj := NewLogger("fatal")
+	testObj := NewLogger("fatal", "test-logger")
 
 	assert.NotNil(t, testObj, "Unexpected error.")
-	assert.Equal(t, reflect.TypeOf(testObj).String(), "*lager.logger", "Invalid object returned.")
+	assert.Equal(t, reflect.TypeOf(testObj).String(), "*logrus.Logger", "Invalid object returned.")
 }
 
 func TestDefaultNewLogger(t *testing.T) {
-	testObj := NewLogger("anything")
+	testObj := NewLogger("anything", "test-logger")
 
 	assert.NotNil(t, testObj, "Unexpected error.")
-	assert.Equal(t, reflect.TypeOf(testObj).String(), "*lager.logger", "Invalid object returned.")
+	assert.Equal(t, reflect.TypeOf(testObj).String(), "*logrus.Logger", "Invalid object returned.")
 }

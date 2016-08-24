@@ -8,30 +8,30 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"
-	"github.com/pivotal-golang/lager"
 )
 
 type CSMStatus struct {
 	common.CSMStatusInterface
-	Logger     lager.Logger
+	Logger     *logrus.Logger
 	Config     *common.ServiceManagerConfiguration
 	FileHelper utils.CSMFileHelperInterface
 }
 
-func NewCSMStatus(logger lager.Logger,
+func NewCSMStatus(logger *logrus.Logger,
 	config *common.ServiceManagerConfiguration,
 	fileHelper utils.CSMFileHelperInterface) *CSMStatus {
-	return &CSMStatus{Logger: logger.Session("CSM-Status"), Config: config, FileHelper: fileHelper}
+	return &CSMStatus{Logger: logger, Config: config, FileHelper: fileHelper}
 }
 
 func (w *CSMStatus) GetStatus() (*models.StatusResponse, *models.Error) {
 	exists, filename := w.getStatusExtension(*w.Config.MANAGER_HOME)
 
-	if !exists || filename == nil {
-		w.Logger.Info("GetStatus", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+	if !exists || filename == "" {
+		w.Logger.WithFields(logrus.Fields{utils.ERR_EXTENSION_NOT_FOUND: exists}).Info("GetStatus")
 
 		return w.statusExtentionNotFound(utils.ERR_EXTENSION_NOT_FOUND)
 	}
@@ -67,19 +67,19 @@ func (w *CSMStatus) statusExtentionNotFound(message string) (*models.StatusRespo
 	}
 	return &status, nil
 }
-func (w *CSMStatus) getStatusExtension(homePath string) (bool, *string) {
+func (w *CSMStatus) getStatusExtension(homePath string) (bool, string) {
 	return w.FileHelper.GetExtension(filepath.Join(homePath, "status"))
 }
 
-func (w *CSMStatus) checkParamsOk(extensionPath *string) error {
-	if extensionPath == nil {
+func (w *CSMStatus) checkParamsOk(extensionPath string) error {
+	if extensionPath == "" {
 		err := errors.New("extensionPath is nil")
 		return err
 	}
 	return nil
 }
 
-func (w *CSMStatus) executeRequest(requestType string, filename *string) (*models.StatusResponse, *models.Error) {
+func (w *CSMStatus) executeRequest(requestType string, filename string) (*models.StatusResponse, *models.Error) {
 	status, err := w.executeExtension(filename)
 
 	if err != nil {
@@ -89,15 +89,21 @@ func (w *CSMStatus) executeRequest(requestType string, filename *string) (*model
 	return status, nil
 }
 
-func (w *CSMStatus) executeExtension(extensionPath *string) (*models.StatusResponse, error) {
+func (w *CSMStatus) executeExtension(extensionPath string) (*models.StatusResponse, error) {
 	if err := w.checkParamsOk(extensionPath); err != nil {
 		return nil, err
 	}
-	w.Logger.Info("executeExtension", lager.Data{"extension Path ": extensionPath})
+	w.Logger.WithFields(logrus.Fields{"extension Path": extensionPath}).Info("executeExtension")
 
-	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(*extensionPath); success {
-		w.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
-		w.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
+	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(extensionPath); success {
+		w.Logger.WithFields(logrus.Fields{"extension execution status": strconv.FormatBool(success)}).Info("executeExtension")
+		var stringOutput string
+		if output == "" {
+			stringOutput = ""
+		} else {
+			stringOutput = output
+		}
+		w.Logger.WithFields(logrus.Fields{"extension execution Result": stringOutput}).Debug("executeExtension")
 
 		fileContent, err := utils.ReadOutputFile(outputFile, *w.Config.DEV_MODE != "true")
 		if err != nil {
@@ -108,11 +114,11 @@ func (w *CSMStatus) executeExtension(extensionPath *string) (*models.StatusRespo
 	} else {
 		// extension couldn't be executed, returned an error or timedout
 		//first we check for timeout (success=false,  output==nil)
-		if output == nil {
+		if output == "" {
 			return nil, errors.New(utils.ERR_TIMEOUT)
 		}
 		//else it means that the extension did not return a zero code	 ("success = false, output != nil)
-		err := errors.New(*output)
+		err := errors.New(output)
 		return nil, err
 	}
 }

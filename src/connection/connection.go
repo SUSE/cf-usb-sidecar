@@ -8,34 +8,34 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"
-	"github.com/pivotal-golang/lager"
 )
 
 // CSMConnection object for managing the connection.
 type CSMConnection struct {
 	common.CSMSetupInterface
-	Logger     lager.Logger
+	Logger     *logrus.Logger
 	Config     *common.ServiceManagerConfiguration
 	FileHelper utils.CSMFileHelperInterface
 }
 
 // NewCSMConnection creates CSMConnection
-func NewCSMConnection(logger lager.Logger, config *common.ServiceManagerConfiguration, fileHelper utils.CSMFileHelperInterface) *CSMConnection {
-	return &CSMConnection{Logger: logger.Session("CSM-Workspace"), Config: config, FileHelper: fileHelper}
+func NewCSMConnection(logger *logrus.Logger, config *common.ServiceManagerConfiguration, fileHelper utils.CSMFileHelperInterface) *CSMConnection {
+	return &CSMConnection{Logger: logger, Config: config, FileHelper: fileHelper}
 }
 
-func (c *CSMConnection) getConnectionsGetExtension(homePath string) (bool, *string) {
+func (c *CSMConnection) getConnectionsGetExtension(homePath string) (bool, string) {
 	return c.FileHelper.GetExtension(filepath.Join(homePath, "connection", "get"))
 }
 
-func (c *CSMConnection) getConnectionsCreateExtension(homePath string) (bool, *string) {
+func (c *CSMConnection) getConnectionsCreateExtension(homePath string) (bool, string) {
 	return c.FileHelper.GetExtension(filepath.Join(homePath, "connection", "create"))
 }
 
-func (c *CSMConnection) getConnectionsDeleteExtension(homePath string) (bool, *string) {
+func (c *CSMConnection) getConnectionsDeleteExtension(homePath string) (bool, string) {
 	return c.FileHelper.GetExtension(filepath.Join(homePath, "connection", "delete"))
 }
 
@@ -80,23 +80,23 @@ func marshalResponseFromMessage(message []byte) (*models.ServiceManagerConnectio
 	return &connection, nil, nil
 }
 
-func checkParamsOk(workspaceID *string, connectionID *string, extensionPath *string) error {
-	if workspaceID == nil {
-		err := errors.New("workspaceID is nil")
+func checkParamsOk(workspaceID string, connectionID string, extensionPath string) error {
+	if workspaceID == "" {
+		err := errors.New("workspaceID is not set")
 		return err
 	}
-	if connectionID == nil {
-		err := errors.New("connectionID is nil")
+	if connectionID == "" {
+		err := errors.New("connectionID is not set")
 		return err
 	}
-	if extensionPath == nil {
-		err := errors.New("extensionPath is nil")
+	if extensionPath == "" {
+		err := errors.New("extensionPath is not set")
 		return err
 	}
 	return nil
 }
 
-func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *string, details map[string]interface{}, extensionPath *string) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
+func (c *CSMConnection) executeExtension(workspaceID string, connectionID string, details map[string]interface{}, extensionPath string) (*models.ServiceManagerConnectionResponse, *models.Error, error) {
 	if err := checkParamsOk(workspaceID, connectionID, extensionPath); err != nil {
 		return nil, nil, err
 	}
@@ -112,10 +112,11 @@ func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *stri
 		detailsStr = string(detailsJSON)
 	}
 
-	c.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "extension Path ": extensionPath, "details": details})
-	if success, outputFile, output := c.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, *connectionID, detailsStr); success {
-		c.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
-		c.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
+	c.Logger.WithFields(logrus.Fields{"workspaceID": workspaceID, "connectionID": connectionID, "extension Path": extensionPath, "details": details}).Info("executeExtension")
+
+	if success, outputFile, output := c.FileHelper.RunExtensionFileGen(extensionPath, workspaceID, connectionID, detailsStr); success {
+		c.Logger.WithFields(logrus.Fields{"extension execution status": success}).Info("executeExtension")
+		c.Logger.WithFields(logrus.Fields{"extension execution Result": output}).Debug("executeExtension")
 
 		fileContent, err := utils.ReadOutputFile(outputFile, *c.Config.DEV_MODE != "true")
 		if err != nil {
@@ -125,33 +126,34 @@ func (c *CSMConnection) executeExtension(workspaceID *string, connectionID *stri
 	} else {
 		// extension couldn't be executed, returned an error or timedout
 		//first we check for timeout (success=false,  output==nil)
-		if output == nil {
+		if output == "" {
 			return nil, utils.GenerateErrorResponse(&utils.HTTP_408, utils.ERR_TIMEOUT), nil
 		}
 		//else it means that the extension did not return a zero code	 ("success = false, output != nil)
-		err := errors.New(*output)
+		err := errors.New(output)
 		return nil, nil, err
 	}
 }
 
 // CheckExtensions checks for workspace extensions
 func (c *CSMConnection) CheckExtensions() {
+
 	_, file := c.getConnectionsGetExtension(*c.Config.MANAGER_HOME)
-	c.Logger.Info("CheckExtensions", lager.Data{"Connections Get extension ": file})
+	c.Logger.WithFields(logrus.Fields{"Connections Get extension": file}).Info("CheckExtensions")
 
 	_, file = c.getConnectionsCreateExtension(*c.Config.MANAGER_HOME)
-	c.Logger.Info("CheckExtensions", lager.Data{"Connections Create extension ": file})
+	c.Logger.WithFields(logrus.Fields{"Connections Create extension": file}).Info("CheckExtensions")
 
 	_, file = c.getConnectionsDeleteExtension(*c.Config.MANAGER_HOME)
-	c.Logger.Info("CheckExtensions", lager.Data{"Connections Delete extension ": file})
+	c.Logger.WithFields(logrus.Fields{"Connections Delete extension": file}).Info("CheckExtensions")
 }
 
-func (c *CSMConnection) executeRequest(workspaceID string, connectionID string, details map[string]interface{}, requestType string, filename *string) (*models.ServiceManagerConnectionResponse, *models.Error) {
+func (c *CSMConnection) executeRequest(workspaceID string, connectionID string, details map[string]interface{}, requestType string, filename string) (*models.ServiceManagerConnectionResponse, *models.Error) {
 	var modelserr *models.Error
 	var connection *models.ServiceManagerConnectionResponse
 	var err error
 
-	connection, modelserr, err = c.executeExtension(&workspaceID, &connectionID, details, filename)
+	connection, modelserr, err = c.executeExtension(workspaceID, connectionID, details, filename)
 	if err != nil {
 		c.Logger.Error(requestType, err)
 		modelserr = utils.GenerateErrorResponse(&utils.HTTP_500, err.Error())
@@ -184,12 +186,12 @@ func generateNoopResponse() *models.ServiceManagerConnectionResponse {
 
 // GetConnection get connections
 func (c *CSMConnection) GetConnection(workspaceID string, connectionID string) (*models.ServiceManagerConnectionResponse, *models.Error) {
-	c.Logger.Info("GetConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
+	c.Logger.WithFields(logrus.Fields{"workspaceID": workspaceID, "connectionID": connectionID}).Info("GetConnection")
 
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsGetExtension(*serviceManagerConfig.MANAGER_HOME)
-	if !exists || filename == nil {
-		c.Logger.Info("GetConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+	if !exists || filename == "" {
+		c.Logger.WithFields(logrus.Fields{utils.ERR_EXTENSION_NOT_FOUND: exists}).Info("GetConnection")
 		return generateNoopResponse(), nil
 	}
 	return c.executeRequest(workspaceID, connectionID, make(map[string]interface{}), "GetConnection", filename)
@@ -197,15 +199,14 @@ func (c *CSMConnection) GetConnection(workspaceID string, connectionID string) (
 
 // CreateConnection create connections
 func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string, details map[string]interface{}) (*models.ServiceManagerConnectionResponse, *models.Error) {
-	c.Logger.Info("CreateConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID, "details": details})
-
+	c.Logger.WithFields(logrus.Fields{"workspaceID": workspaceID, "connectionID": connectionID, "details": details}).Info("CreateConnection")
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsCreateExtension(*serviceManagerConfig.MANAGER_HOME)
 	if (!exists) && (serviceManagerConfig.PARAMETERS != nil) {
 		connection := utils.NewConnection()
-		c.Logger.Info("GetConnection", lager.Data{"Extension not found ": exists})
+		c.Logger.WithFields(logrus.Fields{"Extension not found": exists}).Info("GetConnection")
 		parametersNameList := strings.Split(*serviceManagerConfig.PARAMETERS, " ")
-		c.Logger.Info("GetConnection", lager.Data{"Parameter List ": parametersNameList})
+		c.Logger.WithFields(logrus.Fields{"Parameter List": parametersNameList}).Info("GetConnection")
 		connection.Details = make(map[string]interface{})
 		for _, parameterName := range parametersNameList {
 			parameterValue, ok := os.LookupEnv(parameterName)
@@ -217,8 +218,8 @@ func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string
 		connection.Status = common.PROCESSING_STATUS_SUCCESSFUL
 		return &connection, nil
 
-	} else if !exists || filename == nil {
-		c.Logger.Info("CreateConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+	} else if !exists || filename == "" {
+		c.Logger.WithFields(logrus.Fields{utils.ERR_EXTENSION_NOT_FOUND: exists}).Info("CreateConnection")
 		return generateNoopResponse(), nil
 	}
 	return c.executeRequest(workspaceID, connectionID, details, "CreateConnection", filename)
@@ -226,12 +227,12 @@ func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string
 
 // DeleteConnection delete connections
 func (c *CSMConnection) DeleteConnection(workspaceID string, connectionID string) (*models.ServiceManagerConnectionResponse, *models.Error) {
-	c.Logger.Info("DeleteConnection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
+	c.Logger.WithFields(logrus.Fields{"workspaceID": workspaceID, "connectionID": connectionID}).Info("DeleteConnection")
 
 	serviceManagerConfig := common.NewServiceManagerConfiguration()
 	exists, filename := c.getConnectionsDeleteExtension(*serviceManagerConfig.MANAGER_HOME)
-	if !exists || filename == nil {
-		c.Logger.Info("DeleteConnection", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+	if !exists || filename == "" {
+		c.Logger.WithFields(logrus.Fields{utils.ERR_EXTENSION_NOT_FOUND: exists}).Info("DeleteConnection")
 		return generateNoopResponse(), nil
 	}
 	return c.executeRequest(workspaceID, connectionID, make(map[string]interface{}), "DeleteConnection", filename)

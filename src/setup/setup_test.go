@@ -26,32 +26,32 @@ type MockedFileExtension struct {
 	utils.CSMFileHelperInterface
 }
 
-func (l MockedFileExtension) GetExtension(extPath string) (bool, *string) {
+func (l MockedFileExtension) GetExtension(extPath string) (bool, string) {
 	args := l.Called(extPath)
 	if args.Get(1) == nil {
-		return args.Bool(0), nil
+		return args.Bool(0), ""
 	} else if args.Get(1) != nil {
 		arg2 := args.String(1)
-		return args.Bool(0), &arg2
+		return args.Bool(0), arg2
 	}
-	return false, nil
+	return false, ""
 }
 
-func (l MockedFileExtension) RunExtension(extensionPath string, params ...string) (bool, *string) {
+func (l MockedFileExtension) RunExtension(extensionPath string, params ...string) (bool, string) {
 	args := l.Called(extensionPath, params)
 	if args.Get(1) == nil {
-		return args.Bool(0), nil
+		return args.Bool(0), ""
 	} else {
 		arg2 := args.String(1)
-		return args.Bool(0), &arg2
+		return args.Bool(0), arg2
 	}
 }
 
-func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, *string) {
+func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, string) {
 
 	args := l.Called(extensionPath, params)
 	if args.Get(1) == nil {
-		return args.Bool(0), nil, nil
+		return args.Bool(0), nil, ""
 	} else if args.Get(1) != nil {
 		arg2 := args.String(1)
 		tmpfile, _ := ioutil.TempFile("", "example")
@@ -65,16 +65,16 @@ func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ..
 		} else if arg2 != "" {
 			tmpfile.Write([]byte(arg2))
 		}
-		retString := &arg2
-		return args.Bool(0), tmpfile, retString
+
+		return args.Bool(0), tmpfile, arg2
 	}
-	return false, nil, nil
+	return false, nil, ""
 }
 
 func setup(cmsFileHelper utils.CSMFileHelperInterface) (*common.ServiceManagerConfiguration, *CSMSetup) {
 	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
 	config := common.NewServiceManagerConfiguration()
-	logger := common.NewLogger(strings.ToLower(*config.LOG_LEVEL))
+	logger := common.NewLogger(strings.ToLower(*config.LOG_LEVEL), "test-setup-logger")
 	if cmsFileHelper == nil {
 		cmsFileHelper = utils.CSMFileHelper{
 			Logger: logger,

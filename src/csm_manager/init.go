@@ -3,13 +3,13 @@ package csm_manager
 import (
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/hpcloud/catalog-service-manager/src/common"
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"
 	internalConnection "github.com/hpcloud/catalog-service-manager/src/connection"
 	internalSetup "github.com/hpcloud/catalog-service-manager/src/setup"
 	internalStatus "github.com/hpcloud/catalog-service-manager/src/status"
 	internalWorkspaces "github.com/hpcloud/catalog-service-manager/src/workspace"
-	"github.com/pivotal-golang/lager"
 )
 
 var (
@@ -19,13 +19,13 @@ var (
 	csmStatus     *internalStatus.CSMStatus
 
 	config *common.ServiceManagerConfiguration
-	logger lager.Logger
+	logger *logrus.Logger
 )
 
 //InitServiceCatalogManager initilizes service catalog manager
 func InitServiceCatalogManager() {
 	config = common.NewServiceManagerConfiguration()
-	logger = common.NewLogger(strings.ToLower(*config.LOG_LEVEL))
+	logger = common.NewLogger(strings.ToLower(*config.LOG_LEVEL), "csm-manager")
 	fileHelper := utils.CSMFileHelper{
 		Logger: logger,
 		Config: config,
@@ -67,22 +67,22 @@ func GetConfig() *common.ServiceManagerConfiguration {
 }
 
 // GetLogger returns the Logger object
-func GetLogger() lager.Logger {
+func GetLogger() *logrus.Logger {
 	return logger
 }
 
 // logInitDetails logs the initialization details
-func logInitDetails(logger lager.Logger, config *common.ServiceManagerConfiguration) {
-	logger.Info("InitServiceCatalogManager", lager.Data{"Initialisizing ": "Catalog Service Manager"})
-	logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_LOG_LEVEL ": *config.LOG_LEVEL})
+func logInitDetails(logger *logrus.Logger, config *common.ServiceManagerConfiguration) {
+	logger.Info("InitServiceCatalogManager ", "Initialiizing: "+"Catalog Service Manager")
+	logger.Info("InitServiceCatalogManager ", "SIDECAR_LOG_LEVEL: "+*config.LOG_LEVEL)
 	if *config.DEV_MODE == "true" {
 		// log this only if dev mode is enabled
 		// this is developer flag, this is not inteded to be available for production
-		logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_DEV_MODE ": *config.DEV_MODE})
+		logger.Info("InitServiceCatalogManager ", "SIDECAR_DEV_MODE: "+*config.DEV_MODE)
 	}
-	logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_HOME ": *config.MANAGER_HOME})
-	logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_PARAMETERS ": *config.PARAMETERS})
-	logger.Info("InitServiceCatalogManager", lager.Data{"SIDECAR_API_KEY ": *config.API_KEY})
+	logger.Info("InitServiceCatalogManager ", "SIDECAR_HOME: "+*config.MANAGER_HOME)
+	logger.Info("InitServiceCatalogManager ", "SIDECAR_PARAMETERS: "+*config.PARAMETERS)
+	logger.Info("InitServiceCatalogManager ", "SIDECAR_API_KEY: "+*config.API_KEY)
 }
 
 // CheckExtension runs on setup, workspace and connection objects

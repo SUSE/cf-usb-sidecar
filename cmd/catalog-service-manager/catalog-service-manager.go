@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
 	"time"
+	"log"
 
 	spec "github.com/go-swagger/go-swagger/spec"
 	flags "github.com/jessevdk/go-flags"
@@ -24,16 +24,17 @@ import (
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 func main() {
+	csm_manager.InitServiceCatalogManager()
+	logger := csm_manager.GetLogger()
+
 	swaggerSpec, err := spec.New(restapi.SwaggerJSON, "")
 	if err != nil {
-		log.Fatalln(err)
+		logger.Fatalln(err)
 	}
 
 	api := operations.NewCatlogServiceManagerAPI(swaggerSpec)
 	server := restapi.NewServer(api)
 	handler := srvManagerAPI.ConfigureAPI(api)
-
-	csm_manager.InitServiceCatalogManager()
 
 	defer server.Shutdown()
 
@@ -56,7 +57,6 @@ service management capabilities.
 	httpServer := &graceful.Server{Server: new(http.Server)}
 	httpServer.Addr = "0.0.0.0:8081"
 	httpServer.Handler = handler
-
 	configuration := common.NewServiceManagerConfiguration()
 
 	// transform logrus to a writer for the http server errors
@@ -77,7 +77,7 @@ service management capabilities.
 	fmt.Printf("TLS_PRIVATE_KEY_FILE: %s\n", *configuration.TLS_PRIVATE_KEY_FILE)
 
 	// serving https
-	log.Printf("Helion Service Manager listening at https://%s", httpServer.Addr)
+	logger.Printf("Helion Service Manager listening at https://%s", httpServer.Addr)
 	if err := httpServer.ListenAndServeTLS(*configuration.TLS_CERT_FILE, *configuration.TLS_PRIVATE_KEY_FILE); err != nil {
 		shutdown(api, err)
 	}

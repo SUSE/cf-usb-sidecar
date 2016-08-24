@@ -8,34 +8,34 @@ import (
 
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 	"github.com/hpcloud/catalog-service-manager/src/common"
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"
-	"github.com/pivotal-golang/lager"
 )
 
 type CSMWorkspace struct {
 	common.CSMWorkspaceInterface
-	Logger     lager.Logger
+	Logger     *logrus.Logger
 	Config     *common.ServiceManagerConfiguration
 	FileHelper utils.CSMFileHelperInterface
 }
 
-func NewCSMWorkspace(logger lager.Logger,
+func NewCSMWorkspace(logger *logrus.Logger,
 	config *common.ServiceManagerConfiguration,
 	fileHelper utils.CSMFileHelperInterface) *CSMWorkspace {
-	return &CSMWorkspace{Logger: logger.Session("CSM-Workspace"), Config: config, FileHelper: fileHelper}
+	return &CSMWorkspace{Logger: logger, Config: config, FileHelper: fileHelper}
 }
 
-func (w *CSMWorkspace) getWorkspaceGetExtension(homePath string) (bool, *string) {
+func (w *CSMWorkspace) getWorkspaceGetExtension(homePath string) (bool, string) {
 	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace", "get"))
 }
 
-func (w *CSMWorkspace) getWorkspaceCreateExtension(homePath string) (bool, *string) {
+func (w *CSMWorkspace) getWorkspaceCreateExtension(homePath string) (bool, string) {
 	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace", "create"))
 }
 
-func (w *CSMWorkspace) getWorkspaceDeleteExtension(homePath string) (bool, *string) {
+func (w *CSMWorkspace) getWorkspaceDeleteExtension(homePath string) (bool, string) {
 	return w.FileHelper.GetExtension(filepath.Join(homePath, "workspace", "delete"))
 }
 
@@ -90,19 +90,19 @@ func marshalResponseFromMessage(message []byte) (*models.ServiceManagerWorkspace
 	return &workspace, nil, nil
 }
 
-func checkParamsOk(workspaceID *string, extensionPath *string) error {
-	if workspaceID == nil {
+func checkParamsOk(workspaceID string, extensionPath string) error {
+	if workspaceID == "" {
 		err := errors.New("workspaceID is nil")
 		return err
 	}
-	if extensionPath == nil {
+	if extensionPath == "" {
 		err := errors.New("extensionPath is nil")
 		return err
 	}
 	return nil
 }
 
-func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *string, details map[string]interface{}) (*models.ServiceManagerWorkspaceResponse, *models.Error, error) {
+func (w *CSMWorkspace) executeExtension(workspaceID string, extensionPath string, details map[string]interface{}) (*models.ServiceManagerWorkspaceResponse, *models.Error, error) {
 	if err := checkParamsOk(workspaceID, extensionPath); err != nil {
 		return nil, nil, err
 	}
@@ -118,11 +118,11 @@ func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *stri
 		detailsStr = string(detailsJSON)
 	}
 
-	w.Logger.Info("executeExtension", lager.Data{"workspaceID": workspaceID, "extension Path ": extensionPath, "details": details})
+	w.Logger.WithFields(logrus.Fields{"workspaceID": workspaceID, "extension Path": extensionPath, "details": details}).Info("executeExtension")
 
-	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(*extensionPath, *workspaceID, detailsStr); success {
-		w.Logger.Info("executeExtension", lager.Data{"extension execution status ": success})
-		w.Logger.Debug("executeExtension", lager.Data{"extension execution Result: ": output})
+	if success, outputFile, output := w.FileHelper.RunExtensionFileGen(extensionPath, workspaceID, detailsStr); success {
+		w.Logger.WithFields(logrus.Fields{"extension execution status": success}).Info("executeExtension")
+		w.Logger.WithFields(logrus.Fields{"extension execution Result": output}).Debug("executeExtension")
 
 		fileContent, err := utils.ReadOutputFile(outputFile, *w.Config.DEV_MODE != "true")
 		if err != nil {
@@ -133,11 +133,11 @@ func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *stri
 	} else {
 		// extension couldn't be executed, returned an error or timedout
 		//first we check for timeout (success=false,  output==nil)
-		if output == nil {
+		if output == "" {
 			return nil, utils.GenerateErrorResponse(&utils.HTTP_408, utils.ERR_TIMEOUT), nil
 		}
 		//else it means that the extension did not return a zero code	 ("success = false, output != nil)
-		err := errors.New(*output)
+		err := errors.New(output)
 		return nil, nil, err
 	}
 }
@@ -145,21 +145,21 @@ func (w *CSMWorkspace) executeExtension(workspaceID *string, extensionPath *stri
 // CheckExtensions checks for workspace extensions
 func (w *CSMWorkspace) CheckExtensions() {
 	_, file := w.getWorkspaceGetExtension(*w.Config.MANAGER_HOME)
-	w.Logger.Info("CheckExtensions", lager.Data{"Workspaces Get extension ": file})
+	w.Logger.WithFields(logrus.Fields{"Workspaces Get extension": file}).Info("CheckExtensions")
 
 	_, file = w.getWorkspaceCreateExtension(*w.Config.MANAGER_HOME)
-	w.Logger.Info("CheckExtensions", lager.Data{"Workspaces Create extension ": file})
+	w.Logger.WithFields(logrus.Fields{"Workspaces Create extension": file}).Info("CheckExtensions")
 
 	_, file = w.getWorkspaceDeleteExtension(*w.Config.MANAGER_HOME)
-	w.Logger.Info("CheckExtensions", lager.Data{"Workspaces Delete extension ": file})
+	w.Logger.WithFields(logrus.Fields{"Workspaces Delete extension": file}).Info("CheckExtensions")
 }
 
-func (w *CSMWorkspace) executeRequest(workspaceID string, requestType string, filename *string, details map[string]interface{}) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
+func (w *CSMWorkspace) executeRequest(workspaceID string, requestType string, filename string, details map[string]interface{}) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
 	var modelserr *models.Error
 	var workspace *models.ServiceManagerWorkspaceResponse
 	var err error
 
-	workspace, modelserr, err = w.executeExtension(&workspaceID, filename, details)
+	workspace, modelserr, err = w.executeExtension(workspaceID, filename, details)
 
 	if err != nil {
 		w.Logger.Error(requestType, err)
@@ -176,11 +176,11 @@ func (w *CSMWorkspace) executeRequest(workspaceID string, requestType string, fi
 // GetWorkspace get workspaces
 func (w *CSMWorkspace) GetWorkspace(workspaceID string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
 
-	w.Logger.Info("GetWorkspace", lager.Data{"workspaceID": workspaceID})
+	w.Logger.WithFields(logrus.Fields{"workspaceID ": workspaceID}).Info("GetWorkspace")
 	exists, filename := w.getWorkspaceGetExtension(*w.Config.MANAGER_HOME)
 
-	if !exists || filename == nil {
-		w.Logger.Info("GetWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+	if !exists || filename == "" {
+		w.Logger.WithFields(logrus.Fields{utils.ERR_EXTENSION_NOT_FOUND: exists}).Info("GetWorkspace")
 		return generateNoopResponse(), nil
 	}
 	return w.executeRequest(workspaceID, "GetWorkspace", filename, make(map[string]interface{}))
@@ -189,11 +189,12 @@ func (w *CSMWorkspace) GetWorkspace(workspaceID string) (*models.ServiceManagerW
 
 // CreateWorkspace create workspaces
 func (w *CSMWorkspace) CreateWorkspace(workspaceID string, details map[string]interface{}) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
-	w.Logger.Info("CreateWorkspace", lager.Data{"workspaceID": workspaceID, "details": details})
+	w.Logger.WithFields(logrus.Fields{"workspaceID": workspaceID, "details": details}).Info("CreateWorkspace")
+
 	exists, filename := w.getWorkspaceCreateExtension(*w.Config.MANAGER_HOME)
 
-	if !exists || filename == nil {
-		w.Logger.Info("CreateWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+	if !exists || filename == "" {
+		w.Logger.WithFields(logrus.Fields{utils.ERR_EXTENSION_NOT_FOUND: exists}).Info("CreateWorkspace")
 		return generateNoopResponse(), nil
 	}
 	return w.executeRequest(workspaceID, "CreateWorkspace", filename, details)
@@ -202,11 +203,11 @@ func (w *CSMWorkspace) CreateWorkspace(workspaceID string, details map[string]in
 // DeleteWorkspace delete workspaces
 func (w *CSMWorkspace) DeleteWorkspace(workspaceID string) (*models.ServiceManagerWorkspaceResponse, *models.Error) {
 
-	w.Logger.Info("DeleteWorkspace", lager.Data{"workspaceID": workspaceID})
+	w.Logger.WithFields(logrus.Fields{"workspaceID": workspaceID}).Info("DeleteWorkspace")
 	exists, filename := w.getWorkspaceDeleteExtension(*w.Config.MANAGER_HOME)
 
-	if !exists || filename == nil {
-		w.Logger.Info("DeleteWorkspace", lager.Data{utils.ERR_EXTENSION_NOT_FOUND: exists})
+	if !exists || filename == "" {
+		w.Logger.WithFields(logrus.Fields{utils.ERR_EXTENSION_NOT_FOUND: exists}).Info("DeleteWorkspace")
 		return generateNoopResponse(), nil
 	}
 	return w.executeRequest(workspaceID, "DeleteWorkspace", filename, make(map[string]interface{}))

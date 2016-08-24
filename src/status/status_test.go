@@ -23,28 +23,28 @@ type MockedFileExtension struct {
 	utils.CSMFileHelperInterface
 }
 
-func (l MockedFileExtension) GetExtension(extPath string) (bool, *string) {
+func (l MockedFileExtension) GetExtension(extPath string) (bool, string) {
 	args := l.Called(extPath)
 	if args.Get(1) == nil {
-		return args.Bool(0), nil
+		return args.Bool(0), ""
 	} else if args.Get(1) != nil {
 		arg2 := args.String(1)
-		return args.Bool(0), &arg2
+		return args.Bool(0), arg2
 	}
-	return false, nil
+	return false, ""
 }
 
-func (l MockedFileExtension) RunExtension(extensionPath string, params ...string) (bool, *string) {
+func (l MockedFileExtension) RunExtension(extensionPath string, params ...string) (bool, string) {
 	args := l.Called(extensionPath, params)
 	if args.Get(1) == nil {
-		return args.Bool(0), nil
+		return args.Bool(0), ""
 	} else {
 		arg2 := args.String(1)
-		return args.Bool(0), &arg2
+		return args.Bool(0), arg2
 	}
 }
 
-func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, *string) {
+func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, string) {
 	var args mock.Arguments
 	if len(params) > 0 {
 		args = l.Called(extensionPath, params)
@@ -53,13 +53,13 @@ func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ..
 	}
 	if args.Get(1) == nil {
 		if len(args) >= 3 && args.Get(2) == nil {
-			return args.Bool(0), nil, nil
+			return args.Bool(0), nil, ""
 		}
 		if len(args) >= 3 {
 			retString := args.String(2)
-			return args.Bool(0), nil, &retString
+			return args.Bool(0), nil, retString
 		}
-		return args.Bool(0), nil, nil
+		return args.Bool(0), nil, ""
 	} else if args.Get(1) != nil {
 		arg2 := args.String(1)
 		tmpfile, _ := ioutil.TempFile("", "example1")
@@ -71,28 +71,28 @@ func (l MockedFileExtension) RunExtensionFileGen(extensionPath string, params ..
 			}
 			os.Chown(tmpfile.Name(), 0, 0)
 			os.Chmod(tmpfile.Name(), 0000)
-			return true, tmpfile, nil
+			return true, tmpfile, ""
 		} else if arg2 != "" {
 			tmpfile.Write([]byte(arg2))
 		}
 		if len(args) >= 3 && args.Get(2) == nil {
-			return args.Bool(0), tmpfile, nil
+			return args.Bool(0), tmpfile, ""
 		}
 		if len(args) >= 3 && args.Get(2) != nil {
 			retString := args.String(2)
-			return args.Bool(0), tmpfile, &retString
+			return args.Bool(0), tmpfile, retString
 		} else {
-			return args.Bool(0), tmpfile, nil
+			return args.Bool(0), tmpfile, ""
 		}
 
 	}
-	return false, nil, nil
+	return false, nil, ""
 }
 
 func setup(cmsFileHelper utils.CSMFileHelperInterface) (*common.ServiceManagerConfiguration, *CSMStatus) {
 	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
 	config := common.NewServiceManagerConfiguration()
-	logger := common.NewLogger(strings.ToLower(*config.LOG_LEVEL))
+	logger := common.NewLogger(strings.ToLower(*config.LOG_LEVEL), "test-status")
 	if cmsFileHelper == nil {
 		cmsFileHelper = utils.CSMFileHelper{
 			Logger: logger,

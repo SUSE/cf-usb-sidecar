@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/hpcloud/catalog-service-manager/src/common"
-	"github.com/pivotal-golang/lager"
 )
 
 func GetFileToRunPath(filename string) *string {
@@ -34,8 +33,8 @@ func TestRunExtensionShouldKillAfterTimeout(t *testing.T) {
 	t.Log("Should die after (SIDECAR_EXT_TIMEOUT + SIDECAR_EXT_TIMEOUT_ERROR) secs with false and no string output")
 	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
 	defer os.Unsetenv("SIDECAR_API_KEY")
-	logger := lager.NewLogger("test long running file")
 	config := common.NewServiceManagerConfiguration()
+	logger := common.NewLogger(*config.LOG_LEVEL, "test-long-running-file")
 	*config.EXT_TIMEOUT = "2"
 	*config.EXT_TIMEOUT_ERROR = "2" //this will lower the time to wait to about 4 secs
 
@@ -69,8 +68,8 @@ func TestRunExtensionShouldKillAfterTimeout(t *testing.T) {
 	if file != nil {
 		defer os.Remove(file.Name())
 	}
-	if bOk || strout != nil {
-		t.Error("For ", *fileToRun, param, "expected", false, nil, "got", bOk, *strout)
+	if bOk || strout != "" {
+		t.Error("For ", *fileToRun, param, "expected", false, nil, "got", bOk, strout)
 	}
 }
 
@@ -81,8 +80,8 @@ func TestRunExtensionShouldFalse(t *testing.T) {
 	defer os.Unsetenv("SIDECAR_API_KEY")
 	t.Log(fmt.Sprintf("Should  return an exitStatus %d ", param))
 
-	logger := lager.NewLogger("should fail file")
 	config := common.NewServiceManagerConfiguration()
+	logger := common.NewLogger(*config.LOG_LEVEL, "file-helper-test")
 	csm := CSMFileHelper{Logger: logger, Config: config}
 
 	sParam := strconv.Itoa(param)
@@ -99,13 +98,13 @@ func TestRunExtensionShouldFalse(t *testing.T) {
 	if file != nil {
 		defer os.Remove(file.Name())
 	}
-	if strout == nil {
+	if strout == "" {
 		t.Error("For ", *fileToRun, param, "expected", false, "not nil", "got", bOk, strout)
 		t.Fail()
 		return
 	}
-	if bOk || strout == nil {
-		t.Error("For ", *fileToRun, param, "expected", false, param, "got", bOk, *strout)
+	if bOk || strout == "" {
+		t.Error("For ", *fileToRun, param, "expected", false, param, "got", bOk, strout)
 	}
 }
 
@@ -113,8 +112,8 @@ func TestRunExtensionShouldOk(t *testing.T) {
 	t.Log("Everything should be ok")
 	os.Setenv("SIDECAR_API_KEY", "NotARealKey")
 	defer os.Unsetenv("SIDECAR_API_KEY")
-	logger := lager.NewLogger("ok file")
 	config := common.NewServiceManagerConfiguration()
+	logger := common.NewLogger(*config.LOG_LEVEL, "ok-file")
 	csm := CSMFileHelper{Logger: logger, Config: config}
 
 	fileToRun := GetFileToRunPath("normal_response_task.sh")

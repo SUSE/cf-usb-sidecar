@@ -6,9 +6,11 @@ github.com/hpcloud/cf-usb/cmd/usb/logger.go
 package common
 
 import (
+	"log/syslog"
 	"os"
 
-	"github.com/pivotal-golang/lager"
+	"github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus/hooks/syslog"
 )
 
 const (
@@ -16,28 +18,45 @@ const (
 	INFO  = "info"
 	ERROR = "error"
 	FATAL = "fatal"
+	WARN  = "warn"
 )
 
-func NewLogger(level string) lager.Logger {
-	var logger = lager.NewLogger("csm")
-
-	var minLogLevel lager.LogLevel
+func NewLogger(level string, component string) *logrus.Logger {
+	minLogLevel := logrus.DebugLevel
+	sysLogLevel := syslog.LOG_DEBUG
 	switch level {
-	case DEBUG:
-		minLogLevel = lager.DEBUG
 	case INFO:
-		minLogLevel = lager.INFO
+		minLogLevel = logrus.InfoLevel
+		sysLogLevel = syslog.LOG_INFO
+	case WARN:
+		minLogLevel = logrus.WarnLevel
+		sysLogLevel = syslog.LOG_WARNING
 	case ERROR:
-		minLogLevel = lager.ERROR
+		minLogLevel = logrus.ErrorLevel
+		sysLogLevel = syslog.LOG_ERR
 	case FATAL:
-		minLogLevel = lager.FATAL
-	default:
-		minLogLevel = lager.INFO
+		minLogLevel = logrus.FatalLevel
+		sysLogLevel = syslog.LOG_CRIT
+	case DEBUG:
+		minLogLevel = logrus.DebugLevel
+		sysLogLevel = syslog.LOG_DEBUG
 	}
 
-	logger.RegisterSink(lager.NewWriterSink(os.Stdout, minLogLevel))
+	logger := logrus.New()
+	logger.Out = os.Stdout
+	logger.Level = minLogLevel
 
-	logger.Info("Log level set to:", lager.Data{"level": minLogLevel})
+	config := NewServiceManagerConfiguration()
 
+	if config.FlightRecorderEndpoint() != ":" {
+		hook, err := logrus_syslog.NewSyslogHook("tcp", config.FlightRecorderEndpoint(), sysLogLevel, component)
+		if err != nil {
+			logger.Warnf("Unable to connect to flight recorder %+v", err)
+		} else {
+			logger.Hooks.Add(hook)
+		}
+	} else {
+		logger.Info("Flight recorder endpoint not set.")
+	}
 	return logger
 }

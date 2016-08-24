@@ -12,40 +12,40 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/hpcloud/catalog-service-manager/src/common"
-	"github.com/pivotal-golang/lager"
 )
 
 type CSMFileHelperInterface interface {
-	GetExtension(extPath string) (bool, *string)
-	RunExtension(extensionPath string, params ...string) (bool, *string)
-	RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, *string)
+	GetExtension(extPath string) (bool, string)
+	RunExtension(extensionPath string, params ...string) (bool, string)
+	RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, string)
 }
 
 type CSMFileHelper struct {
 	CSMFileHelperInterface
-	Logger lager.Logger
+	Logger *logrus.Logger
 	Config *common.ServiceManagerConfiguration
 }
 
 //GetExtension verify if the extension file exists
-func (c CSMFileHelper) GetExtension(extPath string) (bool, *string) {
-	c.Logger.Debug("GetExtension", lager.Data{"Path": extPath})
+func (c CSMFileHelper) GetExtension(extPath string) (bool, string) {
+	c.Logger.Debug("GetExtension", "Path: "+extPath)
 	if _, err := os.Stat(extPath); os.IsNotExist(err) {
-		return false, nil
+		return false, ""
 	}
 
 	filename := filepath.Join(extPath, filepath.Base(extPath))
 	_, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return false, nil
+		return false, ""
 	}
 
-	return true, &filename
+	return true, filename
 }
 
 //RunExtension executes the extension
-func (c CSMFileHelper) RunExtension(extensionPath string, params ...string) (bool, *string) {
+func (c CSMFileHelper) RunExtension(extensionPath string, params ...string) (bool, string) {
 	var (
 		err    error
 		cmdOut bytes.Buffer
@@ -57,7 +57,7 @@ func (c CSMFileHelper) RunExtension(extensionPath string, params ...string) (boo
 	params = strings.Split(strings.TrimSpace(paramsString), " ")
 
 	cmd := fmt.Sprintf("%s %s", extensionPath, params)
-	c.Logger.Debug("RunExtension", lager.Data{"Running command : ": cmd})
+	c.Logger.Debug("RunExtension", "Running command : "+cmd)
 
 	cmdExec := exec.Command(extensionPath, params...)
 	cmdExec.Stderr = &cmdErr
@@ -66,25 +66,25 @@ func (c CSMFileHelper) RunExtension(extensionPath string, params ...string) (boo
 	err = cmdExec.Start()
 
 	if err != nil {
-		return false, nil
+		return false, ""
 	}
 
 	bCommandExitOk := RunCmd(cmdExec, c)
 
 	//the command was forced stopped
 	if !bCommandExitOk {
-		c.Logger.Info("RunExtension", lager.Data{fmt.Sprintf("Extension timeout forced stop PID : %d", cmdExec.Process.Pid): "Successful"})
-		return false, nil
+		c.Logger.Info("RunExtension", fmt.Sprintf("Extension timeout forced stop PID : %d ", cmdExec.Process.Pid)+"Successful")
+		return false, ""
 	}
 
 	exitStatus := ReadExitStatus(err, cmdExec, c)
 
 	if exitStatus != 0 { //the command returned in error state
 		resp := cmdErr.String()
-		return false, &resp
+		return false, resp
 	}
 	resp := cmdErr.String()
-	return true, &resp
+	return true, resp
 
 }
 
@@ -118,14 +118,14 @@ func RunCmd(cmdExec *exec.Cmd, c CSMFileHelper) bool {
 	//we send it an interrupt request.
 	//If that does not help either, we just kill the extension
 	timer := time.AfterFunc(timeout*time.Second, func() {
-		c.Logger.Info("RunExtension", lager.Data{fmt.Sprintf("Extension timeout PID : %d ", cmdExec.Process.Pid): "Stoping"})
+		c.Logger.Info("RunExtension", fmt.Sprintf("Extension timeout PID : %d ", cmdExec.Process.Pid)+"stopping")
 
 		err := cmdExec.Process.Signal(os.Interrupt)
 
-		c.Logger.Info("RunExtension", lager.Data{fmt.Sprintf("Extension timeout PID : %d", cmdExec.Process.Pid): "Stoping gracefully"})
+		c.Logger.Info("RunExtension", fmt.Sprintf("Extension timeout PID : %d", cmdExec.Process.Pid)+" stopping gracefully")
 		bCommandExitOk = false
 		timerErr = time.AfterFunc(timeoutOnErr*time.Second, func() {
-			c.Logger.Info("RunExtension", lager.Data{fmt.Sprintf("Extension timeout PID : %d", cmdExec.Process.Pid): "Stoping forcefully"})
+			c.Logger.Info("RunExtension", fmt.Sprintf("Extension timeout PID : %d", cmdExec.Process.Pid)+" stopping forcefully")
 
 			cmdExec.Process.Kill()
 
@@ -134,7 +134,7 @@ func RunCmd(cmdExec *exec.Cmd, c CSMFileHelper) bool {
 		if err != nil {
 			//the extension could not be gracefully kiled.
 			//Now we will try to kill it forcefully
-			c.Logger.Info("RunExtension", lager.Data{fmt.Sprintf("Extension timeout stop PID : ", cmdExec.Process.Pid): "Failed"})
+			c.Logger.Info("RunExtension", fmt.Sprintf("Extension timeout stop PID : ", cmdExec.Process.Pid)+"Failed")
 		}
 
 	})
@@ -161,7 +161,7 @@ func ReadExitStatus(err error, cmdExec *exec.Cmd, c CSMFileHelper) int {
 			waitStatus = exitError.Sys().(syscall.WaitStatus)
 			exitStatus = waitStatus.ExitStatus()
 		}
-		c.Logger.Debug("RunExtension", lager.Data{"command execution failed": fmt.Sprintf("%d", exitStatus)})
+		c.Logger.Debug("RunExtension", "command execution failed"+fmt.Sprintf("%d", exitStatus))
 		return exitStatus
 	} else {
 		waitStatus = cmdExec.ProcessState.Sys().(syscall.WaitStatus)
@@ -174,7 +174,7 @@ func ReadExitStatus(err error, cmdExec *exec.Cmd, c CSMFileHelper) int {
 }
 
 //RunExtensionFileGen executes the extension
-func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, *string) {
+func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...string) (bool, *os.File, string) {
 	var (
 		cmdOut  bytes.Buffer
 		cmdErr  bytes.Buffer
@@ -194,7 +194,7 @@ func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...strin
 	newParams = strings.Split(strings.TrimSpace(paramsString), " ")
 
 	cmd := fmt.Sprintf("%s %s", extensionPath, newParams)
-	c.Logger.Debug("RunExtension", lager.Data{"Running command : ": cmd})
+	c.Logger.Debug("RunExtension", "Running command : "+cmd)
 
 	cmdExec := exec.Command(extensionPath, newParams...)
 
@@ -206,32 +206,32 @@ func (c CSMFileHelper) RunExtensionFileGen(extensionPath string, params ...strin
 	//if we could not start the process we consider the command returned an error code
 	if err != nil {
 		sExitErrorWithStatus := fmt.Sprintf("The extension process could not be started: %s", err.Error())
-		return false, tmpfile, &sExitErrorWithStatus
+		return false, tmpfile, sExitErrorWithStatus
 	}
 
 	bCommandExitOk = RunCmd(cmdExec, c)
 
 	//the command was forced stopped
 	if !bCommandExitOk {
-		c.Logger.Info("RunExtension", lager.Data{fmt.Sprintf("Extension timeout forced stop PID : %d", cmdExec.Process.Pid): "Successful"})
-		return false, tmpfile, nil
+		c.Logger.Info("RunExtension", fmt.Sprintf("Extension timeout forced stop PID : %d", cmdExec.Process.Pid)+"Successful")
+		return false, tmpfile, ""
 	}
 
 	exitStatus := ReadExitStatus(err, cmdExec, c)
 
 	//if the command exited with an error status
 	if exitStatus != 0 {
-		c.Logger.Info("RunExtension", lager.Data{"Extension_Executed": "Error state"})
+		c.Logger.Info("RunExtension", "Extension_Executed "+"Error state")
 		sCmdErr := fmt.Sprintf("%s, %s", cmdErr.String(), cmdOut.String())
-		c.Logger.Debug("RunExtension", lager.Data{"Output : ": sCmdErr})
+		c.Logger.Debug("RunExtension", "Output : "+sCmdErr)
 
-		return false, tmpfile, &sCmdErr
+		return false, tmpfile, sCmdErr
 
 	}
 
-	c.Logger.Info("RunExtension", lager.Data{"Extension_Executed": "Successfuly"})
-	c.Logger.Debug("RunExtension", lager.Data{"Output : ": cmdOut.String()})
+	c.Logger.Info("RunExtension", "Extension_Executed"+"Successfuly")
+	c.Logger.Debug("RunExtension", "Output : "+cmdOut.String())
 	sCmdOut := cmdOut.String()
-	return true, tmpfile, &sCmdOut
+	return true, tmpfile, sCmdOut
 
 }
