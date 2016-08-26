@@ -15,8 +15,8 @@ type ServiceManagerConfiguration struct {
 	EXT_TIMEOUT_ERROR    *string
 	HEALTHCHECK_HOST     *string
 	HEALTHCHECK_PORT     *string
-	FLIGHTRECORDER_HOST *string `env:"HCP_FLIGHTRECORDER_HOST" long:"hcp_flightrecorder_host" description:"Flight Recorder Service Endpoint"`
-	FLIGHTRECORDER_PORT *string `env:"HCP_FLIGHTRECORDER_PORT" long:"hcp_flightrecorder_port" description:"Flight Recorder Service Endpoint"`
+	FLIGHTRECORDER_HOST  *string `env:"HCP_FLIGHTRECORDER_HOST" long:"hcp_flightrecorder_host" description:"Flight Recorder Service Endpoint"`
+	FLIGHTRECORDER_PORT  *string `env:"HCP_FLIGHTRECORDER_PORT" long:"hcp_flightrecorder_port" description:"Flight Recorder Service Endpoint"`
 	TLS_CERT_FILE        *string
 	TLS_PRIVATE_KEY_FILE *string
 }
@@ -30,8 +30,8 @@ var paramDefaultList = map[string]string{
 	"SIDECAR_EXT_TIMEOUT_ERROR": "2",
 	"HEALTHCHECK_HOST":          "",
 	"HEALTHCHECK_PORT":          "",
-        "HCP_FLIGHTRECORDER_HOST": "",
-        "HCP_FLIGHTRECORDER_PORT": "",
+	"HCP_FLIGHTRECORDER_HOST":   "",
+	"HCP_FLIGHTRECORDER_PORT":   "",
 	"TLS_CERT_FILE":             "/etc/secrets/tls-cert-file",
 	"TLS_PRIVATE_KEY_FILE":      "/etc/secrets/tls-private-key-file",
 }

@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"os"
 	"time"
-	"log"
 
 	spec "github.com/go-swagger/go-swagger/spec"
 	flags "github.com/jessevdk/go-flags"
