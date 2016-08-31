@@ -54,6 +54,7 @@ func (provisioner *RabbitHoleProvisioner) CreateContainer(containerName string) 
 			"5672/tcp":  {{HostIP: "", HostPort: strconv.Itoa(svcPort)}},
 			"15672/tcp": {{HostIP: "", HostPort: strconv.Itoa(mgmtPort)}},
 		},
+		RestartPolicy: dockerclient.RestartPolicy{Name: "always"},
 	}
 
 	createOpts := dockerclient.CreateContainerOptions{

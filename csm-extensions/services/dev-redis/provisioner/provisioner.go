@@ -47,6 +47,7 @@ func (provisioner *RedisProvisioner) CreateContainer(containerName string) error
 		PortBindings: map[dockerclient.Port][]dockerclient.PortBinding{
 			"6379/tcp": {{HostIP: "", HostPort: strconv.Itoa(svcPort)}},
 		},
+		RestartPolicy: dockerclient.RestartPolicy{Name: "always"},
 	}
 
 	createOpts := dockerclient.CreateContainerOptions{
