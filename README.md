@@ -324,7 +324,7 @@ CSM provides a base docker image which users creating CSM for their services
 should be able to extended easily. For more information on how to extend the
 base image please refer to the documentation on Extending_CSM.md
 
-### catalog-service-manager:build image (based on golang:1.5-alpine)
+### catalog-service-manager:build image (based on ubuntu:14.04)
 
 This is the build image which has all the CSM dependencies installed (mercurial,
 swagger, make, git etc) on it. By having this image locally available we save at

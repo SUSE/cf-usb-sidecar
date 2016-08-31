@@ -1,16 +1,24 @@
-FROM golang:1.6-alpine
+FROM golang:1.6.3
 
-RUN apk --no-cache add --update git
-RUN apk --no-cache add --update mercurial
-RUN apk --no-cache add --update make
-RUN apk --no-cache add --update gcc
-RUN apk --no-cache add --update alpine-sdk
-COPY . /go/src/github.com/hpcloud/catalog-service-manager
 ENV GOPATH /go
 ENV GOBIN /go/bin
 
-WORKDIR /go/src/github.com/hpcloud/catalog-service-manager
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    git \
+    bash \
+    make \
+    gcc \
+    mercurial \
+    build-essential \
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN make tools
+COPY . /go/src/github.com/hpcloud/catalog-service-manager
+
+RUN cd /go/src/github.com/hpcloud/catalog-service-manager \
+    && make tools \
+    && cd / \
+    && rm -rf /go/src/github.com/hpcloud
 
 ENTRYPOINT echo `hostname`

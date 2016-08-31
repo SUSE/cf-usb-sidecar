@@ -1,20 +1,16 @@
-FROM alpine:3.3
+FROM ubuntu:14.04
 
-RUN mkdir -p /catalog-service-manager/bin/
+RUN mkdir -p /catalog-service-manager/bin \
+    /catalog-service-manager/setup/startup \ 
+    /catalog-service-manager/setup/shutdown \
 
-RUN mkdir -p /catalog-service-manager/setup
-RUN mkdir -p /catalog-service-manager/setup/startup
-RUN mkdir -p /catalog-service-manager/setup/shutdown
+    /catalog-service-manager/workspace/get \
+    /catalog-service-manager/workspace/create \
+    /catalog-service-manager/workspace/delete \
 
-RUN mkdir -p /catalog-service-manager/workspace
-RUN mkdir -p /catalog-service-manager/workspace/get 
-RUN mkdir -p /catalog-service-manager/workspace/create 
-RUN mkdir -p /catalog-service-manager/workspace/delete
-
-RUN mkdir -p /catalog-service-manager/connection
-RUN mkdir -p /catalog-service-manager/connection/get 
-RUN mkdir -p /catalog-service-manager/connection/create 
-RUN mkdir -p /catalog-service-manager/connection/delete
+    /catalog-service-manager/connection/get \
+    /catalog-service-manager/connection/create \
+    /catalog-service-manager/connection/delete
 
 COPY SIDECAR_BIN/catalog-service-manager /catalog-service-manager/bin/
 
