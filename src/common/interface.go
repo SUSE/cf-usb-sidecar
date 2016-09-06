@@ -4,11 +4,6 @@ import (
 	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
 )
 
-type CSMSetupInterface interface {
-	CheckExtensions()
-	Startup() bool
-}
-
 type CSMWorkspaceInterface interface {
 	CheckExtensions()
 	GetWorkspace(workspaceID string) *models.ServiceManagerWorkspaceResponse
