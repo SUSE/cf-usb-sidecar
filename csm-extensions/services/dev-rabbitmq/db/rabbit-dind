@@ -7,5 +7,4 @@ set -e
     docker load -i /root/rabbit.tgz
 } &
 
-
 dockerd-entrypoint.sh
