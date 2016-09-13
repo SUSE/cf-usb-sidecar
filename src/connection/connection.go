@@ -16,7 +16,6 @@ import (
 
 // CSMConnection object for managing the connection.
 type CSMConnection struct {
-	common.CSMSetupInterface
 	Logger     *logrus.Logger
 	Config     *common.ServiceManagerConfiguration
 	FileHelper utils.CSMFileHelperInterface

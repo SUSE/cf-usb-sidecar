@@ -7,13 +7,11 @@ import (
 	"github.com/hpcloud/catalog-service-manager/src/common"
 	"github.com/hpcloud/catalog-service-manager/src/common/utils"
 	internalConnection "github.com/hpcloud/catalog-service-manager/src/connection"
-	internalSetup "github.com/hpcloud/catalog-service-manager/src/setup"
 	internalStatus "github.com/hpcloud/catalog-service-manager/src/status"
 	internalWorkspaces "github.com/hpcloud/catalog-service-manager/src/workspace"
 )
 
 var (
-	csmSetup      *internalSetup.CSMSetup
 	csmWorkspace  *internalWorkspaces.CSMWorkspace
 	csmConnection *internalConnection.CSMConnection
 	csmStatus     *internalStatus.CSMStatus
@@ -30,20 +28,12 @@ func InitServiceCatalogManager() {
 		Logger: logger,
 		Config: config,
 	}
-	csmSetup = internalSetup.NewCSMSetup(logger, config, fileHelper)
 	csmWorkspace = internalWorkspaces.NewCSMWorkspace(logger, config, fileHelper)
 	csmStatus = internalStatus.NewCSMStatus(logger, config, fileHelper)
 	csmConnection = internalConnection.NewCSMConnection(logger, config, fileHelper)
 
 	logInitDetails(logger, config)
 	checkExtensions()
-
-	csmSetup.Startup()
-}
-
-// GetSetup returns the CSMSetup object
-func GetSetup() *internalSetup.CSMSetup {
-	return csmSetup
 }
 
 //GetStatus returns the CSMStatus object
@@ -85,11 +75,10 @@ func logInitDetails(logger *logrus.Logger, config *common.ServiceManagerConfigur
 	logger.Info("InitServiceCatalogManager ", "SIDECAR_API_KEY: "+*config.API_KEY)
 }
 
-// CheckExtension runs on setup, workspace and connection objects
+// CheckExtension runs on workspace and connection objects
 // We log this on startup so that we can let user know what all
 // extensions are visible/known to the CSM service
 func checkExtensions() {
-	csmSetup.CheckExtensions()
 	csmWorkspace.CheckExtensions()
 	csmConnection.CheckExtensions()
 }
