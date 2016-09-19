@@ -68,6 +68,7 @@ clean:
 	@echo "$(OK_COLOR)==> Removing build artifacts$(NO_COLOR)"
 	rm -rf ${GOBIN}/catalog-service-manager
 	rm -rf bin
+	rm -rf SIDECAR_BIN
 
 clean-all: clean
 	@echo "$(OK_COLOR)==> Removing generated code$(NO_COLOR)"
