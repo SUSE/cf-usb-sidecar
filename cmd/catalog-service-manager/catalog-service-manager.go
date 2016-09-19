@@ -54,8 +54,13 @@ service management capabilities.
 		os.Exit(1)
 	}
 
+	exposedPort := os.Getenv("PORT")
+	if exposedPort == "" {
+		exposedPort = "8081"
+	}
+
 	httpServer := &graceful.Server{Server: new(http.Server)}
-	httpServer.Addr = "0.0.0.0:8081"
+	httpServer.Addr = "0.0.0.0:" + exposedPort
 	httpServer.Handler = handler
 	configuration := common.NewServiceManagerConfiguration()
 
