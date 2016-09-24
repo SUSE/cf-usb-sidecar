@@ -2,10 +2,47 @@
 set -e
 
 {
-    echo "sleeping for 5 seconds"
-    sleep 5
-    docker load -i /root/redis.tgz
+	sleep 10
+
+	docker load -i /root/redis.tgz
+
+	containers=$(docker ps -q -a)
+	
+	index=0
+
+        (for c in $containers;
+        do
+                name=$(docker inspect -f "{{.Name}}" $c | cut -d "/" -f 2)
+                port=$(docker inspect -f "{{.HostConfig.PortBindings}}" $c)
+                length=$(expr $(expr index "$port" "}") - $(expr index "$port" "{") - 1)
+                start=$(expr index "$port" "{")
+                mappedPort=${port:$start:$length}
+                cmd=$(docker inspect -f "{{.Config.Cmd}}" $c | cut -d "[" -f 2 | cut -d "]" -f 1)
+                eval NAMES$index=$(echo \"$name\")
+                eval MAPPEDPORTS$index=$(echo \"$mappedPort\")
+                eval CMDS$index="$(echo \"$cmd\")"
+                echo "Removing old container $name"
+                docker rm -f $c
+                index=$(($index+1))
+	done
+
+        docker rmi -f $(docker images -q)
+	
+	docker load -i /root/redis.tgz
+	
+        index=0
+
+        for c in $containers;
+        do
+                name=$(eval echo $"NAMES$index")
+                port=$(eval echo $"MAPPEDPORTS$index")
+                cmd=$(eval echo \"$"CMDS$index"\")
+                echo Creating new container $name
+                echo $(eval echo $"MAPPEDPORTS$index")
+                echo $(eval echo $"CMDS$index")
+                index=$(($index+1))
+                echo docker run --name $name -v /data/$name:/data -p $port:6379 -d redis:hcf $cmd
+                docker run --name  $name -v /data/$name:/data -p $port:6379 -d redis:hcf $cmd
+        done)
 } &
-
 dockerd-entrypoint.sh
-

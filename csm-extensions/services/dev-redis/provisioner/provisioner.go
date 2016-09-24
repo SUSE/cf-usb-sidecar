@@ -47,6 +47,7 @@ func (provisioner *RedisProvisioner) CreateContainer(containerName string) error
 		PortBindings: map[dockerclient.Port][]dockerclient.PortBinding{
 			"6379/tcp": {{HostIP: "", HostPort: strconv.Itoa(svcPort)}},
 		},
+		Binds:         []string{"/data/" + containerName + ":/data:rw"},
 		RestartPolicy: dockerclient.RestartPolicy{Name: "always"},
 	}
 
@@ -105,7 +106,7 @@ func (provisioner *RedisProvisioner) GetCredentials(containerName string) (map[s
 		return nil, err
 	}
 
-	re := regexp.MustCompile(`'--requirepass\s(\S+)'`)
+	re := regexp.MustCompile(`--requirepass\s(([^\'\s][\S])+)`)
 	submatch := re.FindStringSubmatch(container.Command)
 	if submatch == nil {
 		return nil, fmt.Errorf("Could not get password")
