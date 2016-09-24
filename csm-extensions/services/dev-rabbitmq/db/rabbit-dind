@@ -2,9 +2,58 @@
 set -e
 
 {
-    echo "sleeping for 5 seconds"
-    sleep 5
-    docker load -i /root/rabbit.tgz
-} &
+	sleep 10
+
+	index=0
+
+	docker load -i /root/rabbit.tgz
+
+	containers=$(docker ps -a -q)
+
+	(for c in $containers;
+do
+        	name=$(docker inspect -f "{{.Name}}" $c | cut -d "/" -f 2)
+        	env=$(docker inspect -f "{{.Config.Env}}" $c)
+        	user=$(echo $env | grep -o "RABBITMQ_DEFAULT_USER=[^[:space:]]*" | grep -o "=.*")
+        	user=${user:1}
+        	pass=$(echo $env | grep -o "RABBITMQ_DEFAULT_PASS=[^[:space:]]*" | grep -o "=.*")
+        	pass=${pass:1}
+        	ports=$(docker inspect -f "{{.HostConfig.PortBindings}}" $c)
+        	svcPort=$(echo $ports | grep -o "15672/tcp:\[{\s[^}]*" | grep -o "{.*")
+        	svcPort=$(echo ${svcPort:1})
+        	mgmtPort=$(echo $ports | grep -o "\s5672/tcp:\[{\s[^}]*" | grep -o "{.*")
+        	mgmtPort=$(echo ${mgmtPort:1})
+        	hostname=$(docker inspect -f "{{.Config.Hostname}}" $c)
+		eval NAMES$index=$(echo \"$name\")
+		eval HOSTNAMES$index=$(echo \"$hostname\")
+		eval SVCPORTS$index=$(echo \"$svcPorts\")
+		eval MGMTPORTS$index=$(echo \"$mgmtPort\")
+		eval PASSESES$index=$(echo \"$pass\")
+
+        	docker rm -f $c
+		index=$(($index+1))
+	done
+	
+	echo "deleting all images" > /out.txt
+	docker rmi -f $(docker images -q)
+	echo "loading new image" >> /out.txt
+	sleep 5
+	docker load -i /root/rabbit.tgz
+	echo "image loaded" >> /out.txt
+	docker images >> /out.txt
+	index=0
+
+	for c in $containers; do
+		name=$(eval echo \"$"NAMES$index"\")
+		hostname=$(eval echo \"$"HOSTNAMES$index"\")
+		svcPort=$(eval echo \"$"SVCPORTS$index"\")
+		mgmtPort=$(eval echo \"$"MGMTPORTS$index"\")
+		pass=$(eval echo \"$"PASSES$index"\")
+		index=$(($index+1))
+		echo "creating $name" >> /out.txt
+        	docker run --name $name --hostname $hostname -p $svcPort:15672 -p $mgmtPort:5672 -v /var/lib/rabbitmq/$hostname:/var/lib/rabbitmq/mnesia/:rw -e RABBITMQ_DEFAULT_USER=$user -e RABBITMQ_DEFAULT_PASS=$pass -d rabbitmq:hcf
+
+	done)
+} & 
 
 dockerd-entrypoint.sh
