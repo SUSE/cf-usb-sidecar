@@ -19,6 +19,7 @@ type ServiceManagerConfiguration struct {
 	FLIGHTRECORDER_PORT  *string `env:"HCP_FLIGHTRECORDER_PORT" long:"hcp_flightrecorder_port" description:"Flight Recorder Service Endpoint"`
 	TLS_CERT_FILE        *string
 	TLS_PRIVATE_KEY_FILE *string
+	PORT                 *string `env:"PORT"`
 }
 
 var paramDefaultList = map[string]string{
@@ -34,6 +35,7 @@ var paramDefaultList = map[string]string{
 	"HCP_FLIGHTRECORDER_PORT":   "",
 	"TLS_CERT_FILE":             "/etc/secrets/tls-cert-file",
 	"TLS_PRIVATE_KEY_FILE":      "/etc/secrets/tls-private-key-file",
+	"PORT":                      "8081",
 }
 
 // NewServiceManagerConfiguration : Creates object of ServiceManagerConfiguration
@@ -62,6 +64,7 @@ func NewServiceManagerConfiguration() *ServiceManagerConfiguration {
 	config.TLS_PRIVATE_KEY_FILE = config.getConfigFromEnv("TLS_PRIVATE_KEY_FILE")
 	config.FLIGHTRECORDER_HOST = config.getConfigFromEnv("HCP_FLIGHTRECORDER_HOST")
 	config.FLIGHTRECORDER_PORT = config.getConfigFromEnv("HCP_FLIGHTRECORDER_PORT")
+	config.PORT = config.getConfigFromEnv("PORT")
 
 	return &config
 }

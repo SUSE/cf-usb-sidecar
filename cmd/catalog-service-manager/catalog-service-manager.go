@@ -54,15 +54,11 @@ service management capabilities.
 		os.Exit(1)
 	}
 
-	exposedPort := os.Getenv("PORT")
-	if exposedPort == "" {
-		exposedPort = "8081"
-	}
+	configuration := common.NewServiceManagerConfiguration()
 
 	httpServer := &graceful.Server{Server: new(http.Server)}
-	httpServer.Addr = "0.0.0.0:" + exposedPort
+	httpServer.Addr = "0.0.0.0:" + *configuration.PORT
 	httpServer.Handler = handler
-	configuration := common.NewServiceManagerConfiguration()
 
 	// transform logrus to a writer for the http server errors
 	// httpServer.ErrorLog = log.New(common.Logger.Writer(), "", 0)
