@@ -3,9 +3,11 @@
 package mongo
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"testing"
@@ -46,7 +48,10 @@ func initTest() {
 	csmExtensionPort = os.Getenv("SIDECAR_EXTENSION_PORT")
 
 	transportHost = fmt.Sprintf("%s:%s", csmMongoExtensionHost, csmExtensionPort)
-	transport = httpClient.New(transportHost, "", []string{"http"})
+	transport = httpClient.New(transportHost, "", []string{"https"})
+	transport.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	client = csmClient.New(transport, strfmt.Default)
 	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", csmExtensionToken)
 }

@@ -3,8 +3,10 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"os"
+	"net/http"
 	"strconv"
 	"testing"
 
@@ -20,7 +22,7 @@ import (
 )
 
 const (
-	DockerName   = "csm-dev-postgres:latest"
+	DockerName   = "sidecar-dev-postgres:latest"
 	DockerPort   = 8093
 	DockerIP     = "127.0.0.1"
 	WorkspaceID  = "test-onnllyy123"
@@ -64,7 +66,10 @@ func initializeTestAssets(t *testing.T) bool {
 	}
 
 	transportHost = host + ":" + strconv.Itoa(port)
-	transport = httpClient.New(transportHost, "", []string{"http"})
+	transport = httpClient.New(transportHost, "", []string{"https"})
+	transport.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	client = csmClient.New(transport, strfmt.Default)
 	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", token)
 	return true
