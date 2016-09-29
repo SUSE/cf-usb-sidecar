@@ -6,13 +6,16 @@ export WORKSPACE=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
 STARTDIR=${START_DIR:-}
 CONCOURSEBUILD=${CONCOURSE_BUILD:-}
 
-if [ -f ${STARTDIR}/version/number ]; then
-    echo "export VERSION=$(cat ${STARTDIR}/version/number)">$WORKSPACE/version.mk
-    echo "export MAJOR_MINOR=$(cat ${STARTDIR}/version/number| cut -d "." -f1,2)">>$WORKSPACE/version.mk
-    export CONCOURSEBUILD="1"
+# if $VERSION is set from CI build run then use it
+if [ -z "${VERSION-}" ]; then
+  if [ -f ${STARTDIR}/version/number ]; then
+      echo "export VERSION=$(cat ${STARTDIR}/version/number)">$WORKSPACE/version.mk
+      echo "export MAJOR_MINOR=$(cat ${STARTDIR}/version/number| cut -d "." -f1,2)">>$WORKSPACE/version.mk
+      export CONCOURSEBUILD="1"
+  fi
+  . $WORKSPACE/version.mk
 fi
 
-. $WORKSPACE/version.mk
 export BRANCH=$(git name-rev --name-only HEAD)
 
 # since '/' in not allowed in docker image tag 
@@ -24,8 +27,8 @@ build_time=$(date -u +%Y%m%d%H%M%S)
 if [ -n "${CONCOURSEBUILD}" ]; then
   # concourse build number
   if [ "${BRANCH}" = "master" ]; then
-    export APP_VERSION="${VERSION}+${build_commit_hash}.${build_time}"
-    export APP_VERSION_TAG="${VERSION}"
+    export APP_VERSION=$(git describe --tags --long)
+    export APP_VERSION_TAG=$(git describe --tags --long)
     export APP_LATEST_BRANCH_TAG="latest"
   else
     export APP_VERSION="${VERSION}+${BRANCH}.${build_commit_hash}.${build_time}"

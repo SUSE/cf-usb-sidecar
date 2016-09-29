@@ -1,4 +1,5 @@
 #!/bin/sh
+set +e
 
 DOCKER_IMAGE=$1
 DOCKER_IMAGE_TAG=$2
