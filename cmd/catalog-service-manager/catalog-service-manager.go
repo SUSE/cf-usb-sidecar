@@ -54,10 +54,11 @@ service management capabilities.
 		os.Exit(1)
 	}
 
-	httpServer := &graceful.Server{Server: new(http.Server)}
-	httpServer.Addr = "0.0.0.0:8081"
-	httpServer.Handler = handler
 	configuration := common.NewServiceManagerConfiguration()
+
+	httpServer := &graceful.Server{Server: new(http.Server)}
+	httpServer.Addr = "0.0.0.0:" + *configuration.PORT
+	httpServer.Handler = handler
 
 	// transform logrus to a writer for the http server errors
 	// httpServer.ErrorLog = log.New(common.Logger.Writer(), "", 0)
