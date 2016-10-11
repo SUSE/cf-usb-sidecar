@@ -25,6 +25,9 @@ type RabbitHoleProvisioner struct {
 	connected      bool
 }
 
+const DockerImage = "rabbitmq"
+const ImageTag = "hcf"
+
 func NewRabbitHoleProvisioner(logger lager.Logger, conf config.RabbitmqConfig) RabbitmqProvisionerInterface {
 	return &RabbitHoleProvisioner{logger: logger, rabbitmqConfig: conf}
 }
@@ -60,7 +63,7 @@ func (provisioner *RabbitHoleProvisioner) CreateContainer(containerName string) 
 
 	createOpts := dockerclient.CreateContainerOptions{
 		Config: &dockerclient.Config{
-			Image: provisioner.rabbitmqConfig.DockerImage + ":" + provisioner.rabbitmqConfig.ImageTag,
+			Image: DockerImage + ":" + ImageTag,
 			Env: []string{"RABBITMQ_DEFAULT_USER=" + admin_user,
 				"RABBITMQ_DEFAULT_PASS=" + admin_pass},
 		},

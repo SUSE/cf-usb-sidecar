@@ -23,6 +23,9 @@ type RedisProvisioner struct {
 	connected   bool
 }
 
+const DockerImage = "redis"
+const ImageTag = "hcf"
+
 func NewRedisProvisioner(logger lager.Logger, conf config.RedisConfig) RedisProvisionerInterface {
 	return &RedisProvisioner{logger: logger, redisConfig: conf}
 }
@@ -53,7 +56,7 @@ func (provisioner *RedisProvisioner) CreateContainer(containerName string) error
 
 	createOpts := dockerclient.CreateContainerOptions{
 		Config: &dockerclient.Config{
-			Image: provisioner.redisConfig.DockerImage + ":" + provisioner.redisConfig.ImageTag,
+			Image: DockerImage + ":" + ImageTag,
 			Cmd:   []string{"redis-server", fmt.Sprintf("--requirepass %s", pass), "--appendonly yes"},
 		},
 		HostConfig: &hostConfig,
