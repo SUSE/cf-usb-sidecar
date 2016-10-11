@@ -14,5 +14,6 @@ RUN mkdir -p /catalog-service-manager/bin \
 
 COPY SIDECAR_BIN/catalog-service-manager /catalog-service-manager/bin/
 
+COPY docs/package-files/* /usr/share/doc/stackato/
 
 ENTRYPOINT ["/catalog-service-manager/bin/catalog-service-manager"]
