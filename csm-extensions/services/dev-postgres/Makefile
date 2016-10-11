@@ -7,8 +7,8 @@ TOKEN=sidecar-auth-token
 SERVER_IP=127.0.0.1
 SERVER_PORT=8093
 
-ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=hsm-sidecar
+ifndef DOCKER_ORGANIZATION
+	export DOCKER_ORGANIZATION:=stackatodev
 endif
 
 export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
@@ -22,12 +22,12 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=sidecar-dev-postgres
+export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-dev-postgres
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-postgres-build
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=sidecar-dev-postgres-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=hsm-sidecar-dev-postgres-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 
 .PHONY: clean-all clean build-image tools run build-service-image run-db test test-integration

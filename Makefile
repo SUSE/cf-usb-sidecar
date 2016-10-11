@@ -17,19 +17,20 @@ endif
 ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) scripts/build_version.sh "APP_VERSION_TAG")
 endif
+
 # Set environment variables if they are not before starting.
 ifndef SIDECAR_API_KEY
 	export SIDECAR_API_KEY:=sidecar-auth-token
 endif
 
-ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=hsm-sidecar
+ifndef DOCKER_ORGANIZATION
+	export DOCKER_ORGANIZATION:=stackatodev
 endif
 
 export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
-export SIDECAR_BASE_IMAGE_NAME:=sidecar
+export SIDECAR_BASE_IMAGE_NAME:=hsm-sidecar
 export SIDECAR_BASE_IMAGE_TAG:=latest
-export SIDECAR_BUILD_BASE_IMAGE_NAME:=sidecar-buildbase
+export SIDECAR_BUILD_BASE_IMAGE_NAME:=hsm-sidecar-buildbase
 export SIDECAR_BUILD_BASE_IMAGE_TAG:=latest
 
 

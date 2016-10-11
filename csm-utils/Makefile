@@ -4,8 +4,8 @@ OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
-ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=hsm-sidecar
+ifndef DOCKER_ORGANIZATION
+	export DOCKER_ORGANIZATION:=stackatodev
 endif
 
 export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
