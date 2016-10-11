@@ -1,4 +1,4 @@
-FROM sidecar:latest
+FROM hsm-sidecar:latest
 
 COPY ./SIDECAR_HOME /catalog-service-manager
 RUN chmod +x /catalog-service-manager/bin/run.sh

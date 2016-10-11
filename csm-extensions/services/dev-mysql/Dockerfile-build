@@ -1,4 +1,4 @@
-FROM sidecar-buildbase:latest
+FROM hsm-sidecar-buildbase:latest
 
 COPY . /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql
 ENV GOPATH /go

@@ -4,8 +4,8 @@ OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
-ifndef DOCKER_REPOSITORY
-	export DOCKER_REPOSITORY:=hsm-sidecar
+ifndef DOCKER_ORGANIZATION
+	export DOCKER_ORGANIZATION:=stackatodev
 endif
 
 export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
@@ -19,7 +19,7 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=sidecar-rds-mysql
+export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-rds-mysql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-rds-mysql-build
 

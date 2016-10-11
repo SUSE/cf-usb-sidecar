@@ -1,13 +1,13 @@
 #!/bin/sh
 . ${SIDECAR_ROOT}/scripts/colors.sh
 
-if [ -z ${REGISTRY_LOCATION} ]; then
-	echo "Cannot push images as REGISTRY_LOCATION is not set"
+if [ -z ${DOCKER_REPOSITORY} ]; then
+	echo "Cannot push images as DOCKER_REPOSITORY is not set"
 	echo "if you want to push this to local docker registry use"
-	echo "${WARN_MAGENTA} export REGISTRY_LOCATION=localhost:5000${NO_COLOR}"
+	echo "${WARN_MAGENTA} export DOCKER_REPOSITORY=localhost:5000${NO_COLOR}"
 	echo ""
 	echo "if you want to push this to cnap shared docker registry use"
-	echo "${WARN_MAGENTA} export REGISTRY_LOCATION=docker-registry.helion.space:443${NO_COLOR}"
+	echo "${WARN_MAGENTA} export DOCKER_REPOSITORY=docker-registry.helion.space:443${NO_COLOR}"
 	exit 1
 fi
 
@@ -21,8 +21,8 @@ if [ -z ${IMAGE_TAG} ]; then
 	exit 1
 fi
 
-if [ -z ${DOCKER_REPOSITORY} ]; then
-	echo "Error: Please set value for environemtn variable DOCKER_REPOSITORY"
+if [ -z ${DOCKER_ORGANIZATION} ]; then
+	echo "Error: Please set value for environemtn variable DOCKER_ORGANIZATION"
 	exit 1
 fi
 
@@ -33,10 +33,10 @@ fi
 
 docker images ${SIDECAR_IMAGE_NAME} | grep ${IMAGE_TAG} > /dev/null
 if [ $? -eq 0 ]; then
-	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}
-	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${APP_VERSION_TAG}
-	docker push ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}
-	docker push ${REGISTRY_LOCATION}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${APP_VERSION_TAG}
+	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REPOSITORY}/${DOCKER_ORGANIZATION}/${IMAGE_NAME}:${IMAGE_TAG}
+	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REPOSITORY}/${DOCKER_ORGANIZATION}/${IMAGE_NAME}:${APP_VERSION_TAG}
+	docker push ${DOCKER_REPOSITORY}/${DOCKER_ORGANIZATION}/${IMAGE_NAME}:${IMAGE_TAG}
+	docker push ${DOCKER_REPOSITORY}/${DOCKER_ORGANIZATION}/${IMAGE_NAME}:${APP_VERSION_TAG}
 else
 	echo "Error: Docker image ${SIDECAR_IMAGE_NAME}:${IMAGE_TAG} not found"
 	echo "Before running publish-image, please use 'make build-image' to build the docker image."
