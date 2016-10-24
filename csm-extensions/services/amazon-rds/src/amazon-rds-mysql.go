@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -444,27 +445,7 @@ func main() {
 		command := os.Args[1]
 		region := os.Args[2]
 		dbidentifier := os.Args[3]
-		if command == "createdb" {
-			if len(os.Args) != 10 {
-				fmt.Println("Please enter valid options for createdb: region, dbclass, dbidentifier, size, multiAZ, user, password and outputfile")
-			} else {
-				dbclass := os.Args[4]
-				size := os.Args[5]
-				multiAZ := os.Args[6]
-				masteruser := os.Args[7]
-				masterpwd := os.Args[8]
-				outputfile := os.Args[9]
-				size64, serr := strconv.ParseInt(size, 10, 64)
-				if serr != nil {
-					fmt.Println("Size should be of type int64")
-				}
-				multiAZbool, merr := strconv.ParseBool(multiAZ)
-				if merr != nil {
-					fmt.Println("multiAZ accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False")
-				}
-				createRdsDbInstance(region, dbidentifier, dbclass, "mysql", size64, multiAZbool, masteruser, masterpwd, outputfile)
-			}
-		} else if command == "createworkspace" || command == "getworkspace" || command == "deleteworkspace" {
+		if command == "createworkspace" || command == "getworkspace" || command == "deleteworkspace" {
 			if len(os.Args) != 8 {
 				fmt.Println("Please enter valid options for createworkspace: region, dbidentifier, user, password, workspaceID and outputfile")
 			} else {
@@ -498,13 +479,6 @@ func main() {
 					getConnection(region, dbidentifier, masteruser, masterpwd, workspace, user, outputfile)
 				}
 
-			}
-		} else if command == "deletedb" {
-			if len(os.Args) != 5 {
-				fmt.Println("Please enter valid options for deletedb: region, dbID and outputfile")
-			} else {
-				outputfile := os.Args[4]
-				deleteRdsDbInstance(region, dbidentifier, outputfile)
 			}
 		} else {
 			fmt.Println("Please enter valid command")
