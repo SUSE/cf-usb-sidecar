@@ -1,0 +1,9 @@
+#!/bin/sh
+
+PORT="50000"
+
+docker run --privileged \
+	--name ${SIDECAR_EXTENSION_SVC_CONTAINER_NAME} \
+	-p ${PORT}:50000 \
+	-d ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}:${SIDECAR_EXTENSION_SVC_IMAGE_TAG}
+

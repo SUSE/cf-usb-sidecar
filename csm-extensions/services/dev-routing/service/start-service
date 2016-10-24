@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+git clone http://github.com/carabasdaniel/logging-route-service
+
+cd logging-route-service
+
+go build
+
+./logging-route-service
