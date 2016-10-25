@@ -3,7 +3,9 @@
 package tags
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 	"testing"
@@ -20,7 +22,7 @@ import (
 )
 
 const (
-	DockerName   = "csm-dev-mssql:latest"
+	DockerName   = "sidecar-dev-mssql:latest"
 	DockerPort   = 8091
 	DockerIp     = "127.0.0.1"
 	WorkspaceId  = "test-onnllyy123"
@@ -65,7 +67,10 @@ func initializeTestAssets(t *testing.T) bool {
 	}
 
 	transportHost = host + ":" + strconv.Itoa(port)
-	transport = httpClient.New(transportHost, "", []string{"http"})
+	transport = httpClient.New(transportHost, "", []string{"https"})
+	transport.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	client = csmClient.New(transport, strfmt.Default)
 	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", token)
 	return true
