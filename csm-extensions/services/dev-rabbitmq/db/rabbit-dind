@@ -5,8 +5,9 @@ set -e
 	sleep 10
 
 	index=0
-
-	docker load -i /root/rabbit.tgz
+	echo "loading docker image ..." > /out.txt
+	docker load -i /root/rabbit.tgz 1>/docker_load_out.txt 2>/docker_load_err.txt
+	echo "docker image loaded" >> /out.txt
 
 	containers=$(docker ps -a -q)
 
@@ -34,13 +35,16 @@ do
 		index=$(($index+1))
 	done
 	
-	echo "deleting all images" > /out.txt
+[ !-z "$containers" ] &&{
+	echo "deleting all images" >> /out.txt
 	docker rmi -f $(docker images -q)
 	echo "loading new image" >> /out.txt
 	sleep 5
 	docker load -i /root/rabbit.tgz
 	echo "image loaded" >> /out.txt
 	docker images >> /out.txt
+}
+
 	index=0
 
 	for c in $containers; do
