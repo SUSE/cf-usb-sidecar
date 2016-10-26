@@ -8,11 +8,11 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
-			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
+			"Rev": "ccefb5c1bea11695ed982dc3b30a20955808dc44"
 		},
 		{
 			"ImportPath": "github.com/hpcloud/go-csm-lib/extension",
-			"Rev": "650f623dca76820a5f3b1b08f2ed63ecfb478a1e"
+			"Rev": "ccefb5c1bea11695ed982dc3b30a20955808dc44"
 		},
 		{
 			"ImportPath": "github.com/pivotal-golang/lager",

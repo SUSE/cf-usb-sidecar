@@ -5,6 +5,7 @@ type CSMResponse struct {
 	ErrorMessage string              `json:"error_message,omitempty"`
 	Details      interface{}         `json:"details,omitempty"`
 	Status       string              `json:"status"`
+	ServiceType  string              `json:"service_type"`
 	Diagnostics  []*StatusDiagnostic `json:"diagnostics,omitempty"`
 }
 

@@ -62,5 +62,6 @@ func (e *routingExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, e
 func (e *routingExtension) GetStatus() (*csm.CSMResponse, error) {
 	response := csm.CSMResponse{}
 	response.Status = "successful"
+	response.ServiceType = "routing"
 	return &response, nil
 }

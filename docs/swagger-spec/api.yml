@@ -270,6 +270,9 @@ definitions:
       message: 
         type: string
         description: "Contains any detail that informs the success or failure of the diagnostic that was performed"
+      service_type:
+        type: string
+        description: "Contains information about the service type"
       diagnostics: 
         type: array
         description: "Optional array of diagnostics performed by the SIDECAR during ping"

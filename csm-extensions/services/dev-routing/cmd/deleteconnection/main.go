@@ -22,7 +22,7 @@ func main() {
 		logger.Fatal("main", err)
 	}
 
-	request, err := csm.GetCSMRequest(os.Args[1:])
+	request, err := csm.GetCSMRequest(os.Args)
 	if err != nil {
 		logger.Fatal("main", err)
 	}
