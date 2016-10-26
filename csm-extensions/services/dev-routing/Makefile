@@ -26,12 +26,7 @@ export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-routing-build
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=hsm-sidecar-dev-logrouting-service
-export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
-export SIDECAR_EXTENSION_SVC_VERSION:=3.0.7
-export SIDECAR_EXTENSION_SVC_CONTAINER_NAME:=sidecar-dev-logrouting-docker-host
 export SIDECAR_EXTENSION_TOKEN:=sidecar-auth-token
-export SIDECAR_EXTENSION_PORT:=50000
 
 
 .PHONY: clean-all clean build-image tools run build-service-image run-db test test-integration
@@ -55,21 +50,14 @@ help:
 	@echo "  build-service-image  Build database docker image"
 	@echo
 
-all:	clean-all build-image build-service-image run-service run
+all:	clean-all build-image run
 
 build:
 	${SIDECAR_EXTENSION_ROOT}/scripts/build.sh
 
-run-service:
-	${SIDECAR_EXTENSION_ROOT}/scripts/docker-run-logrouting-service.sh
-
 run:
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
 	${SIDECAR_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
-
-build-service-image: 
-	@echo "$(OK_COLOR)==> Building service image $(NO_COLOR)"
-	${SIDECAR_EXTENSION_ROOT}/scripts/build-service.sh
 
 test-format:
 	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
@@ -115,14 +103,12 @@ test-integration: clean-all build-image build-service-image run-db run
 clean-containers:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_SVC_CONTAINER_NAME}
 	
 # (required) clean docker images
 clean-images:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
-
+	
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
 
