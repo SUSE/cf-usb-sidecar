@@ -76,7 +76,7 @@ func (provisioner *RabbitHoleProvisioner) CreateContainer(containerName string) 
 		return err
 	}
 
-	provisioner.client.StartContainer(container.ID, &hostConfig)
+	provisioner.client.StartContainer(container.ID, nil)
 	if err != nil {
 		return err
 	}

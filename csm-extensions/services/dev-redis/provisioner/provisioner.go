@@ -68,7 +68,7 @@ func (provisioner *RedisProvisioner) CreateContainer(containerName string) error
 		return err
 	}
 
-	provisioner.client.StartContainer(container.ID, &hostConfig)
+	provisioner.client.StartContainer(container.ID, nil)
 	if err != nil {
 		return err
 	}
