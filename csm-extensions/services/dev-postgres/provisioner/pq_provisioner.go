@@ -10,17 +10,20 @@ import (
 	"text/template"
 
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/config"
+	"github.com/hpcloud/go-csm-lib/util"
 	_ "github.com/lib/pq"
 	"github.com/pivotal-golang/lager"
 )
 
 var createDatabaseQuery = "CREATE DATABASE {{.Database}}"
-var revokeOnDatabaseQuery = "REVOKE all on database {{.Database}} from public"
+var createDatabaseAdminQuery = "CREATE ROLE \"{{.DbAdmin}}\" LOGIN PASSWORD '{{.DbAdminPassword}}'"
 var dbCountQuery = "SELECT COUNT(*) FROM pg_database WHERE datname = '{{.Database}}'"
-var createRoleQuery = "CREATE ROLE \"{{.User}}\" LOGIN PASSWORD '{{.Password}}'"
+var createRoleQuery = "CREATE ROLE \"{{.User}}\" LOGIN PASSWORD '{{.Password}}' INHERIT"
 var grantAllPrivToRoleQuery = "GRANT ALL PRIVILEGES ON DATABASE {{.Database}} TO \"{{.User}}\""
+var grantDbAdminPrivToRoleQuery = "GRANT {{.DbAdmin}} TO \"{{.User}}\""
 var userCountQuery = "SELECT COUNT(*) FROM pg_roles WHERE rolname = '{{.User}}'"
 var revokeAllPrivFromRoleQuery = "REVOKE ALL PRIVILEGES ON DATABASE {{.Database}} FROM \"{{.User}}\""
+var reassignRoleOwned = "REASSIGN OWNED BY \"{{.User}}\" TO {{.DbAdmin}}"
 var deleteRoleQuery = "DROP ROLE \"{{.User}}\""
 var terminateDatabaseConnQuery = "SELECT pg_terminate_backend(pg_stat_activity.{{ .PidColumn }}) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{{.Database}}' AND {{ .PidColumn }} <> pg_backend_pid()"
 var deleteDatabaseQuery = "DROP DATABASE {{.Database}}"
@@ -69,7 +72,12 @@ func (provisioner *PqProvisioner) CreateDatabase(dbname string) error {
 		return err
 	}
 
-	err = provisioner.executeQueryTx([]string{revokeOnDatabaseQuery}, map[string]string{"Database": dbname})
+	password, err := util.SecureRandomString(15)
+	if err != nil {
+		return err
+	}
+
+	err = provisioner.executeQueryTx([]string{createDatabaseAdminQuery, grantAllPrivToRoleQuery}, map[string]string{"DbAdmin": dbname, "DbAdminPassword": password, "Database": dbname, "User": dbname})
 	if err != nil {
 		return err
 	}
@@ -136,16 +144,34 @@ func (provisioner *PqProvisioner) CreateUser(dbname string, username string, pas
 		return err
 	}
 
-	err = provisioner.executeQueryTx([]string{createRoleQuery, grantAllPrivToRoleQuery}, map[string]string{"User": username, "Password": password, "Database": dbname})
+	err = provisioner.executeQueryTx([]string{createRoleQuery}, map[string]string{"User": username, "Password": password})
 	if err != nil {
 		return err
 	}
 
+	err = provisioner.executeQueryTx([]string{grantDbAdminPrivToRoleQuery}, map[string]string{"User": username, "DbAdmin": dbname})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (provisioner *PqProvisioner) DeleteUser(dbname string, username string) error {
+
+	originalDb := provisioner.conf.Dbname
+	provisioner.conf.Dbname = dbname
 	err := provisioner.connect()
+	if err != nil {
+		return err
+	}
+
+	err = provisioner.executeQueryTx([]string{reassignRoleOwned}, map[string]string{"User": username, "DbAdmin": dbname})
+	if err != nil {
+		return err
+	}
+
+	provisioner.conf.Dbname = originalDb
+	err = provisioner.connect()
 	if err != nil {
 		return err
 	}
