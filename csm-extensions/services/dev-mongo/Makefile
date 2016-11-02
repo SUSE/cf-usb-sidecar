@@ -72,12 +72,12 @@ run: build-image
 test-format:
 	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
 	go list ./... | grep -v vendor | grep -v Godeps | gofmt -l
-		
+
 # (required) run tests
 test:	test-format
 	@(export GO15VENDOREXPERIMENT=1; \
 	go list ./... | grep -v vendor | go test -v)
-	
+
 test-integration: clean-all build-image build-service-image run-db run
 	@(if [ ! -z ${DOCKER_HOST} ]; then \
 	SERVER_IP=`echo ${DOCKER_HOST} | cut -d "/" -f 3 | cut -d ":" -f 1`;\
@@ -120,13 +120,12 @@ clean-images:
 clean-all:	clean-containers clean-images
 
 # (required) build docker image for service
-build-image:	
+build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-docker-image.sh
-
 
 # (required) push image to docker registry
 publish-image:

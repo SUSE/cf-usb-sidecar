@@ -26,7 +26,7 @@ type RabbitHoleProvisioner struct {
 }
 
 const DockerImage = "rabbitmq"
-const ImageTag = "hcf"
+const ImageTag = "hsm"
 
 func NewRabbitHoleProvisioner(logger lager.Logger, conf config.RabbitmqConfig) RabbitmqProvisionerInterface {
 	return &RabbitHoleProvisioner{logger: logger, rabbitmqConfig: conf}
@@ -210,7 +210,14 @@ func (provisioner *RabbitHoleProvisioner) getClient() (*dockerclient.Client, err
 	return client, nil
 }
 
-func (provisioner *RabbitHoleProvisioner) findImage(imageName string) (*dockerclient.Image, error) {
+func (provisioner *RabbitHoleProvisioner) FindImage(imageName string) (*dockerclient.Image, error) {
+	var err error
+	if provisioner.client == nil {
+		provisioner.client, err = provisioner.getClient()
+		if err != nil {
+			return nil, err
+		}
+	}
 	image, err := provisioner.client.InspectImage(imageName)
 	if err != nil {
 		return nil, fmt.Errorf("Could not find base image %s: %s", imageName, err.Error())

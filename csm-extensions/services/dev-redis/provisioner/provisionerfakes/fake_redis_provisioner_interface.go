@@ -4,6 +4,7 @@ package provisionerfakes
 import (
 	"sync"
 
+	go_dockerclient "github.com/fsouza/go-dockerclient"
 	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis/provisioner"
 )
 
@@ -42,6 +43,17 @@ type FakeRedisProvisionerInterface struct {
 		result1 map[string]string
 		result2 error
 	}
+	FindImageStub        func(string) (*go_dockerclient.Image, error)
+	findImageMutex       sync.RWMutex
+	findImageArgsForCall []struct {
+		arg1 string
+	}
+	findImageReturns struct {
+		result1 *go_dockerclient.Image
+		result2 error
+	}
+	invocations      map[string][][]interface{}
+	invocationsMutex sync.RWMutex
 }
 
 func (fake *FakeRedisProvisionerInterface) CreateContainer(arg1 string) error {
@@ -49,6 +61,7 @@ func (fake *FakeRedisProvisionerInterface) CreateContainer(arg1 string) error {
 	fake.createContainerArgsForCall = append(fake.createContainerArgsForCall, struct {
 		arg1 string
 	}{arg1})
+	fake.recordInvocation("CreateContainer", []interface{}{arg1})
 	fake.createContainerMutex.Unlock()
 	if fake.CreateContainerStub != nil {
 		return fake.CreateContainerStub(arg1)
@@ -81,6 +94,7 @@ func (fake *FakeRedisProvisionerInterface) DeleteContainer(arg1 string) error {
 	fake.deleteContainerArgsForCall = append(fake.deleteContainerArgsForCall, struct {
 		arg1 string
 	}{arg1})
+	fake.recordInvocation("DeleteContainer", []interface{}{arg1})
 	fake.deleteContainerMutex.Unlock()
 	if fake.DeleteContainerStub != nil {
 		return fake.DeleteContainerStub(arg1)
@@ -113,6 +127,7 @@ func (fake *FakeRedisProvisionerInterface) ContainerExists(arg1 string) (bool, e
 	fake.containerExistsArgsForCall = append(fake.containerExistsArgsForCall, struct {
 		arg1 string
 	}{arg1})
+	fake.recordInvocation("ContainerExists", []interface{}{arg1})
 	fake.containerExistsMutex.Unlock()
 	if fake.ContainerExistsStub != nil {
 		return fake.ContainerExistsStub(arg1)
@@ -146,6 +161,7 @@ func (fake *FakeRedisProvisionerInterface) GetCredentials(arg1 string) (map[stri
 	fake.getCredentialsArgsForCall = append(fake.getCredentialsArgsForCall, struct {
 		arg1 string
 	}{arg1})
+	fake.recordInvocation("GetCredentials", []interface{}{arg1})
 	fake.getCredentialsMutex.Unlock()
 	if fake.GetCredentialsStub != nil {
 		return fake.GetCredentialsStub(arg1)
@@ -172,6 +188,68 @@ func (fake *FakeRedisProvisionerInterface) GetCredentialsReturns(result1 map[str
 		result1 map[string]string
 		result2 error
 	}{result1, result2}
+}
+
+func (fake *FakeRedisProvisionerInterface) FindImage(arg1 string) (*go_dockerclient.Image, error) {
+	fake.findImageMutex.Lock()
+	fake.findImageArgsForCall = append(fake.findImageArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("FindImage", []interface{}{arg1})
+	fake.findImageMutex.Unlock()
+	if fake.FindImageStub != nil {
+		return fake.FindImageStub(arg1)
+	} else {
+		return fake.findImageReturns.result1, fake.findImageReturns.result2
+	}
+}
+
+func (fake *FakeRedisProvisionerInterface) FindImageCallCount() int {
+	fake.findImageMutex.RLock()
+	defer fake.findImageMutex.RUnlock()
+	return len(fake.findImageArgsForCall)
+}
+
+func (fake *FakeRedisProvisionerInterface) FindImageArgsForCall(i int) string {
+	fake.findImageMutex.RLock()
+	defer fake.findImageMutex.RUnlock()
+	return fake.findImageArgsForCall[i].arg1
+}
+
+func (fake *FakeRedisProvisionerInterface) FindImageReturns(result1 *go_dockerclient.Image, result2 error) {
+	fake.FindImageStub = nil
+	fake.findImageReturns = struct {
+		result1 *go_dockerclient.Image
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeRedisProvisionerInterface) Invocations() map[string][][]interface{} {
+	fake.invocationsMutex.RLock()
+	defer fake.invocationsMutex.RUnlock()
+	fake.createContainerMutex.RLock()
+	defer fake.createContainerMutex.RUnlock()
+	fake.deleteContainerMutex.RLock()
+	defer fake.deleteContainerMutex.RUnlock()
+	fake.containerExistsMutex.RLock()
+	defer fake.containerExistsMutex.RUnlock()
+	fake.getCredentialsMutex.RLock()
+	defer fake.getCredentialsMutex.RUnlock()
+	fake.findImageMutex.RLock()
+	defer fake.findImageMutex.RUnlock()
+	return fake.invocations
+}
+
+func (fake *FakeRedisProvisionerInterface) recordInvocation(key string, args []interface{}) {
+	fake.invocationsMutex.Lock()
+	defer fake.invocationsMutex.Unlock()
+	if fake.invocations == nil {
+		fake.invocations = map[string][][]interface{}{}
+	}
+	if fake.invocations[key] == nil {
+		fake.invocations[key] = [][]interface{}{}
+	}
+	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
 var _ provisioner.RedisProvisionerInterface = new(FakeRedisProvisionerInterface)

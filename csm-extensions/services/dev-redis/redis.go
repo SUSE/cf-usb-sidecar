@@ -101,7 +101,8 @@ func (e *redisExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, err
 
 func (e *redisExtension) GetStatus() (*csm.CSMResponse, error) {
 	response := csm.CSMResponse{}
-	_, err := e.prov.ContainerExists("test")
+
+	_, err := e.prov.FindImage("redis:hsm")
 
 	if err != nil {
 		response.Status = "failed"
@@ -110,6 +111,7 @@ func (e *redisExtension) GetStatus() (*csm.CSMResponse, error) {
 
 		return &response, err
 	}
+
 	response.Status = "successful"
 	return &response, nil
 }

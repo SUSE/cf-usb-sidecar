@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ -z ${SIDECAR_HOST} ]
+then
+  if [ -z ${HSM_SIDE_CAR_INT_SERVICE_PORT} ]
+  then
+    export SIDECAR_HOST="${HSM_SIDE_CAR_SERVICE_HOST}"
+  else
+    export SIDECAR_HOST="${HSM_SIDE_CAR_INT_SERVICE_HOST}"
+  fi
+fi
+
+if [ -z "${SIDECAR_PORT}" ]
+then
+  if [ -z "${HSM_SIDE_CAR_INT_SERVICE_PORT}" ]
+  then
+    export SIDECAR_PORT=${HSM_SIDE_CAR_SERVICE_PORT}
+  else
+    export SIDECAR_PORT=${HSM_SIDE_CAR_INT_SERVICE_PORT}
+  fi
+fi
+
+if [ -z "$SIDECAR_ENDPOINT" ]; then
+  export SIDECAR_ENDPOINT=https://$SIDECAR_HOST:$SIDECAR_PORT
+fi
+
+if [ -z "${MAX}" ]; then
+        export MAX=90
+fi
+
+if [ -z "${DELAY}" ]; then
+        export DELAY=2
+fi
+
+if [ -z "${MSG}" ]; then
+        export MSG="Waiting for sidecar to come online..."
+fi
+
+for i in $(seq 1 "${MAX}")
+do
+	echo "${MSG}"
+        eval "$@" && exit 0 || sleep "${DELAY}"
+done
+
+exit 1

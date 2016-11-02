@@ -21,6 +21,8 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
+export SIDECAR_API_KEY:=sidecar-auth-token
+
 export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-dev-mysql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
@@ -28,6 +30,8 @@ export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mysql-build
 
 export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=hsm-sidecar-dev-mysql-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
+
+export SIDECAR_EXTENSION_PORT=8081
 
 .PHONY: clean-all clean build-image tools run build-service-image run-db test test-integration
 
@@ -49,6 +53,7 @@ help:
 	@echo "  build-image          Build extension docker image"
 	@echo "  publish-image        Publish csm-dev-mysql docker image to registry"
 	@echo "  build-service-image  Build database docker image"
+
 	@echo
 
 all:	clean-all build-image build-service-image run-db run
@@ -72,7 +77,7 @@ test-format:
 	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
 	FILES=`find . -name "*.go" | grep -v vendor | grep -v Godeps`;\
 	${SIDECAR_ROOT}/scripts/testFmt.sh "$$FILES")
-		
+
 # (required) run tests
 test:	test-format
 	@(export GO15VENDOREXPERIMENT=1; \
@@ -105,8 +110,8 @@ test-integration: clean-all build-image build-service-image run-db run
 		echo "$(ERROR_COLOR)==>Not running integration tests:$(NO_COLOR) ";\
 	fi)
 	${MAKE} clean-all
-	
-	
+
+
 
 # (required) clean containers
 clean-containers:
@@ -124,7 +129,7 @@ clean-images:
 clean-all:	clean-containers clean-images
 
 # (required) build docker image for service
-build-image:	
+build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
