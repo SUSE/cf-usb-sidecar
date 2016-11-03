@@ -51,6 +51,7 @@ func (e *mysqlExtension) CreateConnection(workspaceID, connectionID string) (*cs
 		User:     username,
 		Password: password,
 		Database: dbName,
+		JdbcUrl:  config.GenerateConnectionString(config.JdbcUrilTemplate, e.conf.Host, e.conf.Port, dbName, username, password),
 	}
 
 	response := csm.CreateCSMResponse(binding)
