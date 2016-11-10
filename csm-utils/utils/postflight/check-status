@@ -24,22 +24,25 @@ if [ -z "$SIDECAR_ENDPOINT" ]; then
   export SIDECAR_ENDPOINT=https://$SIDECAR_HOST:$SIDECAR_PORT
 fi
 
-if [ -z "${MAX}" ]; then
-        export MAX=90
+if [ -z "${POSTFLIGHT_MAX_TIMEOUT}" ]; then
+        export POSTFLIGHT_MAX_TIMEOUT=300
 fi
 
-if [ -z "${DELAY}" ]; then
-        export DELAY=2
+if [ -z "${POSTFLIGHT_RETRY_DELAY}" ]; then
+        export POSTFLIGHT_RETRY_DELAY=5
 fi
 
-if [ -z "${MSG}" ]; then
-        export MSG="Waiting for sidecar to come online..."
+if [ -z "${POSTFLIGHT_MEASSAGE}" ]; then
+        export POSTFLIGHT_MEASSAGE="Waiting for service to be ready... @ ${SIDECAR_ENDPOINT}/status"
 fi
 
-for i in $(seq 1 "${MAX}")
+
+TOTAL_TIME=0
+until [ ${TOTAL_TIME} -ge ${POSTFLIGHT_MAX_TIMEOUT} ]
 do
-	echo "${MSG}"
-        eval "$@" && exit 0 || sleep "${DELAY}"
+    echo "${POSTFLIGHT_MEASSAGE}"
+    eval "$@" && exit 0 || sleep "${POSTFLIGHT_RETRY_DELAY}"
+    TOTAL_TIME=$(expr ${TOTAL_TIME} + ${POSTFLIGHT_RETRY_DELAY})
 done
 
 exit 1
