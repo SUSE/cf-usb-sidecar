@@ -24,7 +24,7 @@ type RedisProvisioner struct {
 }
 
 const DockerImage = "redis"
-const ImageTag = "hcf"
+const ImageTag = "hsm"
 
 func NewRedisProvisioner(logger lager.Logger, conf config.RedisConfig) RedisProvisionerInterface {
 	return &RedisProvisioner{logger: logger, redisConfig: conf}
@@ -154,7 +154,14 @@ func (provisioner *RedisProvisioner) getClient() (*dockerclient.Client, error) {
 	return client, nil
 }
 
-func (provisioner *RedisProvisioner) findImage(imageName string) (*dockerclient.Image, error) {
+func (provisioner *RedisProvisioner) FindImage(imageName string) (*dockerclient.Image, error) {
+	var err error
+	if provisioner.client == nil {
+		provisioner.client, err = provisioner.getClient()
+		if err != nil {
+			return nil, err
+		}
+	}
 	image, err := provisioner.client.InspectImage(imageName)
 	if err != nil {
 		return nil, fmt.Errorf("Could not find base image %s: %s", imageName, err.Error())

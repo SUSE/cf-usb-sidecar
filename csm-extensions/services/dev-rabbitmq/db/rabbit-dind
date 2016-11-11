@@ -55,9 +55,9 @@ do
 		pass=$(eval echo \"$"PASSES$index"\")
 		index=$(($index+1))
 		echo "creating $name" >> /out.txt
-        	docker run --name $name --hostname $hostname -p $svcPort:15672 -p $mgmtPort:5672 -v /var/lib/rabbitmq/$hostname:/var/lib/rabbitmq/mnesia/:rw -e RABBITMQ_DEFAULT_USER=$user -e RABBITMQ_DEFAULT_PASS=$pass -d rabbitmq:hcf
+        	docker run --name $name --hostname $hostname -p $svcPort:15672 -p $mgmtPort:5672 -v /var/lib/rabbitmq/$hostname:/var/lib/rabbitmq/mnesia/:rw -e RABBITMQ_DEFAULT_USER=$user -e RABBITMQ_DEFAULT_PASS=$pass -d rabbitmq:hsm
 
 	done)
 } & 
 
-dockerd-entrypoint.sh
+dockerd-entrypoint.sh 

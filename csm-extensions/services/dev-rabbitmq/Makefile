@@ -71,7 +71,7 @@ test-format:
 	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
 	go list ./... | grep -v vendor | grep -v Godeps | gofmt -l
 
-build-service-image: 
+build-service-image:
 	@echo "$(OK_COLOR)==> Building database image $(NO_COLOR)"
 	${SIDECAR_EXTENSION_ROOT}/scripts/build-db.sh
 
@@ -79,12 +79,13 @@ build-service-image:
 test: test-format
 	@(export GO15VENDOREXPERIMENT=1; \
 	go list ./... | grep -v vendor | go test -v)
-	
+
 test-integration: clean-all build-image build-service-image run-db run
 	@(if [ ! -z ${DOCKER_HOST} ]; then \
 	SERVER_IP=`echo ${DOCKER_HOST} | cut -d "/" -f 3 | cut -d ":" -f 1`;\
 	else \
 	SERVER_IP=`ip route get 8.8.8.8 | cut -d" " -f8`;\
+	export DOCKER_HOST=$$SERVER_IP:2375;\
 	fi; \
 	export DOCKER_HOST_IP=$$SERVER_IP;\
 	echo "Testing against $$SERVER_IP:$(SIDECAR_EXTENSION_PORT)...\n";\
@@ -124,7 +125,7 @@ clean-images:
 clean-all:	clean-containers clean-images
 
 # (required) build docker image for service
-build-image:	
+build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}

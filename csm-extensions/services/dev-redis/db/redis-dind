@@ -49,7 +49,7 @@ set -e
                 echo $(eval echo $"CMDS$index")
                 index=$(($index+1))
                 echo "creating $name" >> /out.txt
-                docker run --name  $name -v /data/$name:/data -p $port:6379 -d redis:hcf $cmd
+                docker run --name  $name -v /data/$name:/data -p $port:6379 -d redis:hsm $cmd
         done)
 } &
 dockerd-entrypoint.sh

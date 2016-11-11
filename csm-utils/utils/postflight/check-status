@@ -1,0 +1,48 @@
+#!/bin/bash
+
+if [ -z ${SIDECAR_HOST} ]
+then
+  if [ -z ${HSM_SIDE_CAR_INT_SERVICE_PORT} ]
+  then
+    export SIDECAR_HOST="${HSM_SIDE_CAR_SERVICE_HOST}"
+  else
+    export SIDECAR_HOST="${HSM_SIDE_CAR_INT_SERVICE_HOST}"
+  fi
+fi
+
+if [ -z "${SIDECAR_PORT}" ]
+then
+  if [ -z "${HSM_SIDE_CAR_INT_SERVICE_PORT}" ]
+  then
+    export SIDECAR_PORT=${HSM_SIDE_CAR_SERVICE_PORT}
+  else
+    export SIDECAR_PORT=${HSM_SIDE_CAR_INT_SERVICE_PORT}
+  fi
+fi
+
+if [ -z "$SIDECAR_ENDPOINT" ]; then
+  export SIDECAR_ENDPOINT=https://$SIDECAR_HOST:$SIDECAR_PORT
+fi
+
+if [ -z "${POSTFLIGHT_MAX_TIMEOUT}" ]; then
+        export POSTFLIGHT_MAX_TIMEOUT=300
+fi
+
+if [ -z "${POSTFLIGHT_RETRY_DELAY}" ]; then
+        export POSTFLIGHT_RETRY_DELAY=5
+fi
+
+if [ -z "${POSTFLIGHT_MEASSAGE}" ]; then
+        export POSTFLIGHT_MEASSAGE="Waiting for service to be ready... @ ${SIDECAR_ENDPOINT}/status"
+fi
+
+
+TOTAL_TIME=0
+until [ ${TOTAL_TIME} -ge ${POSTFLIGHT_MAX_TIMEOUT} ]
+do
+    echo "${POSTFLIGHT_MEASSAGE}"
+    eval "$@" && exit 0 || sleep "${POSTFLIGHT_RETRY_DELAY}"
+    TOTAL_TIME=$(expr ${TOTAL_TIME} + ${POSTFLIGHT_RETRY_DELAY})
+done
+
+exit 1

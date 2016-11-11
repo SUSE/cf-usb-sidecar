@@ -149,13 +149,15 @@ func (e *rabbitmqExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, 
 func (e *rabbitmqExtension) GetStatus() (*csm.CSMResponse, error) {
 	response := csm.CSMResponse{}
 
-	_, err := e.prov.ContainerExists("test")
+	_, err := e.prov.FindImage("rabbitmq:hsm")
+
 	if err != nil {
 		response.Status = "failed"
 		response.ErrorMessage = "Could not connect to rabbitmq docker host"
 		response.Diagnostics = append(response.Diagnostics, &csm.StatusDiagnostic{Name: "Database", Message: err.Error(), Description: "Server reply", Status: "failed"})
 		return &response, err
 	}
+
 	response.Status = "successful"
 	return &response, nil
 }

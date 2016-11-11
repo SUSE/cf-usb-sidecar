@@ -5,7 +5,6 @@ SERVICE_MYSQL_USER="root"
 SERVICE_MYSQL_PASS="root123"
 SERVICE_MYSQL_PORT="3306"
 SIDECAR_DEV_MODE="true"
-SIDECAR_API_KEY="sidecar-auth-token"
 
 if [ ! -z ${DOCKER_HOST} ]
 then
@@ -14,9 +13,8 @@ else
     export DOCKER_HOST_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
 fi
 
-
 docker run --name ${SIDECAR_EXTENSION_IMAGE_NAME} \
-	-p 0.0.0.0:8081:8081 \
+	-p 0.0.0.0:${SIDECAR_EXTENSION_PORT}:8081 \
 	-e SERVICE_MYSQL_USER=${SERVICE_MYSQL_USER} \
 	-e SERVICE_MYSQL_PASS=${SERVICE_MYSQL_PASS} \
 	-e SERVICE_MYSQL_HOST=${DOCKER_HOST_IP} \

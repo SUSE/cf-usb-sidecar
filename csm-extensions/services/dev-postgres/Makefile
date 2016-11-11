@@ -5,7 +5,6 @@ ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 TOKEN=sidecar-auth-token
 SERVER_IP=127.0.0.1
-SERVER_PORT=8093
 
 ifndef DOCKER_ORGANIZATION
 	export DOCKER_ORGANIZATION:=stackatodev
@@ -22,6 +21,8 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
+export SIDECAR_EXTENSION_PORT:=8093
+
 export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-dev-postgres
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
@@ -30,7 +31,9 @@ export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-postgres-build
 export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=hsm-sidecar-dev-postgres-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 
-.PHONY: clean-all clean build-image tools run build-service-image run-db test test-integration
+export SIDECAR_API_KEY:=sidecar-auth-token
+
+.PHONY: clean-all clean build-image tools run build-service-image build-hsm-pf run-db test test-integration
 
 default: help
 
@@ -70,11 +73,11 @@ run:
 	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
 	${SIDECAR_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
 
-test-format: 
+test-format:
 	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
 	FILES=`find . -name "*.go" | grep -v vendor | grep -v Godeps`;\
 	${SIDECAR_ROOT}/scripts/testFmt.sh "$$FILES")
-	
+
 # (required) run tests
 test: test-format
 	@(export GO15VENDOREXPERIMENT=1; \
@@ -86,6 +89,7 @@ test-integration: clean-all build-image build-service-image run-db run
 	else \
 	    SERVER_IP=`ip route get 8.8.8.8 | cut -d" " -f8`;\
 	fi; \
+	SERVER_PORT=${SIDECAR_EXTENSION_PORT}; \
 	echo "Testing against $$SERVER_IP:$(SERVER_PORT)...\n";\
 	export TEST_SERVER_IP=$$SERVER_IP;\
 	export TEST_SERVER_PORT=$(SERVER_PORT);\
@@ -124,7 +128,7 @@ clean-images:
 clean-all:	clean-containers clean-images
 
 # (required) build docker image for service
-build-image:	
+build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
