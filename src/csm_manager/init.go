@@ -23,7 +23,7 @@ var (
 //InitServiceCatalogManager initilizes service catalog manager
 func InitServiceCatalogManager() {
 	config = common.NewServiceManagerConfiguration()
-	logger = common.NewLogger(strings.ToLower(*config.LOG_LEVEL), "csm-manager")
+	logger = common.NewLogger(strings.ToLower(*config.LOG_LEVEL), *config.HCP_INSTANCE_ID)
 	fileHelper := utils.CSMFileHelper{
 		Logger: logger,
 		Config: config,
