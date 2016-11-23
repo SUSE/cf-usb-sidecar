@@ -36,6 +36,8 @@ if [ -z "${POSTFLIGHT_MEASSAGE}" ]; then
         export POSTFLIGHT_MEASSAGE="Waiting for service to be ready... @ ${SIDECAR_ENDPOINT}/status"
 fi
 
+export NO_PROXY=$NO_PROXY,$SIDECAR_HOST
+export no_proxy=$NO_PROXY
 
 TOTAL_TIME=0
 until [ ${TOTAL_TIME} -ge ${POSTFLIGHT_MAX_TIMEOUT} ]
