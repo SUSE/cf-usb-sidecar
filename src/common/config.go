@@ -20,6 +20,7 @@ type ServiceManagerConfiguration struct {
 	TLS_CERT_FILE        *string
 	TLS_PRIVATE_KEY_FILE *string
 	PORT                 *string `env:"PORT"`
+	HCP_INSTANCE_ID      *string `env:"HCP_INSTANCE_ID"`
 }
 
 var paramDefaultList = map[string]string{
