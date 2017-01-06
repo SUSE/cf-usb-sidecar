@@ -36,7 +36,7 @@ var paramDefaultList = map[string]string{
 	"TLS_CERT_FILE":             "/etc/secrets/tls-cert-file",
 	"TLS_PRIVATE_KEY_FILE":      "/etc/secrets/tls-private-key-file",
 	"PORT":                      "8081",
-	"HCP_INSTANCE_ID"		 	 "Sidecar"
+	"HCP_INSTANCE_ID":           "Sidecar",
 }
 
 // NewServiceManagerConfiguration : Creates object of ServiceManagerConfiguration
