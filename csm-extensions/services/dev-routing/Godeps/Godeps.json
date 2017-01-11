@@ -1,0 +1,27 @@
+{
+	"ImportPath": "github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-routing",
+	"GoVersion": "go1.5",
+	"GodepVersion": "v74",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
+			"Rev": "ccefb5c1bea11695ed982dc3b30a20955808dc44"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/go-csm-lib/extension",
+			"Rev": "ccefb5c1bea11695ed982dc3b30a20955808dc44"
+		},
+		{
+			"ImportPath": "github.com/pivotal-golang/lager",
+			"Rev": "81d18ed6a75f16276fed99134f0e8397ec2e91e2"
+		},
+		{
+			"ImportPath": "gopkg.in/caarlos0/env.v2",
+			"Comment": "v2.0",
+			"Rev": "65331f179c42e3ffe33457b69bee55472a779cd6"
+		}
+	]
+}
