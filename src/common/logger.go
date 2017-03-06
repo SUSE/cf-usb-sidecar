@@ -38,6 +38,5 @@ func NewLogger(level string, component string) *logrus.Logger {
 	logger.Out = os.Stdout
 	logger.Level = minLogLevel
 
-	config := NewServiceManagerConfiguration()
 	return logger
 }
