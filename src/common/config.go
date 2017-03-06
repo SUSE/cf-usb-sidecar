@@ -15,8 +15,6 @@ type ServiceManagerConfiguration struct {
 	EXT_TIMEOUT_ERROR    *string
 	HEALTHCHECK_HOST     *string
 	HEALTHCHECK_PORT     *string
-	FLIGHTRECORDER_HOST  *string `env:"HCP_FLIGHTRECORDER_HOST" long:"hcp_flightrecorder_host" description:"Flight Recorder Service Endpoint"`
-	FLIGHTRECORDER_PORT  *string `env:"HCP_FLIGHTRECORDER_PORT" long:"hcp_flightrecorder_port" description:"Flight Recorder Service Endpoint"`
 	TLS_CERT_FILE        *string
 	TLS_PRIVATE_KEY_FILE *string
 	PORT                 *string `env:"PORT"`
@@ -32,8 +30,6 @@ var paramDefaultList = map[string]string{
 	"SIDECAR_EXT_TIMEOUT_ERROR": "2",
 	"HEALTHCHECK_HOST":          "",
 	"HEALTHCHECK_PORT":          "",
-	"HCP_FLIGHTRECORDER_HOST":   "",
-	"HCP_FLIGHTRECORDER_PORT":   "",
 	"TLS_CERT_FILE":             "/etc/secrets/tls-cert-file",
 	"TLS_PRIVATE_KEY_FILE":      "/etc/secrets/tls-private-key-file",
 	"PORT":                      "8081",
@@ -64,8 +60,6 @@ func NewServiceManagerConfiguration() *ServiceManagerConfiguration {
 	config.HEALTHCHECK_PORT = config.getConfigFromEnv("HEALTHCHECK_PORT")
 	config.TLS_CERT_FILE = config.getConfigFromEnv("TLS_CERT_FILE")
 	config.TLS_PRIVATE_KEY_FILE = config.getConfigFromEnv("TLS_PRIVATE_KEY_FILE")
-	config.FLIGHTRECORDER_HOST = config.getConfigFromEnv("HCP_FLIGHTRECORDER_HOST")
-	config.FLIGHTRECORDER_PORT = config.getConfigFromEnv("HCP_FLIGHTRECORDER_PORT")
 	config.PORT = config.getConfigFromEnv("PORT")
 	config.HCP_INSTANCE_ID = config.getConfigFromEnv("HCP_INSTANCE_ID")
 	return &config
@@ -85,8 +79,4 @@ func (*ServiceManagerConfiguration) getConfigFromEnv(key string) *string {
 	fmt.Fprintf(os.Stderr, "error: Please configure "+key+".")
 	os.Exit(1)
 	return nil
-}
-
-func (c *ServiceManagerConfiguration) FlightRecorderEndpoint() string {
-	return *c.FLIGHTRECORDER_HOST + ":" + *c.FLIGHTRECORDER_PORT
 }
