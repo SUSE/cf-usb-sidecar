@@ -1,13 +1,13 @@
-FROM hsm-sidecar-buildbase:latest
+FROM cf-usb-sidecar-buildbase:latest
 
 ENV GOPATH /go
 ENV GOBIN /go/bin
 
-COPY . /go/src/github.com/hpcloud/catalog-service-manager
+COPY . /go/src/github.com/SUSE/cf-usb-sidecar
 
 RUN go version
 
-RUN cd /go/src/github.com/hpcloud/catalog-service-manager \
+RUN cd /go/src/github.com/SUSE/cf-usb-sidecar \
     && make clean-all build 
 
 ENTRYPOINT cp /go/bin/catalog-service-manager /catalog-service-manager-bin/

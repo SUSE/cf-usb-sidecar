@@ -3,12 +3,12 @@ package csm_manager
 import (
 	"strings"
 
+	"github.com/SUSE/cf-usb-sidecar/src/common"
+	"github.com/SUSE/cf-usb-sidecar/src/common/utils"
+	internalConnection "github.com/SUSE/cf-usb-sidecar/src/connection"
+	internalStatus "github.com/SUSE/cf-usb-sidecar/src/status"
+	internalWorkspaces "github.com/SUSE/cf-usb-sidecar/src/workspace"
 	"github.com/Sirupsen/logrus"
-	"github.com/hpcloud/catalog-service-manager/src/common"
-	"github.com/hpcloud/catalog-service-manager/src/common/utils"
-	internalConnection "github.com/hpcloud/catalog-service-manager/src/connection"
-	internalStatus "github.com/hpcloud/catalog-service-manager/src/status"
-	internalWorkspaces "github.com/hpcloud/catalog-service-manager/src/workspace"
 )
 
 var (

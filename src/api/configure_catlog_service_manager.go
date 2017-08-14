@@ -7,13 +7,13 @@ import (
 	httpkit "github.com/go-swagger/go-swagger/httpkit"
 	middleware "github.com/go-swagger/go-swagger/httpkit/middleware"
 
-	"github.com/hpcloud/catalog-service-manager/cmd/catalog-service-manager/handlers"
+	"github.com/SUSE/cf-usb-sidecar/cmd/catalog-service-manager/handlers"
 
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations"
+	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations"
 
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations/connection"
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations/status"
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations/workspace"
+	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/connection"
+	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/status"
+	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/workspace"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten

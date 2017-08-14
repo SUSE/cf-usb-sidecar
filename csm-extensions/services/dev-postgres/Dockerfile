@@ -1,4 +1,4 @@
-FROM hsm-sidecar:latest
+FROM cf-usb-sidecar:latest
 
 COPY ./SIDECAR_HOME /catalog-service-manager
 RUN chmod +x /catalog-service-manager/bin/run.sh

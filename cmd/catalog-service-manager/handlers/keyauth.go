@@ -3,7 +3,7 @@ package handlers
 import (
 	errors "github.com/go-swagger/go-swagger/errors"
 
-	"github.com/hpcloud/catalog-service-manager/src/csm_manager"
+	"github.com/SUSE/cf-usb-sidecar/src/csm_manager"
 )
 
 // APIKeyAuth authorizatizes an API call

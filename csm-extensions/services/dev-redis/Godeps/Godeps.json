@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis",
+	"ImportPath": "github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-redis",
 	"GoVersion": "go1.5",
 	"GodepVersion": "v74",
 	"Packages": [

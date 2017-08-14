@@ -7,10 +7,10 @@ TOKEN=sidecar-auth-token
 SERVER_PORT=8081
 
 ifndef DOCKER_ORGANIZATION
-	export DOCKER_ORGANIZATION:=stackatodev
+	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 export SIDECAR_UTILS_ROOT:=${SIDECAR_ROOT}/csm-utils/utils/postflight
 
 ifeq ($(strip $(VERSION)),)
@@ -21,7 +21,7 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_UTILS_IMAGE_NAME:=hsm-sidecar-postflight
+export SIDECAR_UTILS_IMAGE_NAME:=cf-usb-sidecar-postflight
 export SIDECAR_UTILS_IMAGE_TAG:=latest
 
 .PHONY: clean-all build-image publish-image

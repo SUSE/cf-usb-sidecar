@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mssql/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mssql/config"
 	"github.com/pivotal-golang/lager/lagertest"
 )
 

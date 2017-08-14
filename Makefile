@@ -24,13 +24,13 @@ ifndef SIDECAR_API_KEY
 endif
 
 ifndef DOCKER_ORGANIZATION
-	export DOCKER_ORGANIZATION:=stackatodev
+	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
-export SIDECAR_BASE_IMAGE_NAME:=hsm-sidecar
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
+export SIDECAR_BASE_IMAGE_NAME:=cf-usb-sidecar
 export SIDECAR_BASE_IMAGE_TAG:=latest
-export SIDECAR_BUILD_BASE_IMAGE_NAME:=hsm-sidecar-buildbase
+export SIDECAR_BUILD_BASE_IMAGE_NAME:=cf-usb-sidecar-buildbase
 export SIDECAR_BUILD_BASE_IMAGE_TAG:=latest
 
 
@@ -112,7 +112,7 @@ test: test-format
 	godep go test $(TESTLIST)
 
 tools:
-	@echo "$(OK_COLOR)==> Installing tools and go dependancies $(NO_COLOR)"
+	@echo "$(OK_COLOR)==> Installing tools and go dependencies $(NO_COLOR)"
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/tools/godep
 	go get github.com/fsouza/go-dockerclient

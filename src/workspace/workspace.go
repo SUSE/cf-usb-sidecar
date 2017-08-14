@@ -8,10 +8,10 @@ import (
 
 	"strings"
 
+	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/models"
+	"github.com/SUSE/cf-usb-sidecar/src/common"
+	"github.com/SUSE/cf-usb-sidecar/src/common/utils"
 	"github.com/Sirupsen/logrus"
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
-	"github.com/hpcloud/catalog-service-manager/src/common"
-	"github.com/hpcloud/catalog-service-manager/src/common/utils"
 )
 
 type CSMWorkspace struct {

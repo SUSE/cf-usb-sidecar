@@ -2,7 +2,7 @@
 set -u
 env_var_to_echo=$1
 
-export WORKSPACE=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export WORKSPACE=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 STARTDIR=${START_DIR:-}
 CONCOURSEBUILD=${CONCOURSE_BUILD:-}
 

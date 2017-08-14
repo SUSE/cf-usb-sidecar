@@ -5,10 +5,10 @@ ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
 ifndef DOCKER_ORGANIZATION
-	export DOCKER_ORGANIZATION:=stackatodev
+	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 
 ifeq ($(strip $(VERSION)),)
 	export VERSION := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "VERSION")
@@ -32,7 +32,7 @@ help:
 
 clean-all:
 	scripts/run_utils_make_target.sh  clean-all
-	
+
 build-image:
 	scripts/run_utils_make_target.sh  build-image
 

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mongo/config"
 	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"
 )

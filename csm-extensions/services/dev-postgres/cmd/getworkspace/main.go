@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres"
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/config"
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/provisioner"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-postgres"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-postgres/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-postgres/provisioner"
 	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/pivotal-golang/lager"
 	"gopkg.in/caarlos0/env.v2"

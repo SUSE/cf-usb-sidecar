@@ -27,7 +27,7 @@ then
 	exit 1
 fi
 
-SIDECAR_BUILD_IMAGE_NAME=hsm-sidecar-build-binary
+SIDECAR_BUILD_IMAGE_NAME=cf-usb-sidecar-build-binary
 SIDECAR_BUILD_IMAGE_TAG=latest
 SIDECAR_BUILD_CONTAINER_NAME=sidecar-build
 

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 TARGET=$1
-SIDECAR_ROOT=$GOPATH/src/github.com/hpcloud/catalog-service-manager
-SIDECAR_SERVICES=$GOPATH/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services
+SIDECAR_ROOT=$GOPATH/src/github.com/SUSE/cf-usb-sidecar
+SIDECAR_SERVICES=$GOPATH/src/github.com/SUSE/cf-usb-sidecar/csm-extensions/services
 
 . ${SIDECAR_ROOT}/scripts/colors.sh
 
@@ -10,7 +10,7 @@ BUILT_SERVICES=""
 FAILED_SERVICES=""
 command_status=0
 
-cd  $GOPATH/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services
+cd  $GOPATH/src/github.com/SUSE/cf-usb-sidecar/csm-extensions/services
 for serviceDir in `find . -maxdepth 1 -mindepth 1 -type d `
 do
     oldDir=`pwd`

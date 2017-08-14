@@ -3,8 +3,8 @@ package handlers
 import (
 	middleware "github.com/go-swagger/go-swagger/httpkit/middleware"
 
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/restapi/operations/workspace"
-	"github.com/hpcloud/catalog-service-manager/src/csm_manager"
+	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/workspace"
+	"github.com/SUSE/cf-usb-sidecar/src/csm_manager"
 )
 
 func DeleteWorkspace(workspaceID string) middleware.Responder {

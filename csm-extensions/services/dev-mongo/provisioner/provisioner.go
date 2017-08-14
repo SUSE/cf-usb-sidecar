@@ -3,7 +3,7 @@ package provisioner
 import (
 	"fmt"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mongo/config"
 	"github.com/pivotal-golang/lager"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

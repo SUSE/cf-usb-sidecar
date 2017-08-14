@@ -4,7 +4,7 @@ package provisionerfakes
 import (
 	"sync"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/provisioner"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-postgres/provisioner"
 )
 
 type FakePostgresProvisionerInterface struct {

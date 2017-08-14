@@ -73,7 +73,7 @@ set this variable appropriately to point to the directory where your workspaces
 and connections extensions are located.
 
 ```
-export SIDECAR_HOME=${GOPATH}/src/github.com/hpcloud/catalog-service-manager/examples/mysql
+export SIDECAR_HOME=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar/examples/mysql
 ```
 
 ### SIDECAR_DEBUG

@@ -1,10 +1,10 @@
-FROM hsm-sidecar-buildbase:latest
+FROM cf-usb-sidecar-buildbase:latest
 
-COPY . /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mssql
+COPY . /go/src/github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mssql
 ENV GOPATH /go
 ENV GOBIN /go/bin
-WORKDIR /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mssql
+WORKDIR /go/src/github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mssql
 
 RUN make tools
 RUN make build
-ENTRYPOINT cp -r /go/src/github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mssql/SIDECAR_HOME/* /out/
+ENTRYPOINT cp -r /go/src/github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mssql/SIDECAR_HOME/* /out/

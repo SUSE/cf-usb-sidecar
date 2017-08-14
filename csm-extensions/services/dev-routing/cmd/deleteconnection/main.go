@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-routing"
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-routing/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-routing"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-routing/config"
 	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/pivotal-golang/lager"
 	"gopkg.in/caarlos0/env.v2"

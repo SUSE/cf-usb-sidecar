@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"sync"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/provisioner"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/provisioner"
 )
 
 type FakeMySQLProvisioner struct {

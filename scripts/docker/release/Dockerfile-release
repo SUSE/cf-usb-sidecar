@@ -1,7 +1,7 @@
-FROM ubuntu:14.04
+FROM opensuse:42.3
 
 RUN mkdir -p /catalog-service-manager/bin \
-    /catalog-service-manager/setup/startup \ 
+    /catalog-service-manager/setup/startup \
     /catalog-service-manager/setup/shutdown \
 
     /catalog-service-manager/workspace/get \

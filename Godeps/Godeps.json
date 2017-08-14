@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/hpcloud/catalog-service-manager",
+	"ImportPath": "github.com/SUSE/cf-usb-sidecar",
 	"GoVersion": "go1.5",
 	"GodepVersion": "v62",
 	"Packages": [

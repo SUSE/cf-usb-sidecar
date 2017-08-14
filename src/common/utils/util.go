@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
-	"github.com/hpcloud/catalog-service-manager/src/common"
+	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/models"
+	"github.com/SUSE/cf-usb-sidecar/src/common"
 )
 
 var HTTP_500 int64 = 500

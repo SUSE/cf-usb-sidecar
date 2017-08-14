@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	go_dockerclient "github.com/fsouza/go-dockerclient"
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq/provisioner"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-rabbitmq/provisioner"
 )
 
 type FakeRabbitmqProvisionerInterface struct {

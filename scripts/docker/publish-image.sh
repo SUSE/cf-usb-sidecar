@@ -3,31 +3,31 @@
 
 if [ -z ${DOCKER_REPOSITORY} ]; then
 	echo "Cannot push images as DOCKER_REPOSITORY is not set"
-	echo "if you want to push this to local docker registry use"
+	echo "if you want to push to your local docker registry use"
 	echo "${WARN_MAGENTA} export DOCKER_REPOSITORY=localhost:5000${NO_COLOR}"
 	echo ""
-	echo "if you want to push this to cnap shared docker registry use"
-	echo "${WARN_MAGENTA} export DOCKER_REPOSITORY=docker-registry.helion.space:443${NO_COLOR}"
+	echo "if you want to push to dockerhub use"
+	echo "${WARN_MAGENTA} export DOCKER_REPOSITORY=docker.io${NO_COLOR}"
 	exit 1
 fi
 
 if [ -z ${IMAGE_NAME} ]; then
-	echo "Error: Please set value for environemtn variable SIDECAR_IMAGE_NAME"
+	echo "Error: Please set environment variable SIDECAR_IMAGE_NAME"
 	exit 1
 fi
 
 if [ -z ${IMAGE_TAG} ]; then
-	echo "Error: Please set value for environemtn variable SIDECAR_IMAGE_TAG"
+	echo "Error: Please set environment variable SIDECAR_IMAGE_TAG"
 	exit 1
 fi
 
 if [ -z ${DOCKER_ORGANIZATION} ]; then
-	echo "Error: Please set value for environemtn variable DOCKER_ORGANIZATION"
+	echo "Error: Please set environment variable DOCKER_ORGANIZATION"
 	exit 1
 fi
 
 if [ -z ${APP_VERSION_TAG} ]; then
-	echo "Error: Please set value for environemtn variable APP_VERSION_TAG"
+	echo "Error: Please set environment variable APP_VERSION_TAG"
 	exit 1
 fi
 

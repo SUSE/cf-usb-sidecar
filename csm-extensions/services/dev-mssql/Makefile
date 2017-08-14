@@ -7,10 +7,10 @@ TOKEN=sidecar-auth-token
 SERVER_PORT=8091
 
 ifndef DOCKER_ORGANIZATION
-	export DOCKER_ORGANIZATION:=stackatodev
+	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-mssql
 
 ifeq ($(strip $(VERSION)),)
@@ -21,7 +21,7 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-dev-mssql
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mssql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mssql-build
@@ -60,7 +60,7 @@ test-format:
 	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
 	FILES=`find . -name "*.go" | grep -v vendor | grep -v Godeps`;\
 	${SIDECAR_ROOT}/scripts/testFmt.sh "$$FILES")
-		
+
 # (required) run tests
 test:	test-format
 	@(export GO15VENDOREXPERIMENT=1; \
@@ -118,7 +118,7 @@ build-service-image:
 	echo "$(WARN_CYN_COLOR)==>No Service image available $(NO_COLOR) ";n=0;\
 
 # (required) build docker image for service
-build-image:	
+build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}

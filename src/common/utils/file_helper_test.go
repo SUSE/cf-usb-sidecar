@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hpcloud/catalog-service-manager/src/common"
+	"github.com/SUSE/cf-usb-sidecar/src/common"
 )
 
 func GetFileToRunPath(filename string) *string {

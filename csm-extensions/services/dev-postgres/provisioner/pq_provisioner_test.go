@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-postgres/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-postgres/config"
 	_ "github.com/lib/pq"
 	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"

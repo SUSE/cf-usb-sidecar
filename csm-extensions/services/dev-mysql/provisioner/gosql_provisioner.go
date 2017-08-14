@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/config"
 	"github.com/pivotal-golang/lager"
 )
 

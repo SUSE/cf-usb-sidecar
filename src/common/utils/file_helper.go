@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/SUSE/cf-usb-sidecar/src/common"
 	"github.com/Sirupsen/logrus"
-	"github.com/hpcloud/catalog-service-manager/src/common"
 )
 
 type CSMFileHelperInterface interface {

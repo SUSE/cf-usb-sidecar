@@ -14,9 +14,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /go/src/github.com/hpcloud/catalog-service-manager
+COPY . /go/src/github.com/SUSE/cf-usb-sidecar
 
-RUN cd /go/src/github.com/hpcloud/catalog-service-manager \
+RUN cd /go/src/github.com/SUSE/cf-usb-sidecar \
     && make tools \
     && cd / \
     && rm -rf /go/src/github.com/hpcloud

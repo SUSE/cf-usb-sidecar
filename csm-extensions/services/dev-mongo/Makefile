@@ -5,10 +5,10 @@ ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
 ifndef DOCKER_ORGANIZATION
-	export DOCKER_ORGANIZATION:=stackatodev
+	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-mongo
 
 ifeq ($(strip $(VERSION)),)
@@ -19,11 +19,11 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-dev-mongo
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mongo
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mongo-build
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=hsm-sidecar-dev-mongo-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-mongo-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 export SIDECAR_EXTENSION_TOKEN:=sidecar-auth-token
 export SIDECAR_EXTENSION_PORT:=8092

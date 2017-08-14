@@ -7,10 +7,10 @@ TOKEN=sidecar-auth-token
 SERVER_PORT=8100
 
 ifndef DOCKER_ORGANIZATION
-	export DOCKER_ORGANIZATION:=stackatodev
+	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-routing
 
 ifeq ($(strip $(VERSION)),)
@@ -21,7 +21,7 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-dev-routing
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-routing
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-routing-build
@@ -63,7 +63,7 @@ test-format:
 	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
 	FILES=`find . -name "*.go" | grep -v vendor | grep -v Godeps`;\
 	${SIDECAR_ROOT}/scripts/testFmt.sh "$$FILES")
-		
+
 # (required) run tests
 test:	test-format
 	@(export GO15VENDOREXPERIMENT=1; \
@@ -96,24 +96,24 @@ test-integration: clean-all build-image build-service-image run-db run
 		echo "$(ERROR_COLOR)==>Not running integration tests:$(NO_COLOR) ";\
 	fi)
 	${MAKE} clean-all
-	
-	
+
+
 
 # (required) clean containers
 clean-containers:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
-	
+
 # (required) clean docker images
 clean-images:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
-	
+
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
 
 # (required) build docker image for service
-build-image:	
+build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
@@ -124,4 +124,3 @@ build-image:
 # (required) push image to docker registry
 publish-image:
 	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
-	

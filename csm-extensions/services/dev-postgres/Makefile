@@ -7,10 +7,10 @@ TOKEN=sidecar-auth-token
 SERVER_IP=127.0.0.1
 
 ifndef DOCKER_ORGANIZATION
-	export DOCKER_ORGANIZATION:=stackatodev
+	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-postgres
 
 ifeq ($(strip $(VERSION)),)
@@ -23,12 +23,12 @@ endif
 
 export SIDECAR_EXTENSION_PORT:=8093
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-dev-postgres
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-postgres
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-postgres-build
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=hsm-sidecar-dev-postgres-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-postgres-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 
 export SIDECAR_API_KEY:=sidecar-auth-token

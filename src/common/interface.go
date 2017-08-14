@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/hpcloud/catalog-service-manager/generated/CatalogServiceManager/models"
+	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/models"
 )
 
 type CSMWorkspaceInterface interface {

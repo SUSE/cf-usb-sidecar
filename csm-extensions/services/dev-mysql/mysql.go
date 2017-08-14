@@ -1,8 +1,8 @@
 package mysql
 
 import (
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/config"
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mysql/provisioner"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/provisioner"
 	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/go-csm-lib/util"

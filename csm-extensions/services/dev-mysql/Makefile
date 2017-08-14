@@ -7,10 +7,10 @@ TOKEN=sidecar-auth-token
 SERVER_PORT=8081
 
 ifndef DOCKER_ORGANIZATION
-	export DOCKER_ORGANIZATION:=stackatodev
+	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/hpcloud/catalog-service-manager
+export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-mysql
 
 ifeq ($(strip $(VERSION)),)
@@ -23,12 +23,12 @@ endif
 
 export SIDECAR_API_KEY:=sidecar-auth-token
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=hsm-sidecar-dev-mysql
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mysql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mysql-build
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=hsm-sidecar-dev-mysql-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_PORT=8081

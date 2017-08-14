@@ -3,8 +3,8 @@ package rabbitmq
 import (
 	"fmt"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq/config"
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-rabbitmq/provisioner"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-rabbitmq/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-rabbitmq/provisioner"
 	"github.com/hpcloud/go-csm-lib/csm"
 	"github.com/hpcloud/go-csm-lib/extension"
 	"github.com/hpcloud/go-csm-lib/util"

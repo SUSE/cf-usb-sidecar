@@ -5,9 +5,9 @@ import (
 
 	"github.com/hpcloud/go-csm-lib/extension"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mongo/config"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-mongo/provisioner/provisionerfakes"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mongo/provisioner/provisionerfakes"
 	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"
 )

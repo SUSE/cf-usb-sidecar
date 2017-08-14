@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hpcloud/catalog-service-manager/src/common"
-	"github.com/hpcloud/catalog-service-manager/src/common/utils"
+	"github.com/SUSE/cf-usb-sidecar/src/common"
+	"github.com/SUSE/cf-usb-sidecar/src/common/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

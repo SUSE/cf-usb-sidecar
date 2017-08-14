@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hpcloud/catalog-service-manager/csm-extensions/services/dev-redis/config"
+	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-redis/config"
 	"github.com/hpcloud/go-csm-lib/util"
 	"github.com/pivotal-golang/lager"
 
