@@ -66,7 +66,7 @@ service management capabilities.
 		fmt.Printf("ssl certs not given so will serve HTTP")
 
 		// serving http
-		logger.Printf("Helion Service Manager listening at http://%s", httpServer.Addr)
+		logger.Printf("sidecar listening at http://%s", httpServer.Addr)
 		if err := httpServer.ListenAndServe(); err != nil {
 			shutdown(api, err)
 		}
@@ -75,7 +75,7 @@ service management capabilities.
 		fmt.Printf("TLS_PRIVATE_KEY_FILE: %s\n", *configuration.TLS_PRIVATE_KEY_FILE)
 
 		// serving https
-		logger.Printf("Helion Service Manager listening at https://%s", httpServer.Addr)
+		logger.Printf("sidecar listening at https://%s", httpServer.Addr)
 		if err := httpServer.ListenAndServeTLS(*configuration.TLS_CERT_FILE, *configuration.TLS_PRIVATE_KEY_FILE); err != nil {
 			shutdown(api, err)
 		}

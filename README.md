@@ -44,7 +44,7 @@ This is the list of environment variables that Catalog Service Manager should
 read, this needs to be set if you are running catalog service manager in the
 default mode (specifically without create connections extensions). When
 extensions are not present, catalog service manager reads this environment and returns
-all the variables listed here. 
+all the variables listed here.
 
 ```
 export SIDECAR_PARAMETERS="HOSTNAME USERNAME"
@@ -65,12 +65,7 @@ export SIDECAR_API_KEY="sidecar-auth-token"
 
 This is the path of the CSM home directory, default value for this is
 /catalog-service-manager which is the path on the Catalog Service Manager's base
-docker image where all the extensions are available. There is no need to change
-the value of this variable in the SDL, if you are copying your extensions in the
-default path (which is strongly recommended). If you are running catalog service
-manager on your machine and trying to test the extensions scripts, you need to
-set this variable appropriately to point to the directory where your workspaces
-and connections extensions are located.
+docker image where all the extensions are available.
 
 ```
 export SIDECAR_HOME=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar/examples/mysql
@@ -81,10 +76,7 @@ export SIDECAR_HOME=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar/examples/mysql
 Set this environment variable if you want catalog service manager to generate
 logs in Debug mode. By default catalog service manager runs with log level Info,
 but for debugging/testing you can set this environment variable and get more
-details from catalog service manager logs. It is strongly recommended to not set
-this environment variable in your SDL (that you plan on adding to service
-catalog), as debug logs may give our sensitive information which is a security
-risk.
+details from catalog service manager logs.
 
 ```
 export SIDECAR_DEBUG=true
@@ -95,10 +87,7 @@ export SIDECAR_DEBUG=true
 Set this environment variable if you want catalog service manager to keep the
 output files written by the extensions. By default catalog service
 manager runs with DEV_MODE set to off, and it always deletes the output file
-where extensions write their output. It is strongly recommended to not set this
-environment variable in your SDL (that you plan on adding to service catalog),
-as leaving these output files on the disk may pose a is a security risk, as
-these files may contain credentials to the service.
+where extensions write their output.
 
 ```
 export DEV_MODE=true
@@ -109,12 +98,12 @@ export DEV_MODE=true
 * SIDECAR_EXT_TIMEOUT has a default value of 30s
 * SIDECAR_EXT_TIMEOUT_ERROR has a default value of 2s
 
-Set SIDECAR_EXT_TIMEOUT environment variable to a value that represents the number of seconds that the 
-catalog service manager will wait for a response from the extension before 
+Set SIDECAR_EXT_TIMEOUT environment variable to a value that represents the number of seconds that the
+catalog service manager will wait for a response from the extension before
 sending it a request to stop.
 
-The catalog service manager will wait for a graceful stop a number of 
-SIDECAR_EXT_TIMEOUT_ERROR seconds. If in this interval the extension did not 
+The catalog service manager will wait for a graceful stop a number of
+SIDECAR_EXT_TIMEOUT_ERROR seconds. If in this interval the extension did not
 stop, the manager will try to force stop the extension.
 
 ```
@@ -124,98 +113,9 @@ export SIDECAR_EXT_TIMEOUT_ERROR=2
 
 ### TLS_CERT_FILE and TLS_PRIVATE_KEY_FILE
 
-CSM will start with TLS automatically and use `TLS_CERT_FILE` and `TLS_PRIVATE_KEY_FILE` 
-environment variables that are set to the default location of `/etc/secrets/tls-cert-file` 
+CSM will start with TLS automatically and use `TLS_CERT_FILE` and `TLS_PRIVATE_KEY_FILE`
+environment variables that are set to the default location of `/etc/secrets/tls-cert-file`
 and `/etc/secrets/tls-private-key-file`.
-
-The default location for these files is based on where HCP injects a file into the 
-container on create. If these files are not found then CSM will generate a self signed 
-certificate to use automatically.
-
-So if you want to inject your own certificates into the csm conatiner you can do so by 
-adding a parameter to the SDL like:
-
-```
-{
-  "name": "tls-private-key-file",
-  "description": "Private certificate string for TLS with endlines preserved with '\n'",
-  "example": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----",
-  "required": false,
-  "secret": true,
-  "default": null
-},
-{
-  "name": "tls-cert-file",
-  "description": "Public certificate string for TLS with endlines preserved with '\n'",
-  "example": "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----",
-  "required": false,
-  "secret": true,
-  "default": null
-}
-```
-
-You can also provide an automatic generation of the TLS certificates.
-
-```
-{
-  "name": "tls-private-ca-cert",
-  "description": "placeholder",
-  "example": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----",
-  "required": true,
-  "secret": true,
-  "generator": {
-    "id": "cacert",
-    "generate": {
-      "value_type": "private_key",
-      "key_length": 2048,
-      "type": "CACertificate"
-    }
-  }
-},
-{
-  "name": "tls-ca-cert",
-  "description": "placeholder",
-  "example": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
-  "required": true,
-  "secret": true,
-  "generator": {
-    "id": "cacert",
-    "generate": {
-      "value_type": "certificate",
-      "type": "CACertificate"
-    }
-  }
-},
-{
-  "name": "tls-private-key-file",
-  "description": "Private certificate string for TLS with endlines preserved with '\n'",
-  "example": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----",
-  "required": false,
-  "secret": true,
-  "generator": {
-    "id": "tls_cert",
-    "generate": {
-      "value_type": "private_key",
-      "key_length": 2048,
-      "type": "Certificate"
-    }
-  }
-},
-{
-  "name": "tls-cert-file",
-  "description": "Public certificate string for TLS with endlines preserved with '\n'",
-  "example": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
-  "required": false,
-  "secret": true,
-  "generator": {
-    "id": "tls_cert",
-    "generate": {
-      "value_type": "certificate",
-      "type": "Certificate"
-    }
-  }
-}
-```
 
 ## Run the service
 
