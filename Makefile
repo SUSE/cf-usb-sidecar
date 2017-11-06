@@ -66,13 +66,13 @@ run:	generate
 all: 	clean-all build test
 
 clean:
-	@echo "$(OK_COLOR)==> Removing build artifacts$(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Removing build artifacts$(NO_COLOR)\n"
 	rm -rf ${GOBIN}/catalog-service-manager
 	rm -rf bin
 	rm -rf SIDECAR_BIN
 
 clean-all: clean
-	@echo "$(OK_COLOR)==> Removing generated code$(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Removing generated code$(NO_COLOR)\n"
 	rm -rf generated
 
 clean-docker:
@@ -82,37 +82,37 @@ clean-docker:
 	scripts/docker/remove-docker-image.sh sidecar
 
 generate-server:
-	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Generating code $(NO_COLOR)\n"
 	rm -rf generated/CatalogServiceManager
 	scripts/generate-server.sh
 
 generate-client:
-	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Generating code $(NO_COLOR)\n"
 	rm -rf generated/CatalogServiceManager-client
 	scripts/generate-csm-client.sh
 
 generate: generate-server generate-client
 
 coverage:
-	@echo "$(OK_COLOR)==> Running tests with coverage tool$(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Running tests with coverage tool$(NO_COLOR)\n"
 	./scripts/testCoverage.sh
 
 build:	generate
-	@echo "$(OK_COLOR)==> Building Catalog Service Manager code $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Building Catalog Service Manager code $(NO_COLOR)\n"
 	cd cmd/catalog-service-manager;\
         godep go install .
 
 test-format:
-	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Running gofmt $(NO_COLOR)\n"
 	./scripts/testFmt.sh src
 	./scripts/testFmt.sh cmd
 
 test: test-format
-	@echo "$(OK_COLOR)==> Running tests $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Running tests $(NO_COLOR)\n"
 	godep go test $(TESTLIST)
 
 tools:
-	@echo "$(OK_COLOR)==> Installing tools and go dependencies $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Installing tools and go dependencies $(NO_COLOR)\n"
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/tools/godep
 	go get github.com/fsouza/go-dockerclient
@@ -120,7 +120,7 @@ tools:
 	./scripts/tools/codegen.sh
 
 build-image: clean-all
-	@echo "$(OK_COLOR)==> Building release docker image for Catalog Service Manager $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Building release docker image for Catalog Service Manager $(NO_COLOR)\n"
 	scripts/docker/release/generate-release-base-image.sh
 
 release-base: build-image
