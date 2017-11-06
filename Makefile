@@ -99,8 +99,7 @@ coverage:
 
 build:	generate
 	@printf "$(OK_COLOR)==> Building Catalog Service Manager code $(NO_COLOR)\n"
-	cd cmd/catalog-service-manager;\
-        godep go install .
+	./scripts/build.sh
 
 test-format:
 	@printf "$(OK_COLOR)==> Running gofmt $(NO_COLOR)\n"
