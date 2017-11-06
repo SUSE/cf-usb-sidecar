@@ -1,0 +1,3 @@
+[submodule "src/github.com/go-swagger/go-swagger"]
+	path = src/github.com/go-swagger/go-swagger
+	url = git@github.com:go-swagger/go-swagger
