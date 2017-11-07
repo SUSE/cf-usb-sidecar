@@ -57,7 +57,7 @@ help:
 
 
 run:	generate
-	godep go run cmd/catalog-service-manager/catalog-service-manager.go
+	./scripts/run.sh
 
 all: 	clean-all build test
 
