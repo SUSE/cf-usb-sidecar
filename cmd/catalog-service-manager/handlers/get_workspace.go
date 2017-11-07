@@ -3,8 +3,8 @@ package handlers
 import (
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/SUSE/cf-usb-sidecar/src/csm_manager"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/workspace"
+	"github.com/SUSE/cf-usb-sidecar/src/csm_manager"
 )
 
 func GetWorkspace(workspaceID string) middleware.Responder {

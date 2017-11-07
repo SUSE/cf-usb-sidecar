@@ -3,8 +3,8 @@ package handlers
 import (
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/SUSE/cf-usb-sidecar/src/csm_manager"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/status"
+	"github.com/SUSE/cf-usb-sidecar/src/csm_manager"
 )
 
 func GetStatus() middleware.Responder {
