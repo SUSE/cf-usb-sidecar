@@ -37,4 +37,8 @@ then
 fi
 
 printf "${OK_GREEN_COLOR}==> Building ${SIDECAR_BUILD_BASE_IMAGE_NAME}:build image ..${NO_COLOR}\n"
-docker build -t ${SIDECAR_BUILD_BASE_IMAGE_NAME}:${SIDECAR_BUILD_BASE_IMAGE_TAG} --rm -f ${script_dir}/Dockerfile-build .
+docker build \
+    -t ${SIDECAR_BUILD_BASE_IMAGE_NAME}:${SIDECAR_BUILD_BASE_IMAGE_TAG} \
+    --rm \
+    --network host \
+    -f ${script_dir}/Dockerfile-build .
