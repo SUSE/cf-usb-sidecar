@@ -120,8 +120,8 @@ func Test_GetStatus_NoExtension(t *testing.T) {
 	_, csmStatus := setup(csmMockedFileExtension)
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, modelserr)
-	assert.Equal(t, response.ProcessingType, "none")
-	assert.Equal(t, response.Status, "none")
+	assert.Equal(t, *response.ProcessingType, "none")
+	assert.Equal(t, *response.Status, "none")
 }
 
 func Test_GetStatus_NullExtension(t *testing.T) {
@@ -130,8 +130,8 @@ func Test_GetStatus_NullExtension(t *testing.T) {
 	_, csmStatus := setup(csmMockedFileExtension)
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, modelserr)
-	assert.Equal(t, response.ProcessingType, "none")
-	assert.Equal(t, response.Status, "none")
+	assert.Equal(t, *response.ProcessingType, "none")
+	assert.Equal(t, *response.Status, "none")
 }
 
 func Test_GetStatus_RunExtensionSuccessful(t *testing.T) {
@@ -143,8 +143,8 @@ func Test_GetStatus_RunExtensionSuccessful(t *testing.T) {
 	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_STATUS_EXTENSION).Return(true, statusString)
 	_, csmStatus := setup(csmMockedFileExtension)
 	response, modelserr := csmStatus.GetStatus()
-	assert.Equal(t, response.ProcessingType, "extension")
-	assert.Equal(t, response.Status, "successful")
+	assert.Equal(t, *response.ProcessingType, "extension")
+	assert.Equal(t, *response.Status, "successful")
 	assert.Nil(t, modelserr)
 }
 
@@ -158,8 +158,8 @@ func Test_GetStatus_RunExtensionFailed(t *testing.T) {
 	_, csmStatus := setup(csmMockedFileExtension)
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, response)
-	assert.Equal(t, &utils.HTTP_500, modelserr.Code)
-	assert.Equal(t, "An Error", modelserr.Message)
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
+	assert.Equal(t, *modelserr.Message, "An Error")
 }
 
 func Test_GetStatus_RunExtensionIncorrectJsonOutput(t *testing.T) {
@@ -169,8 +169,8 @@ func Test_GetStatus_RunExtensionIncorrectJsonOutput(t *testing.T) {
 	_, csmStatus := setup(csmMockedFileExtension)
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, response)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
-	assert.Contains(t, modelserr.Message, "Invalid json response from extension")
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
+	assert.Contains(t, *modelserr.Message, "Invalid json response from extension")
 }
 
 func Test_GetStatus_RunExtensionEmptyOuput(t *testing.T) {
@@ -180,8 +180,8 @@ func Test_GetStatus_RunExtensionEmptyOuput(t *testing.T) {
 	_, csmStatus := setup(csmMockedFileExtension)
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, response)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
-	assert.Contains(t, modelserr.Message, "Invalid json response from extension")
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
+	assert.Contains(t, *modelserr.Message, "Invalid json response from extension")
 }
 
 func Test_GetStatus_RunExtensionDeletedOuputFile(t *testing.T) {
@@ -191,8 +191,8 @@ func Test_GetStatus_RunExtensionDeletedOuputFile(t *testing.T) {
 	_, csmStatus := setup(csmMockedFileExtension)
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, response)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
-	assert.Contains(t, modelserr.Message, "Error reading response from extension:")
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
+	assert.Contains(t, *modelserr.Message, "Error reading response from extension:")
 }
 
 func Test_GetStatus_RunExtensionUnAccessibleFile(t *testing.T) {
@@ -202,13 +202,13 @@ func Test_GetStatus_RunExtensionUnAccessibleFile(t *testing.T) {
 	_, csmStatus := setup(csmMockedFileExtension)
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, response)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
 }
 
 func TestCheck_GetStatus(t *testing.T) {
 	_, csmStatus := setup(nil)
 	response, modelserr := csmStatus.GetStatus()
 	assert.Nil(t, modelserr)
-	assert.Equal(t, response.ProcessingType, "none")
-	assert.Equal(t, response.Status, "none")
+	assert.Equal(t, *response.ProcessingType, "none")
+	assert.Equal(t, *response.Status, "none")
 }
