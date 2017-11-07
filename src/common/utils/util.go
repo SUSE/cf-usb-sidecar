@@ -42,7 +42,7 @@ func (j *JsonResponse) Unmarshal(value []byte) error {
 
 func NewWorkspace() models.ServiceManagerWorkspaceResponse {
 	workspace := models.ServiceManagerWorkspaceResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
+		ProcessingType: &common.PROCESSING_TYPE_NONE,
 	}
 
 	return workspace
@@ -50,7 +50,7 @@ func NewWorkspace() models.ServiceManagerWorkspaceResponse {
 
 func NewConnection() models.ServiceManagerConnectionResponse {
 	workspace := models.ServiceManagerConnectionResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
+		ProcessingType: &common.PROCESSING_TYPE_NONE,
 	}
 
 	return workspace
@@ -58,14 +58,14 @@ func NewConnection() models.ServiceManagerConnectionResponse {
 
 func NewStatus() models.StatusResponse {
 	status := models.StatusResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
+		ProcessingType: &common.PROCESSING_TYPE_NONE,
 	}
 
 	return status
 }
 
 func GenerateErrorResponse(code *int64, message string) *models.Error {
-	errReturn := models.Error{Code: code, Message: message}
+	errReturn := models.Error{Code: *code, Message: &message}
 	return &errReturn
 }
 

@@ -73,8 +73,8 @@ func marshalResponseFromMessage(message []byte) (*models.ServiceManagerConnectio
 		connection.Details = jsonresp.Details.(map[string]interface{})
 	}
 	//connection.Details = jsonresp.Details.(map[string]interface{})
-	connection.Status = "successful"
-	connection.ProcessingType = "Extension"
+	connection.Status = &common.PROCESSING_STATUS_SUCCESSFUL
+	connection.ProcessingType = &common.PROCESSING_TYPE_EXTENSION
 
 	return &connection, nil, nil
 }
@@ -177,8 +177,8 @@ func (c *CSMConnection) executeRequest(workspaceID string, connectionID string, 
 
 func generateNoopResponse() *models.ServiceManagerConnectionResponse {
 	resp := models.ServiceManagerConnectionResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
-		Status:         common.PROCESSING_STATUS_NONE,
+		ProcessingType: &common.PROCESSING_TYPE_NONE,
+		Status:         &common.PROCESSING_STATUS_NONE,
 	}
 	return &resp
 }
@@ -213,8 +213,8 @@ func (c *CSMConnection) CreateConnection(workspaceID string, connectionID string
 				connection.Details[parameterName] = parameterValue
 			}
 		}
-		connection.ProcessingType = common.PROCESSING_TYPE_DEFAULT
-		connection.Status = common.PROCESSING_STATUS_SUCCESSFUL
+		connection.ProcessingType = &common.PROCESSING_TYPE_DEFAULT
+		connection.Status = &common.PROCESSING_STATUS_SUCCESSFUL
 		return &connection, nil
 
 	} else if !exists || filename == "" {

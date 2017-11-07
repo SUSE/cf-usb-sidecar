@@ -8,3 +8,5 @@ var PROCESSING_STATUS_NONE = "none"
 var PROCESSING_STATUS_UNKNOWN = "unknown"
 var PROCESSING_STATUS_SUCCESSFUL = "successful"
 var PROCESSING_STATUS_FAILED = "failed"
+
+var NO_MESSAGE = ""

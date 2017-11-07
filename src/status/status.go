@@ -42,11 +42,11 @@ func (w *CSMStatus) statusExtentionNotFound(message string) (*models.StatusRespo
 	status := utils.NewStatus()
 
 	if *w.Config.HEALTHCHECK_HOST == "" || *w.Config.HEALTHCHECK_PORT == "" {
-		status.Status = common.PROCESSING_STATUS_NONE
-		status.Message = ""
+		status.Status = &common.PROCESSING_STATUS_NONE
+		status.Message = &common.NO_MESSAGE
 	} else {
 		sTimeout := *w.Config.EXT_TIMEOUT
-		status.ProcessingType = common.PROCESSING_TYPE_DEFAULT
+		status.ProcessingType = &common.PROCESSING_TYPE_DEFAULT
 
 		var timeout time.Duration
 		itimeout, err := strconv.Atoi(sTimeout)
@@ -58,11 +58,12 @@ func (w *CSMStatus) statusExtentionNotFound(message string) (*models.StatusRespo
 
 		_, err = net.DialTimeout("tcp", fmt.Sprintf("%s:%s", *w.Config.HEALTHCHECK_HOST, *w.Config.HEALTHCHECK_PORT), timeout)
 		if err != nil {
-			status.Message = err.Error()
-			status.Status = common.PROCESSING_STATUS_FAILED
+			msg := err.Error()
+			status.Message = &msg
+			status.Status = &common.PROCESSING_STATUS_FAILED
 		} else {
-			status.Status = common.PROCESSING_STATUS_SUCCESSFUL
-			status.Message = ""
+			status.Status = &common.PROCESSING_STATUS_SUCCESSFUL
+			status.Message = &common.NO_MESSAGE
 		}
 	}
 	return &status, nil
@@ -135,10 +136,10 @@ func marshalResponseFromMessage(message []byte) (*models.StatusResponse, error) 
 		return nil, err
 	}
 
-	status.Status = jsonresp.Status
-	status.Message = jsonresp.ErrorMessage
-	status.ProcessingType = common.PROCESSING_TYPE_EXTENSION
-	status.ServiceType = &jsonresp.ServiceType
+	status.Status = &jsonresp.Status
+	status.Message = &jsonresp.ErrorMessage
+	status.ProcessingType = &common.PROCESSING_TYPE_EXTENSION
+	status.ServiceType = jsonresp.ServiceType
 	status.Diagnostics = jsonresp.Diagnostics
 
 	return &status, nil
