@@ -78,12 +78,12 @@ clean-docker:
 	scripts/docker/remove-docker-image.sh sidecar
 
 generate-server:
-	@printf "$(OK_COLOR)==> Generating code $(NO_COLOR)\n"
+	@printf "$(OK_COLOR)==> Generating code: server$(NO_COLOR)\n"
 	rm -rf generated/CatalogServiceManager
 	scripts/generate-server.sh
 
 generate-client:
-	@printf "$(OK_COLOR)==> Generating code $(NO_COLOR)\n"
+	@printf "$(OK_COLOR)==> Generating code: client$(NO_COLOR)\n"
 	rm -rf generated/CatalogServiceManager-client
 	scripts/generate-csm-client.sh
 
@@ -111,8 +111,6 @@ tools:
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/tools/godep
 	go get github.com/fsouza/go-dockerclient
-
-	./scripts/tools/codegen.sh
 
 build-image: clean-all
 	@printf "$(OK_COLOR)==> Building release docker image for Catalog Service Manager $(NO_COLOR)\n"
