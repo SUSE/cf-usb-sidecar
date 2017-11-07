@@ -204,11 +204,6 @@
 			"Rev": "0744955171b0b6e1871ff9d7366abc2b7a7fcec0"
 		},
 		{
-			"ImportPath": "github.com/tylerb/graceful",
-			"Comment": "v1.2.4-8-gc78c8d9",
-			"Rev": "c78c8d9dded2ad16ad81b1fa526a81b2bb8049f6"
-		},
-		{
 			"ImportPath": "golang.org/x/net/netutil",
 			"Rev": "35b06af0720201bc2f326773a80767387544f8c4"
 		},

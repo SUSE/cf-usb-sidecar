@@ -57,7 +57,7 @@ func ConfigureAPI(api *operations.CatlogServiceManagerAPI) http.Handler {
 		return handlers.GetConnection(params.WorkspaceID, params.ConnectionID)
 	})
 
-	api.StatusStatusHandler = status.StatusHandlerFunc(func(principal interface{}) middleware.Responder {
+	api.StatusStatusHandler = status.StatusHandlerFunc(func(unknown status.StatusParams, principal interface{}) middleware.Responder {
 		return handlers.GetStatus()
 	})
 
