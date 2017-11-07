@@ -5,19 +5,19 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"os"
 	"net/http"
+	"os"
 	"strconv"
 	"testing"
 
-	"github.com/fsouza/go-dockerclient"
-	swaggerClient "github.com/go-swagger/go-swagger/client"
-	httpClient "github.com/go-swagger/go-swagger/httpkit/client"
-	"github.com/go-swagger/go-swagger/strfmt"
 	csmClient "github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client/connection"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client/workspace"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/models"
+	"github.com/fsouza/go-dockerclient"
+	swaggerClient "github.com/go-swagger/go-swagger/client"
+	httpClient "github.com/go-swagger/go-swagger/httpkit/client"
+	"github.com/go-swagger/go-swagger/strfmt"
 	"github.com/stretchr/testify/assert"
 )
 

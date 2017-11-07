@@ -8,7 +8,7 @@ if [ $# = 0 ]; then
     exit 1
 fi
 # check go format on files
-unformatted_files=$(gofmt -l $(ls -d $1/* | grep -v github | grep -v generated))
+unformatted_files=$(gofmt -l $(ls 2>/dev/null -d $1 $1/* | grep -v github | grep -v generated))
 [ -z "$unformatted_files" ] && exit 0
 
 # show how to fix the unformatted files.

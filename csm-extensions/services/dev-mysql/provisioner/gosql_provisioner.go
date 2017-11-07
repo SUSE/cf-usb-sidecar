@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/config"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/pivotal-golang/lager"
 )
 
