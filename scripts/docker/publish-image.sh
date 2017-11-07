@@ -4,10 +4,10 @@
 if [ -z ${DOCKER_REPOSITORY} ]; then
 	echo "Cannot push images as DOCKER_REPOSITORY is not set"
 	echo "if you want to push to your local docker registry use"
-	echo "${WARN_MAGENTA} export DOCKER_REPOSITORY=localhost:5000${NO_COLOR}"
+	printf "${WARN_MAGENTA} export DOCKER_REPOSITORY=localhost:5000${NO_COLOR}\n"
 	echo ""
 	echo "if you want to push to dockerhub use"
-	echo "${WARN_MAGENTA} export DOCKER_REPOSITORY=docker.io${NO_COLOR}"
+	printf "${WARN_MAGENTA} export DOCKER_REPOSITORY=docker.io${NO_COLOR}\n"
 	exit 1
 fi
 
