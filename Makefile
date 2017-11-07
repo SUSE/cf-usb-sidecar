@@ -33,10 +33,6 @@ export SIDECAR_BASE_IMAGE_TAG:=latest
 export SIDECAR_BUILD_BASE_IMAGE_NAME:=cf-usb-sidecar-buildbase
 export SIDECAR_BUILD_BASE_IMAGE_TAG:=latest
 
-
-# List of files to be tested
-TESTLIST=$(shell go list ./... | grep -v examples | grep -v services | grep -v generated | grep -v scripts | grep -v SIDECAR_extensions)
-
 .PHONY: run all clean clean-all clean-docker generate build test coverage tools build-image publish-image
 
 default: help
@@ -108,7 +104,7 @@ test-format:
 
 test: test-format
 	@printf "$(OK_COLOR)==> Running tests $(NO_COLOR)\n"
-	godep go test $(TESTLIST)
+	./scripts/test.sh
 
 tools:
 	@printf "$(OK_COLOR)==> Installing tools and go dependencies $(NO_COLOR)\n"
