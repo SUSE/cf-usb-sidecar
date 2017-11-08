@@ -46,7 +46,7 @@ help:
 	@echo "  clean-all          Remove all build output and generated code"
 	@echo "  clean-docker       Remove all docker containers and images for catalog-service-manager"
 	@echo "  generate           Generates both server and client"
-	@echo "  build              generates swagger code and rebuilds the service only"
+	@echo "  build              Generates swagger code and rebuilds the service only"
 	@echo "  test               Run the unit tests"
 	@echo "  coverage           Run the unit tests and produces a coverage report"
 	@echo "  tools              Installs tools needed to run"

@@ -40,11 +40,11 @@ default: help
 help:
 	@echo "These 'make' targets are available."
 	@echo
-	@echo "  all                  cleans existing container and images and then"
-	@echo "                       build docker image and runs the extension container "
-	@echo "  build                build the extension binary"
-	@echo "  run                  run the csm docker container for extension"
-	@echo "  run-db               run the db behind csm"
+	@echo "  all                  Cleans existing container and images and then"
+	@echo "                       Build docker image and runs the extension container "
+	@echo "  build                Build the extension binary"
+	@echo "  run                  Run the csm docker container for extension"
+	@echo "  run-db               Run the mysql db used by csm + extension"
 	@echo "  test-format          Run the formatting tests"
 	@echo "  test                 Run the unit tests"
 	@echo "  clean-containers     Remove all docker containers for extension"
@@ -139,5 +139,5 @@ build-image:
 
 # (required) push image to docker registry
 publish-image:
-	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
+	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME}     IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG}     ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 	IMAGE_NAME=${SIDECAR_EXTENSION_SVC_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_SVC_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
