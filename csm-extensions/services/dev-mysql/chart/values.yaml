@@ -1,10 +1,12 @@
 ---
 env:
-  ### SIDECAR_API_KEY: "cf-usb-sidecar-mysql-auth-token"
   SERVICE_MYSQL_HOST: "mysql"
   SERVICE_MYSQL_PORT: 3306
   SERVICE_MYSQL_USER: "root"
   SERVICE_MYSQL_PASS: "cf-usb-sidecar-mysql-admin-password"
+  CF_DOMAIN: ~
+  SERVICE_LOCATION: ~
+  SERVICE_TYPE: "mysql"
 
 kube:
   external_ip: "192.168.77.77"

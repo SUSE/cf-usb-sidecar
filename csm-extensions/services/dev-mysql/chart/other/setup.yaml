@@ -1,11 +1,41 @@
 ---
-# The setup role for cf-usb-sidecar-mysql contains the following jobs:
-#
-# - cf-usb-create-endpoint:
-#   Talk to SCF cf-usb and create the service endpoint.
-#   This makes the mysql service available to SCF in its marketplace.
-#
-#   The location of SCF is taken from the SCF values.yaml file.
-#
-# TODO: Create the docker image with the job, and supporting binaries
-# (cf cli, cf-usb plugin for the cf cli).
+apiVersion: "batch/v1"
+kind: "Job"
+metadata:
+  name: "cf-usb-sidecar-mysql-setup"
+spec:
+  template:
+    metadata:
+      name: "cf-usb-sidecar-dev-mysql-setup"
+      labels:
+        skiff-role-name: "cf-usb-sidecar-dev-mysql-setup"
+    spec:
+      containers:
+      - env:
+        - name: "KUBERNETES_NAMESPACE"
+          valueFrom:
+            fieldRef:
+              fieldPath: "metadata.namespace"
+        - name: "SIDECAR_API_KEY"
+          valueFrom:
+            secretKeyRef:
+              key: "sidecar-api-key"
+              name: "cf-usb-sidecar-mysql-secret"
+        - name: "SERVICE_TYPE"
+          value: {{ .Values.env.SERVICE_TYPE | quote }}
+        - name: "SERVICE_LOCATION"
+          value: {{ required "SERVICE_LOCATION configuration missing" .Values.env.SERVICE_LOCATION | quote }}
+        - name: "CF_DOMAIN"
+          value: {{ required "CF_DOMAIN configuration missing" .Values.env.CF_DOMAIN | quote }}
+        image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-dev-mysql-setup:latest"
+        livenessProbe: ~
+        name: "cf-usb-sidecar-dev-mysql-setup"
+        ports: ~
+        readinessProbe: ~
+        resources: ~
+        securityContext: ~
+        volumeMounts: ~
+      dnsPolicy: "ClusterFirst"
+      imagePullSecrets:
+      - name: "registry-credentials"
+      restartPolicy: "OnFailure"

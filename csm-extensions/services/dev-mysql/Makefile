@@ -26,6 +26,9 @@ export SIDECAR_API_KEY:=sidecar-auth-token
 export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mysql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
+export SIDECAR_SETUP_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-setup
+export SIDECAR_SETUP_IMAGE_TAG:=latest
+
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mysql-build
 
 export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-db
@@ -50,10 +53,9 @@ help:
 	@echo "  clean-containers     Remove all docker containers for extension"
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
-	@echo "  build-image          Build extension docker image"
+	@echo "  build-image          Build extension and setup docker images"
 	@echo "  publish-image        Publish csm-dev-mysql docker image to registry"
 	@echo "  build-service-image  Build database docker image"
-	@echo "  build-pds-image      __TODO__ Build post-deployment task docker image"
 	@echo "  helm                 Create a helm chart for deployment"
 
 	@echo
@@ -119,11 +121,13 @@ test-integration: clean-all build-image build-service-image run-db run
 clean-containers:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_SETUP_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker images
 clean-images:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_SETUP_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
 
@@ -141,6 +145,7 @@ build-image:
 
 # (required) push image to docker registry
 publish-image:
+	IMAGE_NAME=${SIDECAR_SETUP_IMAGE_NAME}         IMAGE_TAG=${SIDECAR_SETUP_IMAGE_TAG}         ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME}     IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG}     ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 	IMAGE_NAME=${SIDECAR_EXTENSION_SVC_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_SVC_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 
