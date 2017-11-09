@@ -25,7 +25,7 @@ spec:
               name: "cf-usb-sidecar-mysql-secret"
         image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-dev-mysql-db:latest"
         readinessProbe:
-          initialDelaySeconds: 600
+          initialDelaySeconds: 10
           tcpSocket:
             port: 3306
         name: "mysql"
