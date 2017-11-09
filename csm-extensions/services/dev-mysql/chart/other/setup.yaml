@@ -1,0 +1,11 @@
+---
+# The setup role for cf-usb-sidecar-mysql contains the following jobs:
+#
+# - cf-usb-create-endpoint:
+#   Talk to SCF cf-usb and create the service endpoint.
+#   This makes the mysql service available to SCF in its marketplace.
+#
+#   The location of SCF is taken from the SCF values.yaml file.
+#
+# TODO: Create the docker image with the job, and supporting binaries
+# (cf cli, cf-usb plugin for the cf cli).

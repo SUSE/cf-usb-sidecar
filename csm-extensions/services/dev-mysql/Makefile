@@ -53,6 +53,8 @@ help:
 	@echo "  build-image          Build extension docker image"
 	@echo "  publish-image        Publish csm-dev-mysql docker image to registry"
 	@echo "  build-service-image  Build database docker image"
+	@echo "  build-pds-image      __TODO__ Build post-deployment task docker image"
+	@echo "  helm                 Create a helm chart for deployment"
 
 	@echo
 
@@ -141,3 +143,6 @@ build-image:
 publish-image:
 	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME}     IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG}     ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 	IMAGE_NAME=${SIDECAR_EXTENSION_SVC_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_SVC_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
+
+helm:
+	${SIDECAR_ROOT}/scripts/helm.sh
