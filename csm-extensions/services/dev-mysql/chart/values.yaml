@@ -15,4 +15,4 @@ kube:
     hostname: "docker.io"
     username: ""
     password: ""
-  organization: "a99k"
+  organization: "splatform"
