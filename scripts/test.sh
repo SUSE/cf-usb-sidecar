@@ -6,4 +6,4 @@ TESTLIST=$(go list ./cmd/... ./src/... | grep -v github.com/go-swagger)
 
 # Manipulate the GOPATH to include both go-swagger and go-openapi from
 # the sub-moduled swagger for succesful compilation of test files.
-GOPATH="${TOPDIR}:${TOPDIR}/v:${GOPATH}" godep go test ${TESTLIST}
+GOPATH="${TOPDIR}:${TOPDIR}/go-swagger:${GOPATH}" godep go test ${TESTLIST}

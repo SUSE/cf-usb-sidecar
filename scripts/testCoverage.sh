@@ -18,7 +18,7 @@ generate_cover_data() {
 		echo $pkg
         f="$workdir/$(echo $pkg | tr / -).cover"
 		echo $f
-        GOPATH="${TOPDIR}:${TOPDIR}/v:${GOPATH}" godep go test \
+        GOPATH="${TOPDIR}:${TOPDIR}/go-swagger:${GOPATH}" godep go test \
 	    -covermode="$mode" \
 	    -coverprofile="$f" "$pkg"
     done
