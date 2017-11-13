@@ -99,8 +99,8 @@ build:	generate
 
 test-format:
 	@printf "$(OK_COLOR)==> Running gofmt $(NO_COLOR)\n"
-	./scripts/testFmt.sh src
-	./scripts/testFmt.sh cmd
+	FILES=`find cmd src -name "*.go" | grep -v github.com/go-swagger`;\
+	./scripts/testFmt.sh "$$FILES"
 
 test: test-format
 	@printf "$(OK_COLOR)==> Running tests $(NO_COLOR)\n"

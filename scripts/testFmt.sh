@@ -4,11 +4,11 @@ NO_COLOR="\033[0m"
 ERROR_COLOR="\033[31;01m"
 
 if [ $# = 0 ]; then
-    printf "${ERROR_COLOR}Usage: testFmt.sh <directory-to-check>${NO_COLOR}\n"
+    printf "${ERROR_COLOR}Usage: testFmt.sh <files-to-check>${NO_COLOR}\n"
     exit 1
 fi
 # check go format on files
-unformatted_files=$(gofmt -l $(ls 2>/dev/null -d $1 $1/* | grep -v github | grep -v generated))
+unformatted_files=$(gofmt -l $1)
 [ -z "$unformatted_files" ] && exit 0
 
 # show how to fix the unformatted files.
