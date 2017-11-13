@@ -28,13 +28,7 @@ spec:
         - name: "CF_DOMAIN"
           value: {{ required "CF_DOMAIN configuration missing" .Values.env.CF_DOMAIN | quote }}
         image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-dev-mysql-setup:latest"
-        livenessProbe: ~
         name: "cf-usb-sidecar-dev-mysql-setup"
-        ports: ~
-        readinessProbe: ~
-        resources: ~
-        securityContext: ~
-        volumeMounts: ~
       dnsPolicy: "ClusterFirst"
       imagePullSecrets:
       - name: "registry-credentials"

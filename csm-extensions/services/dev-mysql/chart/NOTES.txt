@@ -1,1 +1,0 @@
-TODO:	Extend the sidecar chart with a post-deployment job which does this.

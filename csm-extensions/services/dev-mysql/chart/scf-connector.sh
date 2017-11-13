@@ -3,13 +3,14 @@
 # Assumes to have `cf` with `cf-usb-plugin` installed.
 
 set -o errexit
+set -o nounset
 #set -o xtrace
 
 # Parameters, via Environment
-# - CF_DOMAIN		(SCF base domain)
-# - SERVICE_LOCATION	(https://...)
-# - SERVICE_TYPE	(mysql)
-# - SIDECAR_API_KEY	(generated secret)
+# - CF_DOMAIN           (SCF base domain)
+# - SERVICE_LOCATION    (https://...)
+# - SERVICE_TYPE        (mysql)
+# - SIDECAR_API_KEY     (generated secret)
 
 # Default
 SERVICE_TYPE="${SERVICE_TYPE:-mysql}"
@@ -49,14 +50,14 @@ function retry () {
     done
 }
 
-/cf install-plugin -f /cf-plugin-usb
+cf install-plugin -f /usr/local/bin/cf-plugin-usb
 
 status "Waiting for CC ..."
 retry 240 30s /cf api "api.${CF_DOMAIN}"
 
 status "Registering MySQL sidecar with CC"
 
-/cf usb create-driver-endpoint \
+cf usb create-driver-endpoint \
     "${SERVICE_TYPE}" \
     "${SERVICE_LOCATION}" \
     "${SIDECAR_API_KEY}" \

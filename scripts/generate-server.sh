@@ -18,6 +18,6 @@ TOPDIR=$(cd "$(dirname "$0")/.." && pwd)
 GOPATH="${TOPDIR}:${GOPATH}" go run \
     "${TOPDIR}"/src/github.com/go-swagger/go-swagger/cmd/swagger/swagger.go \
     generate server \
-    -A CatlogServiceManager \
-    -t generated/CatalogServiceManager \
-    -f docs/swagger-spec/api.yml
+    --name   CatlogServiceManager \
+    --target generated/CatalogServiceManager \
+    --spec   docs/swagger-spec/api.yml
