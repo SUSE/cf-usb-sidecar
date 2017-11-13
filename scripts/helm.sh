@@ -25,9 +25,7 @@ rm     output/helm/templates/db.yaml
 rm     output/helm/*.sh
 
 # Fix the version information in the image references
-
 for path in output/helm/templates/*
 do
-    sed < $path > $$ -e "s/:latest/:${APP_VERSION_TAG}/"
-    cp $$ $path
+    sed -e "s/:latest/:${APP_VERSION_TAG}/" -i $path
 done
