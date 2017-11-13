@@ -27,14 +27,6 @@ generate_cover_data() {
     grep -h -v "^mode:" "$workdir"/*.cover >>"$profile"
 }
 
-generate_cover_data $(go list ./... | \
-    grep -v github.com/SUSE/cf-usb-sidecar/generated | \
-    grep -v github.com/SUSE/cf-usb-sidecar/example | \
-    grep -v github.com/SUSE/cf-usb-sidecar/csm-extensions | \
-    grep -v github.com/SUSE/cf-usb-sidecar/scripts | \
-    grep -v github.com/SUSE/cf-usb-sidecar/src/github.com/go-swagger | \
-    grep -v github.com/SUSE/cf-usb-sidecar/v/src | \
-    grep -v github.com/SUSE/cf-usb-sidecar/cmd/catalog-service-manager/handlers | \
-    grep -v github.com/SUSE/cf-usb-sidecar/src/api)
+generate_cover_data $(go list ./cmd/... ./src/... | grep -v github.com/go-swagger)
 go tool cover -func="$profile"
 go tool cover -html="$profile"

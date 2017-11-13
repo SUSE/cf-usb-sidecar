@@ -2,14 +2,7 @@
 TOPDIR=$(cd "$(dirname "$0")/.." && pwd)
 
 # List of files to be tested
-TESTLIST=$(go list ./... | \
-    grep -v examples | \
-    grep -v services | \
-    grep -v generated | \
-    grep -v github.com/go-swagger | \
-    grep -v v/src | \
-    grep -v scripts | \
-    grep -v SIDECAR_extensions)
+TESTLIST=$(go list ./cmd/... ./src/... | grep -v github.com/go-swagger)
 
 # Manipulate the GOPATH to include both go-swagger and go-openapi from
 # the sub-moduled swagger for succesful compilation of test files.
