@@ -53,7 +53,7 @@ function retry () {
 cf install-plugin -f /usr/local/bin/cf-plugin-usb
 
 status "Waiting for CC ..."
-retry 240 30s /cf api "api.${CF_DOMAIN}"
+retry 240 30s cf api "api.${CF_DOMAIN}"
 
 status "Registering MySQL sidecar with CC"
 
