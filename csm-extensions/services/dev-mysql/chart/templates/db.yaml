@@ -33,6 +33,9 @@ spec:
         - containerPort: 3306
           name: "mysql"
           protocol: "TCP"
+        resources:
+          requests:
+            memory: 100M
       dnsPolicy: "ClusterFirst"
       imagePullSecrets:
       - name: "registry-credentials"

@@ -47,6 +47,9 @@ spec:
           initialDelaySeconds: 10
           tcpSocket:
             port: 8081
+        resources:
+          requests:
+            memory: 100M
         securityContext:
           privileged: true
       dnsPolicy: "ClusterFirst"
