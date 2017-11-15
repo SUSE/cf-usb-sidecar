@@ -5,6 +5,7 @@ env:
   SERVICE_MYSQL_USER: "root"
   SERVICE_MYSQL_PASS: "cf-usb-sidecar-mysql-admin-password"
   CF_DOMAIN: ~
+  CF_CA_CERT: ~
   SERVICE_LOCATION: ~
   SERVICE_TYPE: "mysql"
 

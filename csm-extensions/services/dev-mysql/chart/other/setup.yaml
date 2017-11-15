@@ -25,6 +25,11 @@ spec:
           value: {{ .Values.env.SERVICE_TYPE | quote }}
         - name: "SERVICE_LOCATION"
           value: {{ required "SERVICE_LOCATION configuration missing" .Values.env.SERVICE_LOCATION | quote }}
+        - name: "CF_CA_CERT"
+          valueFrom:
+            secretKeyRef:
+              key: "cf-ca-cert"
+              name: "cf-usb-sidecar-mysql-secret"
         - name: "CF_DOMAIN"
           value: {{ required "CF_DOMAIN configuration missing" .Values.env.CF_DOMAIN | quote }}
         image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-dev-mysql-setup:latest"
