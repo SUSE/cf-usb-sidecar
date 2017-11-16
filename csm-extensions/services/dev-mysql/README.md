@@ -16,14 +16,12 @@ make publish-image
 ```
 
 Then build and publish the sidecar image itself, in this directory,
-using the same script as above. At last generate the helm chart to
-deploy sidecars, via `make helm`.
+using a similar set of commands and the same docker configuration. At last
+generate the helm chart to deploy sidecars, via `make helm`.
 
 ```
-export DOCKER_REPOSITORY=...
-export DOCKER_ORGANIZATION=...
-
 make build-image
+make build-service-image ;# Needed only for publish to work
 make publish-image
 make helm
 ```
@@ -32,11 +30,14 @@ make helm
 
 |Name			|Example	|Description					|
 |---			|---		|---						|
-|CF_DOMAIN		|?		|The SCF base domain				|
+|CF_ADMIN_PASSWORD	|?		|SCF cluster admin password			|
+|CF_ADMIN_USER		|admin		|SCF cluster admin user				|
 |CF_CA_CERT		|?		|The SCF CA cert				|
+|CF_DOMAIN		|cf-dev.io	|The SCF base domain				|
 |SERVICE_LOCATION	|http://...	|Url to kube service `cf-usb-sidecar-mysql`	|
-|SERVICE_TYPE		|mysql		|The name used to register the sidecar with SCF	|
-|SERVICE_MYSQL_PORT	|3306		|The port the mysql server listens on		|
-|SERVICE_MYSQL_HOST	|?		|The host of the mysql database to use		|
-|SERVICE_MYSQL_USER	|?		|User to access the mysql database		|
+|SERVICE_MYSQL_HOST	|mysql		|The host of the mysql database to use		|
 |SERVICE_MYSQL_PASS	|?		|Credentials for the user above			|
+|SERVICE_MYSQL_PORT	|3306		|The port the mysql server listens on		|
+|SERVICE_MYSQL_USER	|root		|User to access the mysql database		|
+|SERVICE_TYPE		|mysql		|The name used to register the sidecar with SCF	|
+|UAA_CA_CERT		|?		|The UAA CA cert   				|
