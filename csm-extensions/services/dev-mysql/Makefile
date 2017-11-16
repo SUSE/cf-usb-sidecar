@@ -133,6 +133,7 @@ clean-images:
 
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
+	rm -rfv ${SIDECAR_EXTENSION_ROOT}/output
 
 # (required) build docker image for service
 build-image:
