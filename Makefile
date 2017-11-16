@@ -73,8 +73,6 @@ clean-all: clean
 
 clean-docker:
 	scripts/docker/remove-docker-container.sh sidecar
-	scripts/docker/remove-docker-container.sh hsm
-	scripts/docker/remove-docker-image.sh hsm
 	scripts/docker/remove-docker-image.sh sidecar
 
 generate-server:
