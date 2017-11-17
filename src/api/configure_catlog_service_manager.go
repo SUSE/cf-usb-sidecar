@@ -3,14 +3,13 @@ package api
 import (
 	"net/http"
 
-	errors "github.com/go-swagger/go-swagger/errors"
-	httpkit "github.com/go-swagger/go-swagger/httpkit"
-	middleware "github.com/go-swagger/go-swagger/httpkit/middleware"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/SUSE/cf-usb-sidecar/cmd/catalog-service-manager/handlers"
 
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations"
-
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/connection"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/status"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations/workspace"
@@ -26,9 +25,9 @@ func ConfigureAPI(api *operations.CatlogServiceManagerAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
 
-	api.JSONConsumer = httpkit.JSONConsumer()
+	api.JSONConsumer = runtime.JSONConsumer()
 
-	api.JSONProducer = httpkit.JSONProducer()
+	api.JSONProducer = runtime.JSONProducer()
 
 	api.APIKeyAuth = handlers.ApiKeyAuth
 
@@ -58,7 +57,7 @@ func ConfigureAPI(api *operations.CatlogServiceManagerAPI) http.Handler {
 		return handlers.GetConnection(params.WorkspaceID, params.ConnectionID)
 	})
 
-	api.StatusStatusHandler = status.StatusHandlerFunc(func(principal interface{}) middleware.Responder {
+	api.StatusStatusHandler = status.StatusHandlerFunc(func(unknown status.StatusParams, principal interface{}) middleware.Responder {
 		return handlers.GetStatus()
 	})
 

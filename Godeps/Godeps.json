@@ -22,11 +22,6 @@
 			"Rev": "5208815a79dd0135690e0d716d4663c2fbd41ac4"
 		},
 		{
-			"ImportPath": "github.com/go-swagger/go-swagger/httpkit/security",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
 			"ImportPath": "golang.org/x/sys/unix",
 			"Rev": "f64b50fbea64174967a8882830d621a18ee1548e"
 		},
@@ -165,66 +160,6 @@
 			"Rev": "12f418cc7edc5a618a51407b7ac1f1f512139df3"
 		},
 		{
-			"ImportPath": "github.com/go-swagger/go-swagger/errors",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/httpkit",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/httpkit/middleware",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/httpkit/middleware/header",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/httpkit/middleware/untyped",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/httpkit/validate",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/internal/validate",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/jsonpointer",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/jsonreference",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/spec",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/strfmt",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
-			"ImportPath": "github.com/go-swagger/go-swagger/swag",
-			"Comment": "0.5.0-21-g1587e15",
-			"Rev": "1587e154fd59eb78c3d66f191687119bab9fea24"
-		},
-		{
 			"ImportPath": "github.com/gorilla/context",
 			"Rev": "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
 		},
@@ -267,11 +202,6 @@
 			"ImportPath": "github.com/stretchr/testify/mock",
 			"Comment": "v1.1.3-8-g0744955",
 			"Rev": "0744955171b0b6e1871ff9d7366abc2b7a7fcec0"
-		},
-		{
-			"ImportPath": "github.com/tylerb/graceful",
-			"Comment": "v1.2.4-8-gc78c8d9",
-			"Rev": "c78c8d9dded2ad16ad81b1fa526a81b2bb8049f6"
 		},
 		{
 			"ImportPath": "golang.org/x/net/netutil",

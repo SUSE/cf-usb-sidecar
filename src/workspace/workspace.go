@@ -41,8 +41,8 @@ func (w *CSMWorkspace) getWorkspaceDeleteExtension(homePath string) (bool, strin
 
 func generateNoopResponse() *models.ServiceManagerWorkspaceResponse {
 	resp := models.ServiceManagerWorkspaceResponse{
-		ProcessingType: common.PROCESSING_TYPE_NONE,
-		Status:         common.PROCESSING_STATUS_NONE,
+		ProcessingType: &common.PROCESSING_TYPE_NONE,
+		Status:         &common.PROCESSING_STATUS_NONE,
 	}
 	return &resp
 }
@@ -84,8 +84,8 @@ func marshalResponseFromMessage(message []byte) (*models.ServiceManagerWorkspace
 		workspace.Details = jsonresp.Details.(map[string]interface{})
 	}
 
-	workspace.Status = jsonresp.Status
-	workspace.ProcessingType = "Extension"
+	workspace.Status = &jsonresp.Status
+	workspace.ProcessingType = &common.PROCESSING_TYPE_EXTENSION
 
 	return &workspace, nil, nil
 }

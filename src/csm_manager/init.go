@@ -63,7 +63,7 @@ func GetLogger() *logrus.Logger {
 
 // logInitDetails logs the initialization details
 func logInitDetails(logger *logrus.Logger, config *common.ServiceManagerConfiguration) {
-	logger.Info("InitServiceCatalogManager ", "Initialiizing: "+"Catalog Service Manager")
+	logger.Info("InitServiceCatalogManager ", "Initializing: "+"Catalog Service Manager")
 	logger.Info("InitServiceCatalogManager ", "SIDECAR_LOG_LEVEL: "+*config.LOG_LEVEL)
 	if *config.DEV_MODE == "true" {
 		// log this only if dev mode is enabled

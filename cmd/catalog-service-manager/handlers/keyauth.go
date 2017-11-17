@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	errors "github.com/go-swagger/go-swagger/errors"
+	errors "github.com/go-openapi/errors"
 
 	"github.com/SUSE/cf-usb-sidecar/src/csm_manager"
 )

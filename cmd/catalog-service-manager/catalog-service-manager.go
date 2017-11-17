@@ -8,9 +8,9 @@ import (
 	"os"
 	"time"
 
-	spec "github.com/go-swagger/go-swagger/spec"
+	"github.com/go-openapi/loads"
 	flags "github.com/jessevdk/go-flags"
-	graceful "github.com/tylerb/graceful"
+	"github.com/tylerb/graceful"
 
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager/restapi/operations"
@@ -26,7 +26,7 @@ func main() {
 	csm_manager.InitServiceCatalogManager()
 	logger := csm_manager.GetLogger()
 
-	swaggerSpec, err := spec.New(restapi.SwaggerJSON, "")
+	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
 		logger.Fatalln(err)
 	}

@@ -26,6 +26,9 @@ export SIDECAR_API_KEY:=sidecar-auth-token
 export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mysql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
+export SIDECAR_SETUP_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-setup
+export SIDECAR_SETUP_IMAGE_TAG:=latest
+
 export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mysql-build
 
 export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-db
@@ -40,19 +43,20 @@ default: help
 help:
 	@echo "These 'make' targets are available."
 	@echo
-	@echo "  all                  cleans existing container and images and then"
-	@echo "                       build docker image and runs the extension container "
-	@echo "  build                build the extension binary"
-	@echo "  run                  run the csm docker container for extension"
-	@echo "  run-db               run the db behind csm"
+	@echo "  all                  Cleans existing container and images and then"
+	@echo "                       Build docker image and runs the extension container "
+	@echo "  build                Build the extension binary"
+	@echo "  run                  Run the csm docker container for extension"
+	@echo "  run-db               Run the mysql db used by csm + extension"
 	@echo "  test-format          Run the formatting tests"
-	@echo "  test                 Run the formatting tests"
+	@echo "  test                 Run the unit tests"
 	@echo "  clean-containers     Remove all docker containers for extension"
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
-	@echo "  build-image          Build extension docker image"
+	@echo "  build-image          Build extension and setup docker images"
 	@echo "  publish-image        Publish csm-dev-mysql docker image to registry"
 	@echo "  build-service-image  Build database docker image"
+	@echo "  helm                 Create a helm chart for deployment"
 
 	@echo
 
@@ -62,19 +66,19 @@ build:
 	${SIDECAR_EXTENSION_ROOT}/scripts/build.sh
 
 build-service-image:
-	@echo "$(OK_COLOR)==> Building database image $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Building database image $(NO_COLOR)\n"
 	${SIDECAR_EXTENSION_ROOT}/scripts/build-db.sh
 
 run-db:
-	@echo "$(OK_COLOR)==> Start MySQL DB container $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Start MySQL DB container $(NO_COLOR)\n"
 	${SIDECAR_EXTENSION_ROOT}/scripts/docker-run-csm-mysql-db.sh
 
 run:
-	@echo "$(OK_COLOR)==> Run image $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Run image $(NO_COLOR)\n"
 	${SIDECAR_EXTENSION_ROOT}/scripts/docker-run-csm-extension.sh
 
 test-format:
-	@(echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)";\
+	@(printf "$(OK_COLOR)==> Running gofmt $(NO_COLOR)\n";\
 	FILES=`find . -name "*.go" | grep -v vendor | grep -v Godeps`;\
 	${SIDECAR_ROOT}/scripts/testFmt.sh "$$FILES")
 
@@ -93,21 +97,21 @@ test-integration: clean-all build-image build-service-image run-db run
 	export TEST_SERVER_IP=$$SERVER_IP;\
 	export TEST_SERVER_PORT=$(SERVER_PORT);\
 	export TEST_SERVER_TOKEN=$(TOKEN);\
-	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
+	printf "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR)\n";n=0;\
 	until `curl -k https://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
 	do n=$$(( $$n + 1 )) ;\
 		printf ".";\
 		if [ $$n -ge 30 ] ;\
-			then echo "\n$(ERROR_COLOR)==>Docker took to long to wakeup or incorect setup $(NO_COLOR) "; break ;\
+			then printf "\n$(ERROR_COLOR)==>Docker took to long to wakeup or incorect setup $(NO_COLOR)\n"; break ;\
 		fi ;\
 		sleep 1 ;\
 	done; echo "";\
 	if [ $$n -le 19 ]; then \
-		echo "$(OK_COLOR)==>Running integration tests:$(NO_COLOR) ";\
+		printf "$(OK_COLOR)==>Running integration tests:$(NO_COLOR)\n";\
 		export GO15VENDOREXPERIMENT=1;\
 		go test ./tests -tags integration -v;\
 	else \
-		echo "$(ERROR_COLOR)==>Not running integration tests:$(NO_COLOR) ";\
+		printf "$(ERROR_COLOR)==>Not running integration tests:$(NO_COLOR)\n";\
 	fi)
 	${MAKE} clean-all
 
@@ -117,20 +121,23 @@ test-integration: clean-all build-image build-service-image run-db run
 clean-containers:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_SETUP_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker images
 clean-images:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
+	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_SETUP_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
+	rm -rfv ${SIDECAR_EXTENSION_ROOT}/output
 
 # (required) build docker image for service
 build-image:
-	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Building Docker image $(NO_COLOR)\n"
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
@@ -139,5 +146,9 @@ build-image:
 
 # (required) push image to docker registry
 publish-image:
-	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
+	IMAGE_NAME=${SIDECAR_SETUP_IMAGE_NAME}         IMAGE_TAG=${SIDECAR_SETUP_IMAGE_TAG}         ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
+	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME}     IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG}     ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 	IMAGE_NAME=${SIDECAR_EXTENSION_SVC_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_SVC_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
+
+helm:
+	${SIDECAR_ROOT}/scripts/helm.sh

@@ -124,8 +124,8 @@ func Test_GetConnection_NoExtension(t *testing.T) {
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, modelserr)
-	assert.Equal(t, connection.ProcessingType, "none")
-	assert.Equal(t, connection.Status, "none")
+	assert.Equal(t, *connection.ProcessingType, "none")
+	assert.Equal(t, *connection.Status, "none")
 
 }
 
@@ -135,8 +135,8 @@ func Test_GetConnection_NullExtension(t *testing.T) {
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, modelserr)
-	assert.Equal(t, connection.ProcessingType, "none")
-	assert.Equal(t, connection.Status, "none")
+	assert.Equal(t, *connection.ProcessingType, "none")
+	assert.Equal(t, *connection.Status, "none")
 }
 
 func Test_GetConnection_FailedToRunExtension(t *testing.T) {
@@ -146,8 +146,8 @@ func Test_GetConnection_FailedToRunExtension(t *testing.T) {
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Message, utils.ERR_TIMEOUT)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_408)
+	assert.Equal(t, *modelserr.Message, utils.ERR_TIMEOUT)
+	assert.Equal(t, modelserr.Code, utils.HTTP_408)
 }
 
 func Test_GetConnection_RunExtensionSuccessful(t *testing.T) {
@@ -160,8 +160,8 @@ func Test_GetConnection_RunExtensionSuccessful(t *testing.T) {
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, modelserr)
-	assert.Equal(t, "Extension", connection.ProcessingType)
-	assert.Equal(t, "successful", connection.Status)
+	assert.Equal(t, *connection.ProcessingType, "extension")
+	assert.Equal(t, *connection.Status, "successful")
 }
 
 func Test_GetConnection_RunExtensionFailed(t *testing.T) {
@@ -173,8 +173,8 @@ func Test_GetConnection_RunExtensionFailed(t *testing.T) {
 	csmMockedFileExtension.On("RunExtensionFileGen", FAKE_GET_CONNECTION_EXTENSION, []string{"123", "123", "{}"}).Return(false, statusString, "An error")
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
-	assert.Equal(t, &utils.HTTP_500, modelserr.Code)
-	assert.Equal(t, "An error", modelserr.Message)
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
+	assert.Equal(t, *modelserr.Message, "An error")
 	assert.Nil(t, connection)
 }
 
@@ -186,8 +186,8 @@ func Test_GetConnection_RunExtensionIncorrectJsonOutput(t *testing.T) {
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
-	assert.Contains(t, modelserr.Message, "Invalid json response from extension")
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
+	assert.Contains(t, *modelserr.Message, "Invalid json response from extension")
 }
 
 func Test_GetConnection_RunExtensionEmptyOuput(t *testing.T) {
@@ -198,8 +198,8 @@ func Test_GetConnection_RunExtensionEmptyOuput(t *testing.T) {
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
-	assert.Contains(t, modelserr.Message, "Invalid json response from extension")
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
+	assert.Contains(t, *modelserr.Message, "Invalid json response from extension")
 }
 
 func Test_GetConnection_RunExtensionDeletedOuputFile(t *testing.T) {
@@ -210,8 +210,8 @@ func Test_GetConnection_RunExtensionDeletedOuputFile(t *testing.T) {
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
-	assert.Contains(t, modelserr.Message, "Error reading response from extension:")
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
+	assert.Contains(t, *modelserr.Message, "Error reading response from extension:")
 }
 
 func Test_GetConnection_RunExtensionUnAccessibleFile(t *testing.T) {
@@ -222,7 +222,7 @@ func Test_GetConnection_RunExtensionUnAccessibleFile(t *testing.T) {
 	_, csmConnection := setup(csmMockedFileExtension)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, connection)
-	assert.Equal(t, modelserr.Code, &utils.HTTP_500)
+	assert.Equal(t, modelserr.Code, utils.HTTP_500)
 
 }
 
@@ -230,8 +230,8 @@ func TestCheck_GetConnection(t *testing.T) {
 	_, csmConnection := setup(nil)
 	connection, modelserr := csmConnection.GetConnection("123", "123")
 	assert.Nil(t, modelserr)
-	assert.Equal(t, connection.ProcessingType, "none")
-	assert.Equal(t, connection.Status, "none")
+	assert.Equal(t, *connection.ProcessingType, "none")
+	assert.Equal(t, *connection.Status, "none")
 }
 
 func TestCheck_CreateConnection(t *testing.T) {
@@ -247,7 +247,7 @@ func TestCheck_CreateConnection(t *testing.T) {
 	details := make(map[string]interface{})
 	details["custom-api-request-token"] = "Custom-key"
 	connection, modelserr := csmConnection.CreateConnection("123", connectionID, details)
-	assert.Equal(t, connection.ProcessingType, "Extension")
+	assert.Equal(t, *connection.ProcessingType, "extension")
 	assert.NotNil(t, connection.Details, "Details should not be nil")
 	assert.Equal(t, "Custom-key", connection.Details["custom-api-request-token"])
 	assert.Nil(t, modelserr)
@@ -261,12 +261,12 @@ func TestCheck_CreateConnectionDefault(t *testing.T) {
 	connectionID := "123"
 	details := make(map[string]interface{})
 	connectionCreate := models.ServiceManagerConnectionCreateRequest{
-		ConnectionID: connectionID,
+		ConnectionID: &connectionID,
 		Details:      details}
-	connection, modelserr := csmConnection.CreateConnection("123", connectionCreate.ConnectionID, connectionCreate.Details)
+	connection, modelserr := csmConnection.CreateConnection("123", *connectionCreate.ConnectionID, connectionCreate.Details)
 	assert.Nil(t, modelserr)
-	assert.Equal(t, connection.ProcessingType, "default")
-	assert.Equal(t, connection.Status, "successful")
+	assert.Equal(t, *connection.ProcessingType, "default")
+	assert.Equal(t, *connection.Status, "successful")
 	assert.Equal(t, connection.Details["test-param"], "test-value")
 	os.Unsetenv("SIDECAR_PARAMETERS")
 	os.Unsetenv("test-param")
@@ -281,12 +281,12 @@ func TestCheck_CreateConnectionDefaultMultipleParameters(t *testing.T) {
 	connectionID := "123"
 	details := make(map[string]interface{})
 	connectionCreate := models.ServiceManagerConnectionCreateRequest{
-		ConnectionID: connectionID,
+		ConnectionID: &connectionID,
 		Details:      details}
-	connection, modelserr := csmConnection.CreateConnection("123", connectionCreate.ConnectionID, connectionCreate.Details)
+	connection, modelserr := csmConnection.CreateConnection("123", *connectionCreate.ConnectionID, connectionCreate.Details)
 	assert.Nil(t, modelserr)
-	assert.Equal(t, connection.ProcessingType, "default")
-	assert.Equal(t, connection.Status, "successful")
+	assert.Equal(t, *connection.ProcessingType, "default")
+	assert.Equal(t, *connection.Status, "successful")
 	assert.Equal(t, connection.Details["test-param1"], "test-value1")
 	assert.Equal(t, connection.Details["test-param2"], "test-value2")
 	os.Unsetenv("SIDECAR_PARAMETERS")
@@ -298,8 +298,8 @@ func TestCheck_DeleteConnectionWithNone(t *testing.T) {
 	_, csmConnection := setup(nil)
 	connection, modelserr := csmConnection.DeleteConnection("123", "123")
 	assert.Nil(t, modelserr)
-	assert.Equal(t, connection.ProcessingType, "none")
-	assert.Equal(t, connection.Status, "none")
+	assert.Equal(t, *connection.ProcessingType, "none")
+	assert.Equal(t, *connection.Status, "none")
 }
 
 func TestCheck_DeleteConnection(t *testing.T) {
@@ -313,7 +313,7 @@ func TestCheck_DeleteConnection(t *testing.T) {
 
 	// _, csmConnection := setup(nil)
 	connection, modelserr := csmConnection.DeleteConnection("123", "123")
-	assert.Equal(t, connection.ProcessingType, "Extension")
+	assert.Equal(t, *connection.ProcessingType, "extension")
 	assert.Nil(t, modelserr)
 }
 

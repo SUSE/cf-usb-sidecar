@@ -33,10 +33,6 @@ export SIDECAR_BASE_IMAGE_TAG:=latest
 export SIDECAR_BUILD_BASE_IMAGE_NAME:=cf-usb-sidecar-buildbase
 export SIDECAR_BUILD_BASE_IMAGE_TAG:=latest
 
-
-# List of files to be tested
-TESTLIST=$(shell go list ./... | grep -v examples | grep -v services | grep -v generated | grep -v scripts | grep -v SIDECAR_extensions)
-
 .PHONY: run all clean clean-all clean-docker generate build test coverage tools build-image publish-image
 
 default: help
@@ -50,7 +46,7 @@ help:
 	@echo "  clean-all          Remove all build output and generated code"
 	@echo "  clean-docker       Remove all docker containers and images for catalog-service-manager"
 	@echo "  generate           Generates both server and client"
-	@echo "  build              generates swagger code and rebuilds the service only"
+	@echo "  build              Generates swagger code and rebuilds the service only"
 	@echo "  test               Run the unit tests"
 	@echo "  coverage           Run the unit tests and produces a coverage report"
 	@echo "  tools              Installs tools needed to run"
@@ -61,66 +57,61 @@ help:
 
 
 run:	generate
-	godep go run cmd/catalog-service-manager/catalog-service-manager.go
+	./scripts/run.sh
 
 all: 	clean-all build test
 
 clean:
-	@echo "$(OK_COLOR)==> Removing build artifacts$(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Removing build artifacts$(NO_COLOR)\n"
 	rm -rf ${GOBIN}/catalog-service-manager
 	rm -rf bin
 	rm -rf SIDECAR_BIN
 
 clean-all: clean
-	@echo "$(OK_COLOR)==> Removing generated code$(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Removing generated code$(NO_COLOR)\n"
 	rm -rf generated
 
 clean-docker:
 	scripts/docker/remove-docker-container.sh sidecar
-	scripts/docker/remove-docker-container.sh hsm
-	scripts/docker/remove-docker-image.sh hsm
 	scripts/docker/remove-docker-image.sh sidecar
 
 generate-server:
-	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Generating code: server$(NO_COLOR)\n"
 	rm -rf generated/CatalogServiceManager
 	scripts/generate-server.sh
 
 generate-client:
-	@echo "$(OK_COLOR)==> Generating code $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Generating code: client$(NO_COLOR)\n"
 	rm -rf generated/CatalogServiceManager-client
 	scripts/generate-csm-client.sh
 
 generate: generate-server generate-client
 
 coverage:
-	@echo "$(OK_COLOR)==> Running tests with coverage tool$(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Running tests with coverage tool$(NO_COLOR)\n"
 	./scripts/testCoverage.sh
 
 build:	generate
-	@echo "$(OK_COLOR)==> Building Catalog Service Manager code $(NO_COLOR)"
-	cd cmd/catalog-service-manager;\
-        godep go install .
+	@printf "$(OK_COLOR)==> Building Catalog Service Manager code $(NO_COLOR)\n"
+	./scripts/build.sh
 
 test-format:
-	@echo "$(OK_COLOR)==> Running gofmt $(NO_COLOR)"
-	./scripts/testFmt.sh src
-	./scripts/testFmt.sh cmd
+	@printf "$(OK_COLOR)==> Running gofmt $(NO_COLOR)\n"
+	FILES=`find cmd src -name "*.go" | grep -v github.com/go-swagger`;\
+	./scripts/testFmt.sh "$$FILES"
 
 test: test-format
-	@echo "$(OK_COLOR)==> Running tests $(NO_COLOR)"
-	godep go test $(TESTLIST)
+	@printf "$(OK_COLOR)==> Running tests $(NO_COLOR)\n"
+	./scripts/test.sh
 
 tools:
-	@echo "$(OK_COLOR)==> Installing tools and go dependencies $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Installing tools and go dependencies $(NO_COLOR)\n"
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/tools/godep
 	go get github.com/fsouza/go-dockerclient
 
-	./scripts/tools/codegen.sh
-
 build-image: clean-all
-	@echo "$(OK_COLOR)==> Building release docker image for Catalog Service Manager $(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Building release docker image for Catalog Service Manager $(NO_COLOR)\n"
 	scripts/docker/release/generate-release-base-image.sh
 
 release-base: build-image

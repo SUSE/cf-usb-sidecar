@@ -200,8 +200,7 @@ definitions:
         type: object
         description: key value map with connection details (Service manager won't interpret the details of the map it will send this back to the requester as is)
         additionalProperties:
-          items:
-            type: string
+          type: object
 
   ServiceManagerWorkspaceCreateRequest:
     type: object
@@ -215,8 +214,7 @@ definitions:
         type: object
         description: key value map with connection details (Service manager won't interpret the details of the map it will send this back to the requester as is)
         additionalProperties:
-          items:
-            type: string
+          type: object
 
   ServiceManagerConnectionResponse:
     type: object
@@ -235,8 +233,7 @@ definitions:
         type: object
         description: key value map with connection details (Service manager won't interpret the details of the map it will send this back to the requester as is)
         additionalProperties:
-          items:
-            type: string
+          type: object
 
   ServiceManagerConnectionCreateRequest:
     type: object
@@ -250,8 +247,7 @@ definitions:
         type: object
         description: key value map with connection details (Service manager won't interpret the details of the map it will send this back to the requester as is)
         additionalProperties:
-          items:
-            type: string
+          type: object
   StatusResponse: 
     type: object
     required:

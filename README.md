@@ -6,6 +6,7 @@ This repository holds the rest API for Catalog service manager.
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [Setting up project environment/dependencies](#setting-up-dependencies)
+- [Building](#building)
 - [Environment Variables](#environment-variables)
 - [Run the service](#run-the-service)
   - [In go](#In-go)
@@ -32,6 +33,28 @@ or you can also download latest mercurial package from their site.
 ```
 make tools
 ```
+
+## Building
+
+To build the mysql sidecar and associated helm chart do
+
+```
+make build-image
+make publish-image
+
+cd csm-extensions/services/dev-mysql
+make build-image
+make publish-image
+make helm
+```
+
+Note however that the environment variables `DOCKER_REPOSITORY` and
+`DOCKER_ORGANIZATION` have to be set to suitable values before
+invoking the above script.
+
+The docker images needed by the sidecar's helm chart will be pushed to
+the specified repository and organization. The chart itself will be
+stored in the subdirectory `output` of `dev-mysql`.
 
 ## Environment Variables
 
