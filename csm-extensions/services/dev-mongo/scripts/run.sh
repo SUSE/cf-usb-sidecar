@@ -4,9 +4,9 @@ if [ -z ${SERVICE_MONGO_HOST} ]
 then
     if [ -z "${MONGO_INT_SERVICE_PORT}" ]
     then
-      export SERVICE_MONGO_HOST="mongo.${HCP_SERVICE_DOMAIN_SUFFIX}"
+      export SERVICE_MONGO_HOST="mongo.${KUBE_SERVICE_DOMAIN_SUFFIX}"
 	else
-	  export SERVICE_MONGO_HOST="mongo-int.${HCP_SERVICE_DOMAIN_SUFFIX}"
+	  export SERVICE_MONGO_HOST="mongo-int.${KUBE_SERVICE_DOMAIN_SUFFIX}"
 	fi
 fi
 

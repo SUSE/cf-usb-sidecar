@@ -4,9 +4,9 @@ if [ -z ${DOCKER_HOST} ]
 then
   if [ -z "${RABBITMQ_INT_SERVICE_PORT}" ]
   then
-   export DOCKER_HOST="rabbitmq.${HCP_SERVICE_DOMAIN_SUFFIX}"   
+   export DOCKER_HOST="rabbitmq.${KUBE_SERVICE_DOMAIN_SUFFIX}"
   else
-   export DOCKER_HOST="rabbitmq-int.${HCP_SERVICE_DOMAIN_SUFFIX}"
+   export DOCKER_HOST="rabbitmq-int.${KUBE_SERVICE_DOMAIN_SUFFIX}"
   fi
 fi
 

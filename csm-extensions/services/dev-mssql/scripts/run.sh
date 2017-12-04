@@ -2,7 +2,7 @@
 
 if [ -z ${MSSQL_HOST} ]
 then
-    export MSSQL_HOST="mysql-int.${HCP_SERVICE_DOMAIN_SUFFIX}"
+    export MSSQL_HOST="mysql-int.${KUBE_SERVICE_DOMAIN_SUFFIX}"
 fi
 
 echo "Starting catalog-service-manager ..."

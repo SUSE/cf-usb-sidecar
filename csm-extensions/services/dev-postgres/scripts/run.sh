@@ -4,9 +4,9 @@ if [ -z "${SERVICE_POSTGRES_HOST}" ]
 then
     if [ -z "${POSTGRES_INT_SERVICE_PORT}" ]
     then
-      export SERVICE_POSTGRES_HOST="postgres.${HCP_SERVICE_DOMAIN_SUFFIX}"
+      export SERVICE_POSTGRES_HOST="postgres.${KUBE_SERVICE_DOMAIN_SUFFIX}"
 	else
-	  export SERVICE_POSTGRES_HOST="postgres-int.${HCP_SERVICE_DOMAIN_SUFFIX}"
+	  export SERVICE_POSTGRES_HOST="postgres-int.${KUBE_SERVICE_DOMAIN_SUFFIX}"
 	fi
 fi
 
