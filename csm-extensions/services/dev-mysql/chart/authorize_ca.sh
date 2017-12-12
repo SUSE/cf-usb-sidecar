@@ -4,7 +4,7 @@
 # - The SCF CA securing the TLS cert securing cf <-> API comms
 
 # The file is derived from
-# scf.git:container-host-files/etc/hcf/config/scripts/authorize_internal_ca.sh
+# scf.git:container-host-files/etc/scf/config/scripts/authorize_internal_ca.sh
 # and modified to suit. As it is sourced by `scf-connector.sh` as an
 # environment script we do things to ensure that we have an acceptable
 # environment.

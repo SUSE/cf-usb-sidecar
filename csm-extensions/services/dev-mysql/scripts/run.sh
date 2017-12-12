@@ -4,9 +4,9 @@ if [ -z "${SERVICE_MYSQL_HOST}" ]
 then
     if [ -z "${MYSQL_INT_SERVICE_PORT}" ]
     then
-      export SERVICE_MYSQL_HOST="mysql.${HCP_SERVICE_DOMAIN_SUFFIX}"
+      export SERVICE_MYSQL_HOST="mysql.${KUBE_SERVICE_DOMAIN_SUFFIX}"
 	else
-	  export SERVICE_MYSQL_HOST="mysql-int.${HCP_SERVICE_DOMAIN_SUFFIX}"
+	  export SERVICE_MYSQL_HOST="mysql-int.${KUBE_SERVICE_DOMAIN_SUFFIX}"
 	fi
 fi
 

@@ -4,7 +4,7 @@ mkdir -p /etc/nginx/conf.d/tcp/
 
 cat <<EOF > /etc/nginx/conf.d/tcp/service.conf
 upstream service {
-    server ${TARGET_SERVICE_HOST}.${HCP_SERVICE_DOMAIN_SUFFIX}:${TARGET_SERVICE_PORT};
+    server ${TARGET_SERVICE_HOST}.${KUBE_SERVICE_DOMAIN_SUFFIX}:${TARGET_SERVICE_PORT};
 }
 
 server {

@@ -4,9 +4,9 @@ if [ -z "${DOCKER_HOST}" ]
 then
   if [ -z "${REDIS_INT_SERVICE_PORT}" ]
   then
-    export DOCKER_HOST="redis.${HCP_SERVICE_DOMAIN_SUFFIX}"
+    export DOCKER_HOST="redis.${KUBE_SERVICE_DOMAIN_SUFFIX}"
   else
-    export DOCKER_HOST="redis-int.${HCP_SERVICE_DOMAIN_SUFFIX}"
+    export DOCKER_HOST="redis-int.${KUBE_SERVICE_DOMAIN_SUFFIX}"
   fi
 fi
 
