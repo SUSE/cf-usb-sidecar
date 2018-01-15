@@ -10,8 +10,8 @@ ifndef DOCKER_ORGANIZATION
 	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
-export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-mysql
+export SIDECAR_ROOT:=$(realpath $(dir ${CURDIR})/../.. )
+export SIDECAR_EXTENSION_ROOT:=${CURDIR}
 
 ifeq ($(strip $(VERSION)),)
 	export VERSION := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "VERSION")
