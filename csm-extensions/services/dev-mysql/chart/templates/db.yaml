@@ -1,5 +1,6 @@
 ---
 # The mysql role contains a plain mysql server (mysql 5.5)
+{{ if eq ( .Values.env.SERVICE_MYSQL_HOST | quote ) ( "AUTO" | quote ) }}
 
 apiVersion: "apps/v1beta1"
 kind: "StatefulSet"
@@ -71,3 +72,5 @@ items:
       skiff-role-name: "mysql"
     type: "ClusterIP"
 kind: "List"
+
+{{ end }}

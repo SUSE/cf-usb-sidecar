@@ -21,7 +21,6 @@ mkdir -p output/helm
 cp -rf chart/* output/helm/
 mv     output/helm/other/* output/helm/templates/
 rmdir  output/helm/other
-rm     output/helm/templates/db.yaml
 rm     output/helm/*.sh
 
 # Fix the version information in the image references
