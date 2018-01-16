@@ -26,6 +26,9 @@ export SIDECAR_EXTENSION_PORT:=8093
 export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-postgres
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
+export SIDECAR_SETUP_IMAGE_NAME:=cf-usb-sidecar-dev-postgres-setup
+export SIDECAR_SETUP_IMAGE_TAG:=latest
+
 export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-postgres-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 
@@ -136,6 +139,7 @@ build-image:
 
 # (required) push image to docker registry
 publish-image:
+	IMAGE_NAME=${SIDECAR_SETUP_IMAGE_NAME}         IMAGE_TAG=${SIDECAR_SETUP_IMAGE_TAG}         ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 	IMAGE_NAME=${SIDECAR_EXTENSION_IMAGE_NAME}     IMAGE_TAG=${SIDECAR_EXTENSION_IMAGE_TAG}     ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 	IMAGE_NAME=${SIDECAR_EXTENSION_SVC_IMAGE_NAME} IMAGE_TAG=${SIDECAR_EXTENSION_SVC_IMAGE_TAG} ${SIDECAR_ROOT}/scripts/docker/publish-image.sh
 
