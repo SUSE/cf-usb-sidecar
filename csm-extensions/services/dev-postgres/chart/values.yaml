@@ -6,7 +6,7 @@ env:
   CF_DOMAIN: ~
   SERVICE_LOCATION: ~
   SERVICE_POSTGRESQL_HOST: ~
-  SERVICE_POSTGRESQL_PASS: cf-usb-sidecar-mysql-admin-password
+  SERVICE_POSTGRESQL_PASS: cf-usb-sidecar-postgres-admin-password
   SERVICE_POSTGRESQL_PORT: 5432
   SERVICE_POSTGRESQL_SSLMODE: require
   SERVICE_POSTGRESQL_USER: postgres

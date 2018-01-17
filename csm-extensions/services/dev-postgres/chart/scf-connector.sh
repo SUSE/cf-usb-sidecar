@@ -66,12 +66,12 @@ retry 240 30s cf api "api.${CF_DOMAIN}"
 status "Logging in"
 cf auth ${CF_ADMIN_USER} ${CF_ADMIN_PASSWORD}
 
-status "Registering MySQL sidecar with CC"
+status "Registering PostgreSQL sidecar with CC"
 cf usb create-driver-endpoint \
     "${SERVICE_TYPE}" \
     "${SERVICE_LOCATION}" \
     "${SIDECAR_API_KEY}" \
     -c ":"
 
-status "MySQL sidevar configuration complete."
+status "PostgreSQL sidecar configuration complete."
 exit 0
