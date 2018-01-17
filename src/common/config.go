@@ -18,7 +18,7 @@ type ServiceManagerConfiguration struct {
 	TLS_CERT_FILE        *string
 	TLS_PRIVATE_KEY_FILE *string
 	PORT                 *string `env:"PORT"`
-	KUBE_INSTANCE_ID      *string `env:"KUBE_INSTANCE_ID"`
+	KUBE_INSTANCE_ID     *string `env:"KUBE_INSTANCE_ID"`
 }
 
 var paramDefaultList = map[string]string{
@@ -33,7 +33,7 @@ var paramDefaultList = map[string]string{
 	"TLS_CERT_FILE":             "/etc/secrets/tls-cert-file",
 	"TLS_PRIVATE_KEY_FILE":      "/etc/secrets/tls-private-key-file",
 	"PORT":                      "8081",
-	"KUBE_INSTANCE_ID":           "Sidecar",
+	"KUBE_INSTANCE_ID":          "Sidecar",
 }
 
 // NewServiceManagerConfiguration : Creates object of ServiceManagerConfiguration

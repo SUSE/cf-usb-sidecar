@@ -27,7 +27,7 @@ ifndef DOCKER_ORGANIZATION
 	export DOCKER_ORGANIZATION:=splatform
 endif
 
-export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
+export SIDECAR_ROOT:=${CURDIR}
 export SIDECAR_BASE_IMAGE_NAME:=cf-usb-sidecar
 export SIDECAR_BASE_IMAGE_TAG:=latest
 export SIDECAR_BUILD_BASE_IMAGE_NAME:=cf-usb-sidecar-buildbase

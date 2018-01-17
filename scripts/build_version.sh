@@ -2,7 +2,8 @@
 set -u
 env_var_to_echo=$1
 
-export WORKSPACE=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
+unset CDPATH
+export WORKSPACE="$(cd "$(dirname "${0}")/.." && pwd)"
 STARTDIR=${START_DIR:-}
 CONCOURSEBUILD=${CONCOURSE_BUILD:-}
 

@@ -24,7 +24,7 @@ spec:
             fieldRef:
               fieldPath: "metadata.namespace"
         - name: "SERVICE_MYSQL_HOST"
-          value: {{ required "SERVICE_MYSQL_HOST configuration missing" .Values.env.SERVICE_MYSQL_HOST | quote }}
+          value: {{ if eq ( .Values.env.SERVICE_MYSQL_HOST | quote ) ( "AUTO" | quote ) }} mysql.{{.Release.Namespace}} {{ else }} {{ required "SERVICE_MYSQL_HOST configuration missing; use AUTO to deploy one" .Values.env.SERVICE_MYSQL_HOST | quote }} {{ end }}
         - name: "SERVICE_MYSQL_PASS"
           valueFrom:
             secretKeyRef:

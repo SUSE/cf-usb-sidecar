@@ -203,8 +203,22 @@ func (provisioner *PqProvisioner) UserExists(username string) (bool, error) {
 }
 
 func buildConnectionString(connectionParams config.PostgresConfig) string {
-	var res string = fmt.Sprintf("user=%v password=%v host=%v port=%v dbname=%v sslmode=%v",
-		connectionParams.User, connectionParams.Password, connectionParams.Host, connectionParams.Port, connectionParams.Dbname, connectionParams.Sslmode)
+	var res string
+	for name, value := range map[string]string{
+		"user":     connectionParams.User,
+		"password": connectionParams.Password,
+		"host":     connectionParams.Host,
+		"port":     connectionParams.Port,
+		"dbname":   connectionParams.Dbname,
+		"sslmode":  connectionParams.Sslmode,
+	} {
+		if value != "" {
+			if res != "" {
+				res += " "
+			}
+			res += fmt.Sprintf("%s=%v", name, value)
+		}
+	}
 	return res
 }
 

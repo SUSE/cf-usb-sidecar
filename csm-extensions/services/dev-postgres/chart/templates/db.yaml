@@ -1,0 +1,77 @@
+---
+# The postgres role contains a plain postgres server
+# This is only deployed if this  helm chart was deployed with a host of "AUTO"
+
+{{ if eq ( .Values.env.SERVICE_POSTGRESQL_HOST | quote ) ( "AUTO" | quote ) }}
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: postgres
+  labels:
+    skiff-role-name: postgres
+spec:
+  replicas: 1
+  serviceName: postgres-set
+  template:
+    metadata:
+      name: postgres
+      labels:
+        skiff-role-name: postgres
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: service-postgres-pass
+              name: cf-usb-sidecar-postgres-secret
+        - name: POSTGRES_USER
+          value: {{ required "SERVICE_POSTGRESQL_USER configuration missing" .Values.env.SERVICE_POSTGRESQL_USER | quote }}
+        image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-dev-postgres-db:latest"
+        readinessProbe:
+          initialDelaySeconds: 10
+          tcpSocket:
+            port: 5432
+        name: postgres
+        ports:
+        - containerPort: 5432
+          name: postgres
+          protocol: "TCP"
+        resources:
+          requests:
+            memory: 100M
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: registry-credentials
+      restartPolicy: "Always"
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: postgres-set
+  spec:
+    clusterIP: None
+    ports:
+    - name: postgres
+      port: 5432
+      protocol: TCP
+    selector:
+      skiff-role-name: postgres
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: postgres
+  spec:
+    ports:
+    - name: postgres
+      port: {{ required "SERVICE_POSTGRESQL_PORT configuration missing" .Values.env.SERVICE_POSTGRESQL_PORT }}
+      protocol: TCP
+      targetPort: postgres
+    selector:
+      skiff-role-name: postgres
+    type: ClusterIP
+kind: List
+{{ end }}
