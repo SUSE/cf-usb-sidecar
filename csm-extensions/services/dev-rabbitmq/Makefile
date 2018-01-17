@@ -21,7 +21,6 @@ endif
 
 export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-rabbitmq
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
-export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-rabbitmq-build
 export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-rabbitmq-db
 export SIDECAR_EXTENSION_SVC_VERSION:=3.6.0-management
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
@@ -111,14 +110,12 @@ test-integration: clean-all build-image build-service-image run-db run
 
 # (required) clean containers
 clean-containers:
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_SVC_CONTAINER_NAME}
 
 # (required) clean docker images
 clean-images:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker containers and images
@@ -127,9 +124,6 @@ clean-all:	clean-containers clean-images
 # (required) build docker image for service
 build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
-	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-docker-image.sh
 
 
