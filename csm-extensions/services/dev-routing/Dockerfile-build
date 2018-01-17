@@ -1,9 +1,0 @@
-FROM cf-usb-sidecar-buildbase:latest
-
-COPY . /go/src/github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-routing
-ENV GOPATH /go
-ENV GOBIN /go/bin
-WORKDIR /go/src/github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-routing
-
-RUN make build
-ENTRYPOINT cp -r /go/src/github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-routing/SIDECAR_HOME/* /out/
