@@ -29,8 +29,6 @@ export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 export SIDECAR_SETUP_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-setup
 export SIDECAR_SETUP_IMAGE_TAG:=latest
 
-export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mysql-build
-
 export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 
@@ -119,7 +117,6 @@ test-integration: clean-all build-image build-service-image run-db run
 
 # (required) clean containers
 clean-containers:
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_SETUP_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
@@ -128,7 +125,6 @@ clean-containers:
 clean-images:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_SETUP_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}
 
 # (required) clean docker containers and images
@@ -138,9 +134,6 @@ clean-all:	clean-containers clean-images
 # (required) build docker image for service
 build-image:
 	@printf "$(OK_COLOR)==> Building Docker image $(NO_COLOR)\n"
-	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-docker-image.sh
 
 
