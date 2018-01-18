@@ -1,19 +1,28 @@
+FROM cf-usb-sidecar-buildbase:latest as builder
+
+ENV GOPATH /go
+ENV GOBIN /go/bin
+
+COPY . /go/src/github.com/SUSE/cf-usb-sidecar
+
+RUN go version
+
+WORKDIR /go/src/github.com/SUSE/cf-usb-sidecar
+RUN make clean-all build
+
 FROM opensuse:42.3
 
 RUN mkdir -p /catalog-service-manager/bin \
     /catalog-service-manager/setup/startup \
     /catalog-service-manager/setup/shutdown \
-
     /catalog-service-manager/workspace/get \
     /catalog-service-manager/workspace/create \
     /catalog-service-manager/workspace/delete \
-
     /catalog-service-manager/connection/get \
     /catalog-service-manager/connection/create \
     /catalog-service-manager/connection/delete
 
-COPY SIDECAR_BIN/catalog-service-manager /catalog-service-manager/bin/
-
+COPY --from=builder /go/bin/catalog-service-manager /catalog-service-manager/bin/
 COPY docs/package-files/* /usr/share/doc/stackato/
 
 ENTRYPOINT ["/catalog-service-manager/bin/catalog-service-manager"]
