@@ -17,4 +17,3 @@ FROM cf-usb-sidecar-buildbase:latest
 COPY --from=builder /out/ /usr/local/bin/
 WORKDIR /
 ENTRYPOINT /bin/bash /usr/local/bin/scf-connector.sh
-COPY --from=builder /out/ /usr/local/bin/
