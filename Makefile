@@ -65,7 +65,6 @@ clean:
 	@printf "$(OK_COLOR)==> Removing build artifacts$(NO_COLOR)\n"
 	rm -rf ${GOBIN}/catalog-service-manager
 	rm -rf bin
-	rm -rf SIDECAR_BIN
 
 clean-all: clean
 	@printf "$(OK_COLOR)==> Removing generated code$(NO_COLOR)\n"

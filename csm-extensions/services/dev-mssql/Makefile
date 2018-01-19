@@ -24,8 +24,6 @@ endif
 export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mssql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
-export SIDECAR_EXTENSION_BUILD_IMAGE_NAME:=sidecar-dev-mssql-build
-
 .PHONY: clean-all clean build-image tools run test test-integration
 
 default: help
@@ -101,14 +99,12 @@ test-integration-manual: all
 
 # (required) clean containers
 clean-containers:
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh csm-dev-mssql-db
 
 # (required) clean docker images
 clean-images:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 
 # (required) clean docker containers and images
 clean-all:	clean-containers clean-images
@@ -120,9 +116,6 @@ build-service-image:
 # (required) build docker image for service
 build-image:
 	@echo "$(OK_COLOR)==> Building Docker image $(NO_COLOR)"
-	${SIDECAR_ROOT}/scripts/dev-extensions/build-csm-binaries.sh
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-image.sh ${SIDECAR_EXTENSION_BUILD_IMAGE_NAME}
 	${SIDECAR_ROOT}/scripts/dev-extensions/build-docker-image.sh
 
 

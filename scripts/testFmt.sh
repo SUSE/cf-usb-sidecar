@@ -9,7 +9,10 @@ if [ $# = 0 ]; then
 fi
 # check go format on files
 unformatted_files=$(gofmt -l $1)
-[ -z "$unformatted_files" ] && exit 0
+if test -z "${unformatted_files}" ; then
+    printf "All files are formatted correctly.\n"
+    exit 0
+fi
 
 # show how to fix the unformatted files.
 echo Run
