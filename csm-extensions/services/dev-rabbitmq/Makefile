@@ -19,12 +19,12 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-rabbitmq
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-rabbitmq
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-rabbitmq-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-rabbitmq-db
 export SIDECAR_EXTENSION_SVC_VERSION:=3.6.0-management
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
-export SIDECAR_EXTENSION_SVC_CONTAINER_NAME:=sidecar-dev-rabbitmq-docker-host
+export SIDECAR_EXTENSION_SVC_CONTAINER_NAME:=sidecar-rabbitmq-docker-host
 export SIDECAR_EXTENSION_SVC_PORTS_START:=32000
 export SIDECAR_EXTENSION_SVC_PORTS_END:=32020
 export SIDECAR_EXTENSION_TOKEN:=sidecar-auth-token
@@ -49,7 +49,7 @@ help:
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
 	@echo "  build-service-image  Build database docker image"
-	@echo "  publish-image        Publish csm-dev-rabbitmq docker image to registry"
+	@echo "  publish-image        Publish the rabbitmq docker images to registry"
 	@echo
 
 all:	clean-all build-image build-service-image run-db run

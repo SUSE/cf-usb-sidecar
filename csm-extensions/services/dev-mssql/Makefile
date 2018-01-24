@@ -21,7 +21,7 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mssql
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-mssql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
 .PHONY: clean-all clean build-image tools run test test-integration
@@ -42,7 +42,7 @@ help:
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
-	@echo "  publish-image        Publish csm-dev-mssql docker image to registry"
+	@echo "  publish-image        Publish the mssql docker images to registry"
 	@echo
 
 all:	clean-all build-image run
@@ -65,7 +65,7 @@ test:	test-format
 	go list ./... | grep -v vendor | go test -v)
 
 test-integration:
-	echo "$(WARN_CYN_COLOR)==>Use test-integration-manual target to run integration tests for dev-mssql $(NO_COLOR) ";n=0;\
+	echo "$(WARN_CYN_COLOR)==>Use test-integration-manual target to run integration tests for mssql $(NO_COLOR) ";n=0;\
 
 test-integration-manual: all
 	@(if [ ! -z ${DOCKER_HOST} ]; then \

@@ -23,13 +23,13 @@ endif
 
 export SIDECAR_API_KEY:=sidecar-auth-token
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mysql
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-mysql
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
-export SIDECAR_SETUP_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-setup
+export SIDECAR_SETUP_IMAGE_NAME:=cf-usb-sidecar-mysql-setup
 export SIDECAR_SETUP_IMAGE_TAG:=latest
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-mysql-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-mysql-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_PORT=8081
@@ -52,7 +52,7 @@ help:
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension and setup docker images"
-	@echo "  publish-image        Publish csm-dev-mysql docker image to registry"
+	@echo "  publish-image        Publish the mysql docker images to registry"
 	@echo "  build-service-image  Build database docker image"
 	@echo "  helm                 Create a helm chart for deployment"
 

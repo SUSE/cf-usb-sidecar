@@ -19,13 +19,13 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-redis
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-redis
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-redis-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-redis-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 export SIDECAR_EXTENSION_SVC_VERSION:=3.0.7
-export SIDECAR_EXTENSION_SVC_CONTAINER_NAME:=sidecar-dev-redis-docker-host
+export SIDECAR_EXTENSION_SVC_CONTAINER_NAME:=sidecar-redis-docker-host
 export SIDECAR_EXTENSION_SVC_PORTS_START:=33000
 export SIDECAR_EXTENSION_SVC_PORTS_END:=33020
 export SIDECAR_EXTENSION_TOKEN:=sidecar-auth-token
@@ -50,7 +50,7 @@ help:
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
 	@echo "  build-service-image  Build database docker image"
-	@echo "  publish-image        Publish csm-dev-redis docker image to registry"
+	@echo "  publish-image        Publish the redis docker images to registry"
 	@echo
 
 all:	clean-all build-image build-service-image run-db run

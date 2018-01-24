@@ -23,13 +23,13 @@ endif
 
 export SIDECAR_EXTENSION_PORT:=8093
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-postgres
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-postgres
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
-export SIDECAR_SETUP_IMAGE_NAME:=cf-usb-sidecar-dev-postgres-setup
+export SIDECAR_SETUP_IMAGE_NAME:=cf-usb-sidecar-postgres-setup
 export SIDECAR_SETUP_IMAGE_TAG:=latest
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-postgres-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-postgres-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 
 export SIDECAR_API_KEY:=sidecar-auth-token
@@ -52,7 +52,7 @@ help:
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
-	@echo "  publish-image        Publish csm-dev-postgres docker image to registry"
+	@echo "  publish-image        Publish the postgres docker images to registry"
 	@echo "  run-db               run the db behind csm"
 	@echo "  build-service-image  Build database docker image"
 	@echo "  helm                 Create a helm chart for deployment"
