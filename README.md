@@ -9,8 +9,9 @@ This repository holds the rest API for Catalog service manager.
 - [Building](#building)
 - [Environment Variables](#environment-variables)
 - [Run the service](#run-the-service)
-  - [In go](#In-go)
-  - [On docker](#With-container-in-docker)
+  - [In go](#in-go)
+  - [On docker](#run-service-with-examplemysql-extensions)
+  - [Helm with SCF](#running-with-the-scf-vagrant-machine)
 - [Testing CSM Service](#testing-csm-service)
 - [Docker Containers for Catalog Service Manager](#docker-containers-for-catalog-service-manager)
 
@@ -198,6 +199,19 @@ export SIDECAR_API_KEY=my-foo-bar-key
 ```
 make run
 ```
+
+### Running with the SCF Vagrant machine
+
+For a simplified setup with the SCF vagrant machine (or any other compatible
+Kubernetes-based deployment), use `scripts/cf-deploy.sh`:
+
+```bash
+scripts/cf-deploy.sh mysql
+# Alternatively, `scripts/cf-deploy.sh postgres`
+```
+
+This will deploy the helm chart (which should be manually built before hand)
+using the current configuration.
 
 ## Testing CSM Service
 
