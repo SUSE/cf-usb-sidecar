@@ -27,7 +27,7 @@ spec:
               name: cf-usb-sidecar-postgres-secret
         - name: POSTGRES_USER
           value: {{ required "SERVICE_POSTGRESQL_USER configuration missing" .Values.env.SERVICE_POSTGRESQL_USER | quote }}
-        image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-dev-postgres-db:latest"
+        image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-postgres-db:latest"
         readinessProbe:
           initialDelaySeconds: 10
           tcpSocket:

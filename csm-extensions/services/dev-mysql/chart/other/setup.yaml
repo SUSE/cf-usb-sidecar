@@ -6,9 +6,9 @@ metadata:
 spec:
   template:
     metadata:
-      name: "cf-usb-sidecar-dev-mysql-setup"
+      name: "cf-usb-sidecar-mysql-setup"
       labels:
-        skiff-role-name: "cf-usb-sidecar-dev-mysql-setup"
+        skiff-role-name: "cf-usb-sidecar-mysql-setup"
     spec:
       containers:
       - env:
@@ -44,8 +44,8 @@ spec:
             secretKeyRef:
               key: "uaa-ca-cert"
               name: "cf-usb-sidecar-mysql-secret"
-        image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-dev-mysql-setup:latest"
-        name: "cf-usb-sidecar-dev-mysql-setup"
+        image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-mysql-setup:latest"
+        name: "cf-usb-sidecar-mysql-setup"
         resources:
           requests:
             memory: 100M
