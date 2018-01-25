@@ -1,3 +1,5 @@
+ARG base_image=opensuse:latest
+
 FROM cf-usb-sidecar-buildbase:latest as builder
 
 ENV GOPATH /go
@@ -5,12 +7,10 @@ ENV GOBIN /go/bin
 
 COPY . /go/src/github.com/SUSE/cf-usb-sidecar
 
-RUN go version
-
 WORKDIR /go/src/github.com/SUSE/cf-usb-sidecar
 RUN make clean-all build
 
-FROM opensuse:42.3
+FROM ${base_image}
 
 RUN mkdir -p /catalog-service-manager/bin \
     /catalog-service-manager/setup/startup \
@@ -24,5 +24,3 @@ RUN mkdir -p /catalog-service-manager/bin \
 
 COPY --from=builder /go/bin/catalog-service-manager /catalog-service-manager/bin/
 COPY docs/package-files/* /usr/share/doc/stackato/
-
-ENTRYPOINT ["/catalog-service-manager/bin/catalog-service-manager"]
