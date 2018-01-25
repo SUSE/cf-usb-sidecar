@@ -24,7 +24,7 @@ import (
 const (
 	DockerPort   = 8081
 	DockerIP     = "127.0.0.1"
-	DockerName   = "sidecar-dev-mysql:latest"
+	DockerName   = "sidecar-mysql:latest"
 	WorkspaceID  = "test-onnllyy123"
 	ConnectionID = "testconnonnllyy123"
 	Token        = "sidecar-auth-token"

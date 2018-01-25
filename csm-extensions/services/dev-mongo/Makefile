@@ -19,10 +19,10 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-mongo
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-mongo
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
-export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-dev-mongo-db
+export SIDECAR_EXTENSION_SVC_IMAGE_NAME:=cf-usb-sidecar-mongo-db
 export SIDECAR_EXTENSION_SVC_IMAGE_TAG:=latest
 export SIDECAR_EXTENSION_TOKEN:=sidecar-auth-token
 export SIDECAR_EXTENSION_PORT:=8092
@@ -47,7 +47,7 @@ help:
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-service-image  Build database docker image"
 	@echo "  build-image          Build extension docker image"
-	@echo "  publish-image        Publish csm-dev-mongo docker image to registry"
+	@echo "  publish-image        Publish the mongo docker images to registry"
 	@echo
 
 all:	clean-all build-image build-service-image run-db run

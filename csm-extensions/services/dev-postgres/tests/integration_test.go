@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	DockerName   = "sidecar-dev-postgres:latest"
+	DockerName   = "sidecar-postgres:latest"
 	DockerPort   = 8093
 	DockerIP     = "127.0.0.1"
 	WorkspaceID  = "test-onnllyy123"

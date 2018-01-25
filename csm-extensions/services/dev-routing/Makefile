@@ -21,7 +21,7 @@ ifeq ($(strip $(APP_VERSION_TAG)),)
 	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
-export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-dev-routing
+export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-routing
 export SIDECAR_EXTENSION_IMAGE_TAG:=latest
 
 export SIDECAR_EXTENSION_TOKEN:=sidecar-auth-token
@@ -44,7 +44,7 @@ help:
 	@echo "  clean-images         Remove all docker images for extension"
 	@echo "  clean-all            Remove docker container and images"
 	@echo "  build-image          Build extension docker image"
-	@echo "  publish-image        Publish csm-dev-routing docker image to registry"
+	@echo "  publish-image        Publish the routing docker images to registry"
 	@echo "  build-service-image  Build database docker image"
 	@echo
 

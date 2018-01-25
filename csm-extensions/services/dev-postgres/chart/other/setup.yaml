@@ -6,9 +6,9 @@ metadata:
 spec:
   template:
     metadata:
-      name: "cf-usb-sidecar-dev-postgres-setup"
+      name: "cf-usb-sidecar-postgres-setup"
       labels:
-        skiff-role-name: "cf-usb-sidecar-dev-postgres-setup"
+        skiff-role-name: "cf-usb-sidecar-postgres-setup"
     spec:
       containers:
       - env:
@@ -44,8 +44,8 @@ spec:
             secretKeyRef:
               key: "uaa-ca-cert"
               name: "cf-usb-sidecar-postgres-secret"
-        image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-dev-postgres-setup:latest"
-        name: "cf-usb-sidecar-dev-postgres-setup"
+        image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-postgres-setup:latest"
+        name: "cf-usb-sidecar-postgres-setup"
         resources:
           requests:
             memory: 100M
