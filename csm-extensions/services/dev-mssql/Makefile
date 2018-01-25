@@ -100,7 +100,6 @@ test-integration-manual: all
 # (required) clean containers
 clean-containers:
 	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh ${SIDECAR_EXTENSION_IMAGE_NAME}
-	${SIDECAR_ROOT}/scripts/docker/remove-docker-container.sh csm-dev-mssql-db
 
 # (required) clean docker images
 clean-images:
