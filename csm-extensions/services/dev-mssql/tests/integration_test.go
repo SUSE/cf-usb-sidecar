@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	DockerName   = "sidecar-dev-mssql:latest"
+	DockerName   = "sidecar-mssql:latest"
 	DockerPort   = 8091
 	DockerIp     = "127.0.0.1"
 	WorkspaceId  = "test-onnllyy123"
