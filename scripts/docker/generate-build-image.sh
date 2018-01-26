@@ -39,4 +39,5 @@ printf "%b==> Building ${SIDECAR_BUILD_BASE_IMAGE_NAME}:${SIDECAR_BUILD_BASE_IMA
 docker build \
     --tag "${SIDECAR_BUILD_BASE_IMAGE_NAME}:${SIDECAR_BUILD_BASE_IMAGE_TAG}" \
     --rm \
+	${SIDECAR_BUILD_BASE_PARENT_IMAGE:+--build-arg base_image=${SIDECAR_BUILD_BASE_PARENT_IMAGE}} \
     --file "${script_dir}/Dockerfile-build" .
