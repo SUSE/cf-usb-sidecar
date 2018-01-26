@@ -3,7 +3,7 @@
 # This script deploys the given service on the default kubernetes context
 
 set -o errexit -o nounset
-service="${1,,:-mysql}"
+service="$(tr '[:upper:]' '[:lower:]' <<<"${1:-mysql}")"
 host="${service^^}"
 extra=""
 case "${service}" in
@@ -34,7 +34,7 @@ helm list --all | \
     xargs --no-run-if-empty helm delete --purge
 
 helm install \
-    csm-extensions/services/dev-${service}/output/helm \
+    "$(dirname "${0}")/../csm-extensions/services/dev-${service}/output/helm" \
     --name "dev-${service}" \
     --namespace "dev-${service}" \
     --wait \
