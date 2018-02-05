@@ -1,4 +1,6 @@
 #!/bin/bash
-
-docker pull mysql:5.5
-docker tag mysql:5.5 ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}:${SIDECAR_EXTENSION_SVC_IMAGE_TAG}
+topdir=$(dirname $(dirname "$0"))
+docker build \
+    --tag "${SIDECAR_EXTENSION_SVC_IMAGE_NAME}:${SIDECAR_EXTENSION_SVC_IMAGE_TAG}" \
+    --rm \
+    --file "${topdir}/Dockerfile-db" .
