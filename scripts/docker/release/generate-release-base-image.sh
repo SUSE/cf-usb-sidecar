@@ -28,7 +28,12 @@ then
 fi
 
 printf "${OK_GREEN_COLOR}==> Building ${SIDECAR_BASE_IMAGE_NAME}:${SIDECAR_BASE_IMAGE_TAG} image ..  ${NO_COLOR}\n"
-docker build -t ${SIDECAR_BASE_IMAGE_NAME}:${SIDECAR_BASE_IMAGE_TAG} --rm -f scripts/docker/release/Dockerfile-release .
+docker build \
+	-t ${SIDECAR_BASE_IMAGE_NAME}:${SIDECAR_BASE_IMAGE_TAG} \
+	--rm \
+	${SIDECAR_PARENT_IMAGE:+--build-arg base_image=${SIDECAR_PARENT_IMAGE}} \
+	-f scripts/docker/release/Dockerfile-release \
+	.
 
 echo ""
 echo ""

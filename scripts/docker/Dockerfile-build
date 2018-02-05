@@ -1,24 +1,32 @@
-FROM golang:1.8.4
+ARG base_image=opensuse:latest
 
-ENV GOPATH /go
-ENV GOBIN /go/bin
+FROM ${base_image}
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN zypper --non-interactive addrepo --check --gpgcheck obs://Cloud:Tools Cloud:Tools
+RUN zypper --non-interactive addrepo --check --gpgcheck obs://devel:languages:go devel:languages:go
+RUN zypper --non-interactive --gpg-auto-import-keys refresh
+RUN zypper --non-interactive install \
+    cf-cli \
     git \
-    bash \
+    go \
     make \
-    gcc \
-    mercurial \
-    build-essential \
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+    unzip \
+    wget \
+    ${NULL}
+
+RUN mkdir /out
+
+RUN cp /usr/bin/cf /out
+
+RUN wget -O cf-plugin-usb.zip https://github.com/SUSE/cf-usb-plugin/releases/download/0.0.1/cf-plugin-usb-linux-amd64.zip
+RUN unzip cf-plugin-usb.zip
+RUN mv cf-plugin-usb /out
+RUN chmod +x /out/cf-plugin-usb
 
 COPY . /go/src/github.com/SUSE/cf-usb-sidecar
 
-RUN cd /go/src/github.com/SUSE/cf-usb-sidecar \
-    && make tools \
-    && cd / \
-    && rm -rf /go/src/github.com/hpcloud
+WORKDIR /go/src/github.com/SUSE/cf-usb-sidecar
+
+RUN make tools
 
 ENTRYPOINT echo `hostname`
