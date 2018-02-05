@@ -1,5 +1,6 @@
 #!/bin/bash
-
-pushd ${SIDECAR_EXTENSION_ROOT}/db
- docker build -t ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}:${SIDECAR_EXTENSION_SVC_IMAGE_TAG} .
-popd
+topdir=$(dirname $(dirname "$0"))
+docker build \
+    --tag ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}:${SIDECAR_EXTENSION_SVC_IMAGE_TAG} \
+    --rm \
+    --file  "${topdir}/Dockerfile-db" .
