@@ -10,8 +10,12 @@ RUN if test -e /usr/lib/zypp/plugins/services/container-suseconnect ; then \
 
 ARG repo_cloud_tools=obs://Cloud:Tools
 ARG repo_devel_languages_go=obs://devel:languages:go
+ARG repo_extra
 RUN zypper --non-interactive addrepo --check --gpgcheck "${repo_cloud_tools}" "Cloud:Tools"
 RUN zypper --non-interactive addrepo --check --gpgcheck "${repo_devel_languages_go}" "devel:languages:go"
+RUN if test -n "${repo_extra}" ; then \
+    zypper --non-interactive addrepo --check --gpgcheck "${repo_extra}" "extra" ; \
+    fi
 RUN zypper --non-interactive --gpg-auto-import-keys refresh
 RUN zypper --non-interactive install \
     cf-cli \
