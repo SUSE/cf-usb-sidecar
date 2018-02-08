@@ -2,14 +2,23 @@ ARG base_image=opensuse:latest
 
 FROM ${base_image}
 
-RUN zypper --non-interactive addrepo --check --gpgcheck obs://Cloud:Tools Cloud:Tools
-RUN zypper --non-interactive addrepo --check --gpgcheck obs://devel:languages:go devel:languages:go
+# If we're on the SLE container, delete the magic helper for SCC registration
+# It just slows down zypper
+RUN if test -e /usr/lib/zypp/plugins/services/container-suseconnect ; then \
+        rpm --erase container-suseconnect ; \
+    fi
+
+ARG repo_cloud_tools=obs://Cloud:Tools
+ARG repo_devel_languages_go=obs://devel:languages:go
+RUN zypper --non-interactive addrepo --check --gpgcheck "${repo_cloud_tools}" "Cloud:Tools"
+RUN zypper --non-interactive addrepo --check --gpgcheck "${repo_devel_languages_go}" "devel:languages:go"
 RUN zypper --non-interactive --gpg-auto-import-keys refresh
 RUN zypper --non-interactive install \
     cf-cli \
     git \
     go \
     make \
+    tar \
     unzip \
     wget \
     ${NULL}
