@@ -55,7 +55,9 @@ rm -rf "stable/${bundle}"
 # Place the new ones
 mkdir "stable/${bundle}"
 tar -x -C "stable/${bundle}" -f ../bundle.tgz
-find stable
+# We can't ship the automatic database provisioning, because we don't track
+# license provenance and it's not based on SLE
+rm -f "stable/${bundle}/templates/db.yaml"
 
 # Fix up the registry host name to the prod server
 sed -i 's@^\(\s\+\)hostname:\s\+".*"$@\1hostname: "registry.suse.com"@' "stable/${bundle}/values.yaml"
