@@ -2,7 +2,7 @@
 
 # This script is used to open a PR against this repository:
 # https://github.com/SUSE/kubernetes-charts-suse-com
-# It will fetch the bundle specified by CAP_BUNDLE and will update the helm
+# It will fetch the bundle specified by SIDECAR_BUNDLE and will update the helm
 # charts in the above repo.
 
 set -e
@@ -17,8 +17,8 @@ if [ -z "$GITHUB_PASSWORD" ]; then
   exit 1
 fi
 
-if [[ -z "${CAP_BUNDLE}" ]]; then
-  echo "CAP_BUNDLE not set"
+if [[ -z "${SIDECAR_BUNDLE}" ]]; then
+  echo "SIDECAR_BUNDLE not set"
   exit 1
 fi
 
@@ -43,8 +43,8 @@ chmod +x "${HUB}"
 # where the helm chart name is "cf-usb-sidecar-<thing>"
 # So we need to recover that... somehow
 
-wget -O bundle.tgz "${CAP_BUNDLE}"
-versioned_bundle="$(basename "${CAP_BUNDLE}" .tgz)"
+wget -O bundle.tgz "${SIDECAR_BUNDLE}"
+versioned_bundle="$(basename "${SIDECAR_BUNDLE}" .tgz)"
 bundle="${versioned_bundle#cf-usb-sidecar-}"
 bundle="${bundle%%-*}"
 bundle="cf-usb-sidecar-${bundle}"
