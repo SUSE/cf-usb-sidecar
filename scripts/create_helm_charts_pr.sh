@@ -32,9 +32,13 @@ pushd "${TMP_WORKDIR}"
 
 # Get the "hub" cli
 # https://hub.github.com/hub.1.html
-curl -L https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz | tar xvz --wildcards --strip-components=2 '*/bin/hub'
-HUB="${PWD}/hub"
-chmod +x "${HUB}"
+if type -p hub ; then
+  HUB="$(type -p hub)"
+else
+  wget -O - https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz | tar xvz --wildcards --strip-components=2 '*/bin/hub'
+  HUB="${PWD}/hub"
+  chmod +x "${HUB}"
+fi
 
 # Clone the kubernetes-charts-suse-com github repo
 "${HUB}" clone "git@github.com:${GITHUB_ORGANIZATION}/kubernetes-charts-suse-com.git"

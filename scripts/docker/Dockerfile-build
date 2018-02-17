@@ -36,6 +36,10 @@ RUN unzip cf-plugin-usb.zip
 RUN mv cf-plugin-usb /out
 RUN chmod +x /out/cf-plugin-usb
 
+# "hub" CLI, https://hub.github.com/hub.1.html
+# Used to create PRs for helm chart distribution
+RUN wget -O - https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz | tar xvz -C /usr/local/bin --wildcards --strip-components=2 '*/bin/hub'
+
 COPY . /go/src/github.com/SUSE/cf-usb-sidecar
 
 WORKDIR /go/src/github.com/SUSE/cf-usb-sidecar
