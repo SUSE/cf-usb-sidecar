@@ -13,26 +13,26 @@ import (
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client/workspace"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/models"
 	"github.com/fsouza/go-dockerclient"
-	swaggerClient "github.com/go-swagger/go-swagger/client"
-	httpClient "github.com/go-swagger/go-swagger/httpkit/client"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+	httpTransport "github.com/go-openapi/runtime/client"
+	strfmt "github.com/go-openapi/strfmt"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
-	DockerName   = "sidecar-postgres:latest"
-	DockerPort   = 8093
-	DockerIP     = "127.0.0.1"
-	WorkspaceID  = "test-onnllyy123"
-	ConnectionID = "testconnonnllyy123"
-	Token        = "sidecar-auth-token"
+	DockerName = "sidecar-postgres:latest"
+	DockerPort = 8093
+	DockerIP   = "127.0.0.1"
+	Token      = "sidecar-auth-token"
 )
 
 var (
 	transportHost string
-	transport     *httpClient.Runtime
+	transport     runtime.ClientTransport
 	client        *csmClient.CatlogServiceManager
-	authFunc      swaggerClient.AuthInfoWriter
+	authFunc      runtime.ClientAuthInfoWriter
+	WorkspaceID   = "test-onnllyy123"
+	ConnectionID  = "testconnonnllyy123"
 )
 
 func initializeTestAssets(t *testing.T) bool {
@@ -64,9 +64,9 @@ func initializeTestAssets(t *testing.T) bool {
 	}
 
 	transportHost = host + ":" + strconv.Itoa(port)
-	transport = httpClient.New(transportHost, "", []string{"http"})
+	transport = httpTransport.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
-	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", token)
+	authFunc = httpTransport.APIKeyAuth("x-sidecar-token", "header", token)
 	return true
 }
 
@@ -155,7 +155,7 @@ func TestCreateWorkspaceShouldSucced(t *testing.T) {
 		return
 	}
 	createWorkspaceRequest := models.ServiceManagerWorkspaceCreateRequest{
-		WorkspaceID: WorkspaceID,
+		WorkspaceID: &WorkspaceID,
 	}
 	params := workspace.NewCreateWorkspaceParams().WithCreateWorkspaceRequest(&createWorkspaceRequest)
 	resp, err := client.Workspace.CreateWorkspace(params, authFunc)
@@ -218,7 +218,7 @@ func TestCreateConnectionShouldSucced(t *testing.T) {
 	}
 
 	createConnectionRequest := models.ServiceManagerConnectionCreateRequest{
-		ConnectionID: ConnectionID,
+		ConnectionID: &ConnectionID,
 	}
 	params := connection.NewCreateConnectionParams().WithWorkspaceID(WorkspaceID).WithConnectionCreateRequest(&createConnectionRequest)
 	resp, err := client.Connection.CreateConnection(params, authFunc)
@@ -285,7 +285,7 @@ func TestCreateWorkspaceShouldFail(t *testing.T) {
 	}
 
 	createWorkspaceRequest := models.ServiceManagerWorkspaceCreateRequest{
-		WorkspaceID: WorkspaceID,
+		WorkspaceID: &WorkspaceID,
 	}
 	params := workspace.NewCreateWorkspaceParams().WithCreateWorkspaceRequest(&createWorkspaceRequest)
 	resp, err := client.Workspace.CreateWorkspace(params, authFunc)
