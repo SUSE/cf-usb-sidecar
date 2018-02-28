@@ -149,7 +149,7 @@ func TestGetWorkspaceShouldFail(t *testing.T) {
 	assert.Nil(resp, "response should be nil since there was an error")
 }
 
-func TestCreateWorkspaceShouldSucced(t *testing.T) {
+func TestCreateWorkspaceShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
 	if !initializeTestAssets(t) {
 		return
@@ -211,7 +211,7 @@ func TestDeleteConnectionShouldFail(t *testing.T) {
 	assert.Nil(resp, "response should be nil as no connection with this name was yet created")
 }
 
-func TestCreateConnectionShouldSucced(t *testing.T) {
+func TestCreateConnectionShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
 	if !initializeTestAssets(t) {
 		return
@@ -295,14 +295,14 @@ func TestCreateWorkspaceShouldFail(t *testing.T) {
 	if resp != nil {
 		t.Logf("Create workspace resp: Status = %s, ProcessingType = %s", resp.Payload.Status, resp.Payload.ProcessingType)
 	}
-	if assert.Error(err, "There should be an error when creating an workspace that allready exists") {
-		assert.Contains(err.Error(), "pq: database \"dtestonnllyy123\" already exists", "There should be an error message stating that this db allready exists when attempting to create an existing database")
+	if assert.Error(err, "There should be an error when creating an workspace that already exists") {
+		assert.Contains(err.Error(), "pq: database \"dtestonnllyy123\" already exists", "There should be an error message stating that this db already exists when attempting to create an existing database")
 	}
-	assert.Nil(resp, "There should be no correct unswer when creating a workspace that allready exists")
+	assert.Nil(resp, "There should be no correct unswer when creating a workspace that already exists")
 
 }
 
-func TestGetWorkspacesShouldSucced(t *testing.T) {
+func TestGetWorkspacesShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
 	if !initializeTestAssets(t) {
 		return
@@ -322,7 +322,7 @@ func TestGetWorkspacesShouldSucced(t *testing.T) {
 	}
 }
 
-func TestDeleteWorkspaceShouldSucced(t *testing.T) {
+func TestDeleteWorkspaceShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
 	if !initializeTestAssets(t) {
 		return
