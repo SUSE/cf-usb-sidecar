@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	DockerName = "sidecar-postgres:latest"
+	DockerName = "cf-usb-sidecar-postgres:latest"
 	DockerPort = 8093
 	DockerIP   = "127.0.0.1"
 	Token      = "sidecar-auth-token"
