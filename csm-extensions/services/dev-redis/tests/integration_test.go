@@ -3,10 +3,8 @@
 package redis
 
 import (
-	"crypto/tls"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 	"testing"
@@ -50,10 +48,7 @@ func initTest() {
 	csmExtensionPort = os.Getenv("SIDECAR_EXTENSION_PORT")
 
 	transportHost = fmt.Sprintf("%s:%s", csmExtensionHost, csmExtensionPort)
-	transport = httpClient.New(transportHost, "", []string{"https"})
-	transport.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
+	transport = httpClient.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
 	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", csmExtensionToken)
 }
@@ -195,6 +190,24 @@ func Test_CreateConnection(t *testing.T) {
 	}
 }
 
+func Test_GetConnection(t *testing.T) {
+	assert := assert.New(t)
+	initTest()
+
+	err := checkPrerequisites()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	params := connection.NewGetConnectionParams().WithConnectionID(CONNECTION_ID).WithWorkspaceID(WORKSPACE_ID)
+	response, err := client.Connection.GetConnection(params, authFunc)
+
+	if assert.Error(err) {
+		assert.Contains(err.Error(), "Connection does not exist")
+	}
+	assert.Nil(response)
+}
+
 func Test_DeleteConnection(t *testing.T) {
 	assert := assert.New(t)
 	initTest()
@@ -209,6 +222,24 @@ func Test_DeleteConnection(t *testing.T) {
 
 	assert.NoError(err)
 	assert.NotNil(response)
+}
+
+func Test_GetConnectionAfterDelete(t *testing.T) {
+	assert := assert.New(t)
+	initTest()
+
+	err := checkPrerequisites()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	params := connection.NewGetConnectionParams().WithConnectionID(CONNECTION_ID).WithWorkspaceID(WORKSPACE_ID)
+	response, err := client.Connection.GetConnection(params, authFunc)
+
+	if assert.Error(err) {
+		assert.Contains(err.Error(), "Connection does not exist")
+	}
+	assert.Nil(response)
 }
 
 func Test_DeleteWorkspace(t *testing.T) {

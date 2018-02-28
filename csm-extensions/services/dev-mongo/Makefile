@@ -86,7 +86,7 @@ test-integration: clean-all build-image build-service-image run-db run
 	export DOCKER_HOST_IP=$$SERVER_IP;\
 	echo "Testing against $$SERVER_IP:$(SIDECAR_EXTENSION_PORT)...\n";\
 	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
-	until `curl -k https://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(SIDECAR_EXTENSION_TOKEN)" --fail --silent --output /dev/null`;\
+	until `curl http://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(SIDECAR_EXTENSION_TOKEN)" --fail --silent --output /dev/null`;\
 	do n=$$(( $$n + 1 )) ;\
 	printf ".";\
 	if [ $$n -ge 20 ] ;\

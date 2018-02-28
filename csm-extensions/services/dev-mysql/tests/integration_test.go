@@ -3,7 +3,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"net/http"
 	"os"
@@ -67,10 +66,7 @@ func initializeTestAssets(t *testing.T) bool {
 	}
 
 	transportHost = host + ":" + strconv.Itoa(port)
-	transport = httpClient.New(transportHost, "", []string{"https"})
-	transport.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
+	transport = httpClient.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
 	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", token)
 	return true

@@ -96,7 +96,7 @@ test-integration: clean-all build-image build-service-image run-db run
 	export TEST_SERVER_PORT=$(SERVER_PORT);\
 	export TEST_SERVER_TOKEN=$(TOKEN);\
 	printf "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR)\n";n=0;\
-	until `curl -k https://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
+	until `curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
 	do n=$$(( $$n + 1 )) ;\
 		printf ".";\
 		if [ $$n -ge 30 ] ;\

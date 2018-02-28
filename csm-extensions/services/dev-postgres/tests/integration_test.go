@@ -3,21 +3,19 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"os"
-	"net/http"
 	"strconv"
 	"testing"
 
-	"github.com/fsouza/go-dockerclient"
-	swaggerClient "github.com/go-swagger/go-swagger/client"
-	httpClient "github.com/go-swagger/go-swagger/httpkit/client"
-	"github.com/go-swagger/go-swagger/strfmt"
 	csmClient "github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client/connection"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client/workspace"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/models"
+	"github.com/fsouza/go-dockerclient"
+	swaggerClient "github.com/go-swagger/go-swagger/client"
+	httpClient "github.com/go-swagger/go-swagger/httpkit/client"
+	"github.com/go-swagger/go-swagger/strfmt"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -66,10 +64,7 @@ func initializeTestAssets(t *testing.T) bool {
 	}
 
 	transportHost = host + ":" + strconv.Itoa(port)
-	transport = httpClient.New(transportHost, "", []string{"https"})
-	transport.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
+	transport = httpClient.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
 	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", token)
 	return true
