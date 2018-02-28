@@ -167,8 +167,8 @@ func TestCreateWorkspaceShouldSucceed(t *testing.T) {
 	}
 	assert.NoError(err, "There was an unexpected error while creating workspace")
 	if assert.NotNil(resp, "There should be no error when creating a workspace") {
-		assert.Equal("Extension", resp.Payload.ProcessingType, "Unexpected processing_type")
-		assert.Equal("successful", resp.Payload.Status, "Unexpected status")
+		assert.Equal("extension", *resp.Payload.ProcessingType, "Unexpected processing_type")
+		assert.Equal("successful", *resp.Payload.Status, "Unexpected status")
 	}
 
 }
@@ -231,8 +231,8 @@ func TestCreateConnectionShouldSucceed(t *testing.T) {
 	}
 	assert.NoError(err, "No error expected since the connection has not been created yet")
 	if assert.NotNil(resp, "response should not be nil as no connection with this name was yet created") {
-		assert.Equal("Extension", resp.Payload.ProcessingType, "Incorrect extension received")
-		assert.Equal("successful", resp.Payload.Status, "Invalid status received")
+		assert.Equal("extension", *resp.Payload.ProcessingType, "Incorrect extension received")
+		assert.Equal("successful", *resp.Payload.Status, "Invalid status received")
 		assert.NotNil(resp.Payload.Details, "The details should contain connection info")
 	}
 }
@@ -254,8 +254,8 @@ func TestGetConnectionShouldSucceed(t *testing.T) {
 	}
 	assert.NoError(err, "No error expected since the connection has already been created yet")
 	if assert.NotNil(resp, "response should not be nil as a connection with this name was already created") {
-		assert.Equal("Extension", resp.Payload.ProcessingType, "Incorrect extension received")
-		assert.Equal("successful", resp.Payload.Status, "Invalid status received")
+		assert.Equal("extension", *resp.Payload.ProcessingType, "Incorrect extension received")
+		assert.Equal("successful", *resp.Payload.Status, "Invalid status received")
 	}
 }
 
@@ -317,8 +317,8 @@ func TestGetWorkspacesShouldSucceed(t *testing.T) {
 		t.Logf("Get workspace resp: Status: %s, ProcessingType: %s", resp.Payload.Status, resp.Payload.ProcessingType)
 	}
 	if assert.NoError(err, "There was an unexpected error while getting existing workspace.") {
-		assert.Equal("Extension", resp.Payload.ProcessingType, "Unexpected processing_type")
-		assert.Equal("successful", resp.Payload.Status, "Unexpected status")
+		assert.Equal("extension", *resp.Payload.ProcessingType, "Unexpected processing_type")
+		assert.Equal("successful", *resp.Payload.Status, "Unexpected status")
 	}
 }
 
