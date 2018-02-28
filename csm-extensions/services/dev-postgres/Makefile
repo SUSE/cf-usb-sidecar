@@ -92,13 +92,13 @@ test-integration: clean-all build-image build-service-image run-db run
 	else \
 	    SERVER_IP=`ip route get 8.8.8.8 | cut -d" " -f8`;\
 	fi; \
-	SERVER_PORT=${SIDECAR_EXTENSION_PORT}; \
-	echo "Testing against $$SERVER_IP:$(SERVER_PORT)...\n";\
+	SERVER_PORT=$(SIDECAR_EXTENSION_PORT); \
+	echo "Testing against $$SERVER_IP:$$SERVER_PORT...\n";\
 	export TEST_SERVER_IP=$$SERVER_IP;\
-	export TEST_SERVER_PORT=$(SERVER_PORT);\
+	export TEST_SERVER_PORT=$$SERVER_PORT;\
 	export TEST_SERVER_TOKEN=$(TOKEN);\
 	printf "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR)\n";n=0;\
-	until `curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
+	until curl http://$$SERVER_IP:$$SERVER_PORT/workspaces -X POST -d '{"workspace_id":"initial"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null;\
 	do n=$$(( $$n + 1 )) ;\
 		printf ".";\
 		if [ $$n -ge 30 ] ;\
