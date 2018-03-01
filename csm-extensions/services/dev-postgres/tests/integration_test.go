@@ -126,7 +126,7 @@ func TestDeleteWorkspaceShouldFail(t *testing.T) {
 	if assert.Error(err, "There should be an error while deleting a non existing workspace") {
 		assert.Contains(err.Error(), "[DELETE /workspaces/{workspace_id}][500] deleteWorkspace default", "Incorrect answer when deleting a database that does not exist")
 	}
-	assert.Nil(resp, "There should be no correct unswer when deleting a non existing workspace")
+	assert.Nil(resp, "There should be no correct answer when deleting a non existing workspace")
 }
 
 func TestGetWorkspaceShouldFail(t *testing.T) {
@@ -141,7 +141,7 @@ func TestGetWorkspaceShouldFail(t *testing.T) {
 		t.Logf("Get workspace error: %s", err.Error())
 	}
 	if resp != nil {
-		t.Logf("Get workspace resp: Status = %s, ProcessingType = %s", resp.Payload.Status, resp.Payload.ProcessingType)
+		t.Logf("Get workspace resp: Status = %s, ProcessingType = %s", *resp.Payload.Status, *resp.Payload.ProcessingType)
 	}
 	if assert.Error(err, "Expected error since workspace does not exist") {
 		assert.Contains(err.Error(), "[GET /workspaces/{workspace_id}][404] getWorkspace default", "The error message is incorrect for getting an inexistent workspace")
@@ -227,7 +227,7 @@ func TestCreateConnectionShouldSucceed(t *testing.T) {
 		t.Logf("Create connection error: %s", err.Error())
 	}
 	if resp != nil {
-		t.Logf("Create connection resp: Status = %s, ProcessingType = %s, Error=%s", resp.Payload.Status, resp.Payload.ProcessingType, resp.Error())
+		t.Logf("Create connection resp: Status = %s, ProcessingType = %s, Error=%s", *resp.Payload.Status, *resp.Payload.ProcessingType, resp.Error())
 	}
 	assert.NoError(err, "No error expected since the connection has not been created yet")
 	if assert.NotNil(resp, "response should not be nil as no connection with this name was yet created") {
@@ -293,13 +293,12 @@ func TestCreateWorkspaceShouldFail(t *testing.T) {
 		t.Logf("Create workspace error: %s", err.Error())
 	}
 	if resp != nil {
-		t.Logf("Create workspace resp: Status = %s, ProcessingType = %s", resp.Payload.Status, resp.Payload.ProcessingType)
+		t.Logf("Create workspace resp: Status = %s, ProcessingType = %s", *resp.Payload.Status, *resp.Payload.ProcessingType)
 	}
 	if assert.Error(err, "There should be an error when creating an workspace that already exists") {
 		assert.Contains(err.Error(), "[POST /workspaces][500] createWorkspace default", "There should be an error message stating that this db already exists when attempting to create an existing database")
 	}
-	assert.Nil(resp, "There should be no correct unswer when creating a workspace that already exists")
-
+	assert.Nil(resp, "There should be no correct answer when creating a workspace that already exists")
 }
 
 func TestGetWorkspacesShouldSucceed(t *testing.T) {
@@ -314,7 +313,7 @@ func TestGetWorkspacesShouldSucceed(t *testing.T) {
 		t.Logf("Get workspace error: %s", err.Error())
 	}
 	if resp != nil {
-		t.Logf("Get workspace resp: Status: %s, ProcessingType: %s", resp.Payload.Status, resp.Payload.ProcessingType)
+		t.Logf("Get workspace resp: Status: %s, ProcessingType: %s", *resp.Payload.Status, *resp.Payload.ProcessingType)
 	}
 	if assert.NoError(err, "There was an unexpected error while getting existing workspace.") {
 		assert.Equal("extension", *resp.Payload.ProcessingType, "Unexpected processing_type")
