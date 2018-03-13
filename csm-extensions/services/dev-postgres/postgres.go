@@ -3,9 +3,9 @@ package postgres
 import (
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-postgres/config"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-postgres/provisioner"
-	"github.com/hpcloud/go-csm-lib/csm"
-	"github.com/hpcloud/go-csm-lib/extension"
-	"github.com/hpcloud/go-csm-lib/util"
+	"github.com/SUSE/go-csm-lib/csm"
+	"github.com/SUSE/go-csm-lib/extension"
+	"github.com/SUSE/go-csm-lib/util"
 	"github.com/pivotal-golang/lager"
 )
 

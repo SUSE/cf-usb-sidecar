@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-redis/config"
-	"github.com/hpcloud/go-csm-lib/util"
+	"github.com/SUSE/go-csm-lib/util"
 	"github.com/pivotal-golang/lager"
 
 	dockerclient "github.com/fsouza/go-dockerclient"

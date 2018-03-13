@@ -1,7 +1,7 @@
 package extension
 
 import (
-	"github.com/hpcloud/go-csm-lib/csm"
+	"github.com/SUSE/go-csm-lib/csm"
 )
 
 type Extension interface {

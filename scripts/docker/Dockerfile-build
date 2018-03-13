@@ -31,10 +31,10 @@ RUN mkdir /out
 
 RUN cp /usr/bin/cf /out
 
-RUN wget -O cf-plugin-usb.zip https://github.com/SUSE/cf-usb-plugin/releases/download/0.0.1/cf-plugin-usb-linux-amd64.zip
-RUN unzip cf-plugin-usb.zip
-RUN mv cf-plugin-usb /out
-RUN chmod +x /out/cf-plugin-usb
+RUN wget -O cf-usb-plugin.zip https://github.com/SUSE/cf-usb-plugin/releases/download/0.0.1/cf-usb-plugin-linux-amd64.zip
+RUN unzip cf-usb-plugin.zip
+RUN mv cf-usb-plugin /out
+RUN chmod +x /out/cf-usb-plugin
 
 COPY . /go/src/github.com/SUSE/cf-usb-sidecar
 
