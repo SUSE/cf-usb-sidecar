@@ -11,15 +11,15 @@
 			"Rev": "e291d7fd2204827b9964304c46ec21c330573faf"
 		},
 		{
-			"ImportPath": "github.com/hpcloud/go-csm-lib/csm",
+			"ImportPath": "github.com/SUSE/go-csm-lib/csm",
 			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
 		},
 		{
-			"ImportPath": "github.com/hpcloud/go-csm-lib/extension",
+			"ImportPath": "github.com/SUSE/go-csm-lib/extension",
 			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
 		},
 		{
-			"ImportPath": "github.com/hpcloud/go-csm-lib/util",
+			"ImportPath": "github.com/SUSE/go-csm-lib/util",
 			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
 		},
 		{

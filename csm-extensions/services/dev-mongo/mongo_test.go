@@ -3,7 +3,7 @@ package mongo
 import (
 	"testing"
 
-	"github.com/hpcloud/go-csm-lib/extension"
+	"github.com/SUSE/go-csm-lib/extension"
 
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mongo/config"
 
