@@ -8,15 +8,15 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/SUSE/go-csm-lib/csm",
-			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
+			"Rev": "12433a2d88d798021012991e3797891c5fdf455a"
 		},
 		{
 			"ImportPath": "github.com/SUSE/go-csm-lib/extension",
-			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
+			"Rev": "12433a2d88d798021012991e3797891c5fdf455a"
 		},
 		{
 			"ImportPath": "github.com/SUSE/go-csm-lib/util",
-			"Rev": "791a0a73f1bc85f4bf0b7c8126fd144cea1e3757"
+			"Rev": "12433a2d88d798021012991e3797891c5fdf455a"
 		},
 		{
 			"ImportPath": "github.com/Azure/go-ansiterm",
@@ -41,18 +41,6 @@
 			"Rev": "d69616f51cdfcd7514d6a380847a152dfc2a749d"
 		},
 		{
-			"ImportPath": "github.com/SUSE/cf-usb-sidecar/go-csm-lib/csm",
-			"Rev": "6a8e87b78a08d4aa51c8b115d9975406ee539946"
-		},
-		{
-			"ImportPath": "github.com/SUSE/cf-usb-sidecar/go-csm-lib/extension",
-			"Rev": "6a8e87b78a08d4aa51c8b115d9975406ee539946"
-		},
-		{
-			"ImportPath": "github.com/SUSE/cf-usb-sidecar/go-csm-lib/util",
-			"Rev": "6a8e87b78a08d4aa51c8b115d9975406ee539946"
-		},
-		{
 			"ImportPath": "github.com/asaskevich/govalidator",
 			"Comment": "v3-8-g5b6e937",
 			"Rev": "5b6e9375cbf581a9008064f7216e816b568d6daa"
@@ -60,10 +48,6 @@
 		{
 			"ImportPath": "github.com/containerd/continuity/pathdriver",
 			"Rev": "d8fb8589b0e8e85b8c8bbaa8840226d0dfeb7371"
-		},
-		{
-			"ImportPath": "github.com/davecgh/go-spew/spew",
-			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
 		},
 		{
 			"ImportPath": "github.com/docker/docker/api/types",
@@ -267,7 +251,6 @@
 		},
 		{
 			"ImportPath": "github.com/go-openapi/swag",
-			"Comment": "ajh-old-head-40-g0d03ad0",
 			"Rev": "0d03ad0b6405ada874d59d97c416b5cf4234e154"
 		},
 		{
@@ -427,10 +410,6 @@
 			"ImportPath": "github.com/pkg/errors",
 			"Comment": "v0.8.0-11-g30136e2",
 			"Rev": "30136e27e2ac8d167177e8a583aa4c3fea5be833"
-		},
-		{
-			"ImportPath": "github.com/pmezard/go-difflib/difflib",
-			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
