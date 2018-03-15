@@ -78,7 +78,7 @@ test-integration-manual: all
 	export TEST_SERVER_PORT=$(SERVER_PORT);\
 	export TEST_SERVER_TOKEN=$(TOKEN);\
 	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
-	until `curl -k https://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initialdbtestonly"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
+	until `curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initialdbtestonly"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
 	do n=$$(( $$n + 1 )) ;\
 		printf ".";\
 		if [ $$n -ge 20 ] ;\

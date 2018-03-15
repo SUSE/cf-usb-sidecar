@@ -3,38 +3,36 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"os"
-	"net/http"
 	"strconv"
 	"testing"
 
-	"github.com/fsouza/go-dockerclient"
-	swaggerClient "github.com/go-swagger/go-swagger/client"
-	httpClient "github.com/go-swagger/go-swagger/httpkit/client"
-	"github.com/go-swagger/go-swagger/strfmt"
 	csmClient "github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client/connection"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client/workspace"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/models"
+	"github.com/fsouza/go-dockerclient"
+	"github.com/go-openapi/runtime"
+	httpTransport "github.com/go-openapi/runtime/client"
+	strfmt "github.com/go-openapi/strfmt"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
-	DockerName   = "sidecar-postgres:latest"
-	DockerPort   = 8093
-	DockerIP     = "127.0.0.1"
-	WorkspaceID  = "test-onnllyy123"
-	ConnectionID = "testconnonnllyy123"
-	Token        = "sidecar-auth-token"
+	DockerName = "cf-usb-sidecar-postgres:latest"
+	DockerPort = 8093
+	DockerIP   = "127.0.0.1"
+	Token      = "sidecar-auth-token"
 )
 
 var (
 	transportHost string
-	transport     *httpClient.Runtime
+	transport     runtime.ClientTransport
 	client        *csmClient.CatlogServiceManager
-	authFunc      swaggerClient.AuthInfoWriter
+	authFunc      runtime.ClientAuthInfoWriter
+	WorkspaceID   = "test-onnllyy123"
+	ConnectionID  = "testconnonnllyy123"
 )
 
 func initializeTestAssets(t *testing.T) bool {
@@ -66,12 +64,9 @@ func initializeTestAssets(t *testing.T) bool {
 	}
 
 	transportHost = host + ":" + strconv.Itoa(port)
-	transport = httpClient.New(transportHost, "", []string{"https"})
-	transport.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
+	transport = httpTransport.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
-	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", token)
+	authFunc = httpTransport.APIKeyAuth("x-sidecar-token", "header", token)
 	return true
 }
 
@@ -129,9 +124,9 @@ func TestDeleteWorkspaceShouldFail(t *testing.T) {
 		t.Logf("Delete workspace resp: %s", resp.Error())
 	}
 	if assert.Error(err, "There should be an error while deleting a non existing workspace") {
-		assert.Contains(err.Error(), "pq: database \"dtestonnllyy123\" does not exist", "Incorrect answer when deleting a database that does not exist")
+		assert.Contains(err.Error(), "[DELETE /workspaces/{workspace_id}][500] deleteWorkspace default", "Incorrect answer when deleting a database that does not exist")
 	}
-	assert.Nil(resp, "There should be no correct unswer when deleting a non existing workspace")
+	assert.Nil(resp, "There should be no correct answer when deleting a non existing workspace")
 }
 
 func TestGetWorkspaceShouldFail(t *testing.T) {
@@ -146,21 +141,21 @@ func TestGetWorkspaceShouldFail(t *testing.T) {
 		t.Logf("Get workspace error: %s", err.Error())
 	}
 	if resp != nil {
-		t.Logf("Get workspace resp: Status = %s, ProcessingType = %s", resp.Payload.Status, resp.Payload.ProcessingType)
+		t.Logf("Get workspace resp: Status = %s, ProcessingType = %s", *resp.Payload.Status, *resp.Payload.ProcessingType)
 	}
 	if assert.Error(err, "Expected error since workspace does not exist") {
-		assert.Contains(err.Error(), "Workspace does not exist", "The error message is incorrect for getting an inexistent workspace")
+		assert.Contains(err.Error(), "[GET /workspaces/{workspace_id}][404] getWorkspace default", "The error message is incorrect for getting an inexistent workspace")
 	}
 	assert.Nil(resp, "response should be nil since there was an error")
 }
 
-func TestCreateWorkspaceShouldSucced(t *testing.T) {
+func TestCreateWorkspaceShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
 	if !initializeTestAssets(t) {
 		return
 	}
 	createWorkspaceRequest := models.ServiceManagerWorkspaceCreateRequest{
-		WorkspaceID: WorkspaceID,
+		WorkspaceID: &WorkspaceID,
 	}
 	params := workspace.NewCreateWorkspaceParams().WithCreateWorkspaceRequest(&createWorkspaceRequest)
 	resp, err := client.Workspace.CreateWorkspace(params, authFunc)
@@ -172,8 +167,8 @@ func TestCreateWorkspaceShouldSucced(t *testing.T) {
 	}
 	assert.NoError(err, "There was an unexpected error while creating workspace")
 	if assert.NotNil(resp, "There should be no error when creating a workspace") {
-		assert.Equal("Extension", resp.Payload.ProcessingType, "Unexpected processing_type")
-		assert.Equal("successful", resp.Payload.Status, "Unexpected status")
+		assert.Equal("extension", *resp.Payload.ProcessingType, "Unexpected processing_type")
+		assert.Equal("successful", *resp.Payload.Status, "Unexpected status")
 	}
 
 }
@@ -216,14 +211,14 @@ func TestDeleteConnectionShouldFail(t *testing.T) {
 	assert.Nil(resp, "response should be nil as no connection with this name was yet created")
 }
 
-func TestCreateConnectionShouldSucced(t *testing.T) {
+func TestCreateConnectionShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
 	if !initializeTestAssets(t) {
 		return
 	}
 
 	createConnectionRequest := models.ServiceManagerConnectionCreateRequest{
-		ConnectionID: ConnectionID,
+		ConnectionID: &ConnectionID,
 	}
 	params := connection.NewCreateConnectionParams().WithWorkspaceID(WorkspaceID).WithConnectionCreateRequest(&createConnectionRequest)
 	resp, err := client.Connection.CreateConnection(params, authFunc)
@@ -232,12 +227,12 @@ func TestCreateConnectionShouldSucced(t *testing.T) {
 		t.Logf("Create connection error: %s", err.Error())
 	}
 	if resp != nil {
-		t.Logf("Create connection resp: Status = %s, ProcessingType = %s, Error=%s", resp.Payload.Status, resp.Payload.ProcessingType, resp.Error())
+		t.Logf("Create connection resp: Status = %s, ProcessingType = %s, Error=%s", *resp.Payload.Status, *resp.Payload.ProcessingType, resp.Error())
 	}
 	assert.NoError(err, "No error expected since the connection has not been created yet")
 	if assert.NotNil(resp, "response should not be nil as no connection with this name was yet created") {
-		assert.Equal("Extension", resp.Payload.ProcessingType, "Incorrect extension received")
-		assert.Equal("successful", resp.Payload.Status, "Invalid status received")
+		assert.Equal("extension", *resp.Payload.ProcessingType, "Incorrect extension received")
+		assert.Equal("successful", *resp.Payload.Status, "Invalid status received")
 		assert.NotNil(resp.Payload.Details, "The details should contain connection info")
 	}
 }
@@ -259,8 +254,8 @@ func TestGetConnectionShouldSucceed(t *testing.T) {
 	}
 	assert.NoError(err, "No error expected since the connection has already been created yet")
 	if assert.NotNil(resp, "response should not be nil as a connection with this name was already created") {
-		assert.Equal("Extension", resp.Payload.ProcessingType, "Incorrect extension received")
-		assert.Equal("successful", resp.Payload.Status, "Invalid status received")
+		assert.Equal("extension", *resp.Payload.ProcessingType, "Incorrect extension received")
+		assert.Equal("successful", *resp.Payload.Status, "Invalid status received")
 	}
 }
 
@@ -290,7 +285,7 @@ func TestCreateWorkspaceShouldFail(t *testing.T) {
 	}
 
 	createWorkspaceRequest := models.ServiceManagerWorkspaceCreateRequest{
-		WorkspaceID: WorkspaceID,
+		WorkspaceID: &WorkspaceID,
 	}
 	params := workspace.NewCreateWorkspaceParams().WithCreateWorkspaceRequest(&createWorkspaceRequest)
 	resp, err := client.Workspace.CreateWorkspace(params, authFunc)
@@ -298,16 +293,15 @@ func TestCreateWorkspaceShouldFail(t *testing.T) {
 		t.Logf("Create workspace error: %s", err.Error())
 	}
 	if resp != nil {
-		t.Logf("Create workspace resp: Status = %s, ProcessingType = %s", resp.Payload.Status, resp.Payload.ProcessingType)
+		t.Logf("Create workspace resp: Status = %s, ProcessingType = %s", *resp.Payload.Status, *resp.Payload.ProcessingType)
 	}
-	if assert.Error(err, "There should be an error when creating an workspace that allready exists") {
-		assert.Contains(err.Error(), "pq: database \"dtestonnllyy123\" already exists", "There should be an error message stating that this db allready exists when attempting to create an existing database")
+	if assert.Error(err, "There should be an error when creating an workspace that already exists") {
+		assert.Contains(err.Error(), "[POST /workspaces][500] createWorkspace default", "There should be an error message stating that this db already exists when attempting to create an existing database")
 	}
-	assert.Nil(resp, "There should be no correct unswer when creating a workspace that allready exists")
-
+	assert.Nil(resp, "There should be no correct answer when creating a workspace that already exists")
 }
 
-func TestGetWorkspacesShouldSucced(t *testing.T) {
+func TestGetWorkspacesShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
 	if !initializeTestAssets(t) {
 		return
@@ -319,15 +313,15 @@ func TestGetWorkspacesShouldSucced(t *testing.T) {
 		t.Logf("Get workspace error: %s", err.Error())
 	}
 	if resp != nil {
-		t.Logf("Get workspace resp: Status: %s, ProcessingType: %s", resp.Payload.Status, resp.Payload.ProcessingType)
+		t.Logf("Get workspace resp: Status: %s, ProcessingType: %s", *resp.Payload.Status, *resp.Payload.ProcessingType)
 	}
 	if assert.NoError(err, "There was an unexpected error while getting existing workspace.") {
-		assert.Equal("Extension", resp.Payload.ProcessingType, "Unexpected processing_type")
-		assert.Equal("successful", resp.Payload.Status, "Unexpected status")
+		assert.Equal("extension", *resp.Payload.ProcessingType, "Unexpected processing_type")
+		assert.Equal("successful", *resp.Payload.Status, "Unexpected status")
 	}
 }
 
-func TestDeleteWorkspaceShouldSucced(t *testing.T) {
+func TestDeleteWorkspaceShouldSucceed(t *testing.T) {
 	assert := assert.New(t)
 	if !initializeTestAssets(t) {
 		return

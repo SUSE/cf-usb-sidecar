@@ -90,11 +90,11 @@ test-integration: clean-all build-image build-service-image run-db run
 	export DOCKER_HOST_IP=$$SERVER_IP;\
 	echo "Testing against $$SERVER_IP:$(SIDECAR_EXTENSION_PORT)...\n";\
 	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
-	rez=`curl -i -k https://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-csm-token: $(SIDECAR_EXTENSION_TOKEN)" --silent | grep successful` ; \
+	rez=`curl -i http://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(SIDECAR_EXTENSION_TOKEN)" --silent | grep successful` ; \
 	while [ -z "$$rez" ] ; \
 	do n=$$(( $$n + 1 )) ;\
 	printf ".";\
-	rez=`curl -i -k https://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-csm-token: $(SIDECAR_EXTENSION_TOKEN)"  --silent | grep successful` ; \
+	rez=`curl -i http://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(SIDECAR_EXTENSION_TOKEN)" --silent | grep successful` ; \
 	if [ $$n -ge 60 ] ;\
 	then echo "\n$(ERROR_COLOR)==>Docker took to long to wakeup or incorect setup $(NO_COLOR) "; break ;\
 	fi ;\
