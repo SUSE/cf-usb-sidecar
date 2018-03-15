@@ -28,8 +28,8 @@ build_time=$(date -u +%Y%m%d%H%M%S)
 if [ -n "${CONCOURSEBUILD}" ]; then
   # concourse build number
   if [ "${BRANCH}" = "master" ]; then
-    export APP_VERSION=$(git describe --tags --long)
-    export APP_VERSION_TAG=$(git describe --tags --long)
+    export APP_VERSION="${VERSION:-$(git describe --tags --long)}"
+    export APP_VERSION_TAG="${VERSION:-$(git describe --tags --long)}"
     export APP_LATEST_BRANCH_TAG="latest"
   else
     export APP_VERSION="${VERSION}+${BRANCH}.${build_commit_hash}.${build_time}"
