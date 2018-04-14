@@ -11,6 +11,8 @@ RUN if test -e /usr/lib/zypp/plugins/services/container-suseconnect ; then \
 ARG repo_cloud_tools=obs://Cloud:Tools
 ARG repo_devel_languages_go=obs://devel:languages:go
 ARG repo_extra
+# Useless command to _use_ the args, which somehow makes things work. Not sure why.
+RUN true "${repo_cloud_tools} ${repo_devel_languages_go} ${repo_extra}"
 RUN zypper --non-interactive addrepo --check --gpgcheck "${repo_cloud_tools}" "Cloud:Tools"
 RUN zypper --non-interactive addrepo --check --gpgcheck "${repo_devel_languages_go}" "devel:languages:go"
 RUN if test -n "${repo_extra}" ; then \
