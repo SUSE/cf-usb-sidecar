@@ -67,7 +67,7 @@ status "Logging in"
 cf auth ${CF_ADMIN_USER} ${CF_ADMIN_PASSWORD}
 
 status "Registering PostgreSQL sidecar with CC"
-cf usb create-driver-endpoint \
+cf usb-create-driver-endpoint \
     "${SERVICE_TYPE}" \
     "${SERVICE_LOCATION}" \
     "${SIDECAR_API_KEY}" \
