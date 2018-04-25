@@ -222,7 +222,7 @@ func (e *GoSqlProvisioner) DeleteUser(username string) error {
 
 func (e *GoSqlProvisioner) openSqlConnection() (*sql.DB, error) {
 
-	con, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/mysql?interpolateParams=true", e.Conf.User, e.Conf.Pass, e.Conf.Host, e.Conf.Port))
+	con, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/mysql?interpolateParams=true&tls=skip-verify", e.Conf.User, e.Conf.Pass, e.Conf.Host, e.Conf.Port))
 	if err != nil {
 		return nil, err
 	}

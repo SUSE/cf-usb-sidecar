@@ -1,15 +1,15 @@
 {
 	"ImportPath": "github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql",
 	"GoVersion": "go1.5",
-	"GodepVersion": "v74",
+	"GodepVersion": "v79",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/go-sql-driver/mysql",
-			"Comment": "v1.2-119-g527bcd5",
-			"Rev": "527bcd55aab2e53314f1a150922560174b493034"
+			"Comment": "v1.3-60-g3287d94",
+			"Rev": "3287d94d4c6a48a63e16fffaabf27ab20203af2a"
 		},
 		{
 			"ImportPath": "github.com/SUSE/go-csm-lib/csm",

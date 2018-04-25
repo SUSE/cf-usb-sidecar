@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"strings"
+
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/config"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/provisioner"
 	"github.com/SUSE/go-csm-lib/csm"
@@ -41,6 +43,12 @@ func (e *mysqlExtension) CreateConnection(workspaceID, connectionID string) (*cs
 
 	if err != nil {
 		return nil, err
+	}
+
+	// For Azure: if the config user name contains '@', append that plus
+	// anything following to the user name
+	if strings.Contains(e.conf.User, "@") {
+		username = username + e.conf.User[strings.LastIndex(e.conf.User, "@"):]
 	}
 
 	binding := config.MySQLBinding{
