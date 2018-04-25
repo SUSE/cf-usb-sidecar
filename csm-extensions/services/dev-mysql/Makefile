@@ -13,12 +13,8 @@ endif
 export SIDECAR_ROOT:=$(realpath $(dir ${CURDIR})/../.. )
 export SIDECAR_EXTENSION_ROOT:=${CURDIR}
 
-ifeq ($(strip $(VERSION)),)
-	export VERSION := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "VERSION")
-endif
-
 ifeq ($(strip $(APP_VERSION_TAG)),)
-	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+	export APP_VERSION_TAG := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
 export SIDECAR_API_KEY:=sidecar-auth-token
