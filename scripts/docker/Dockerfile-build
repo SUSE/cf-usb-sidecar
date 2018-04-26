@@ -33,9 +33,7 @@ RUN mkdir /out
 
 RUN cp /usr/bin/cf /out
 
-RUN wget -O cf-usb-plugin.zip https://github.com/SUSE/cf-usb-plugin/releases/download/0.0.1/cf-usb-plugin-linux-amd64.zip
-RUN unzip cf-usb-plugin.zip
-RUN mv cf-usb-plugin /out
+RUN wget -O /out/cf-usb-plugin https://github.com/SUSE/cf-usb-plugin/releases/download/1.0.0/cf-usb-plugin-1.0.0.0.g47b49cd-linux-amd64
 RUN chmod +x /out/cf-usb-plugin
 
 # "hub" CLI, https://hub.github.com/hub.1.html
