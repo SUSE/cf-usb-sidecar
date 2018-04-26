@@ -3,7 +3,21 @@
 # This script deploys the given service on the default kubernetes context
 
 set -o errexit -o nounset
-service="$(tr '[:upper:]' '[:lower:]' <<<"${1:-mysql}")"
+if test -r "${1:-}/Chart.yaml" ; then
+    # Explicit path to chart, use that and autodetect type
+    chart_path="${1:-}"
+    service="$(grep name: "${chart_path}/Chart.yaml" | sed 's@name: cf-usb-sidecar-@@')"
+else
+    # Service by type
+    service="$(tr '[:upper:]' '[:lower:]' <<<"${1:-mysql}")"
+    chart_path="$(dirname "${0}")/../csm-extensions/services/dev-${service}/output/helm"
+    if ! test -r "${chart_path}/Chart.yaml" ; then
+        printf "Failed to find helm chart at %b%s%b\n" "\033[0;1;31m" "${chart_path}" "\033[0m" >&2
+        exit 1
+    fi
+fi
+shift 1
+
 host="${service^^}"
 extra=""
 case "${service}" in
@@ -33,8 +47,10 @@ helm list --all | \
     awk "\$NF == \"dev-${service}\" { print \$1 }" | \
     xargs --no-run-if-empty helm delete --purge
 
+printf "Deploying %b%s%b\n" "\033[0;1;32m" "dev-${service}" "\033[0m"
+
 helm install \
-    "$(dirname "${0}")/../csm-extensions/services/dev-${service}/output/helm" \
+    "${chart_path}" \
     --name "dev-${service}" \
     --namespace "dev-${service}" \
     --wait \
@@ -48,4 +64,4 @@ helm install \
     --set env.SERVICE_${host}_HOST=AUTO \
     --set kube.registry.hostname="${DOCKER_REPOSITORY:-docker.io}" \
     --set kube.organization="${DOCKER_ORGANIZATION:-splatform}" \
-    ${extra}
+    ${extra} "$@"

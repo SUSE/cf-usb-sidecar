@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"testing"
 
-	"github.com/hpcloud/go-csm-lib/extension"
+	"github.com/SUSE/go-csm-lib/extension"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-rabbitmq/config"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-rabbitmq/provisioner/provisionerfakes"
 	"github.com/pivotal-golang/lager/lagertest"

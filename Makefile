@@ -4,18 +4,8 @@ OK_GREEN_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_CYN_COLOR=\033[33;01m
 
-include version.mk
-
-ifeq ($(strip $(VERSION)),)
-    export VERSION := $(shell scripts/build_version.sh "VERSION")
-endif
-
-ifeq ($(strip $(APP_VERSION)),)
-	export APP_VERSION := $(shell VERSION=$(VERSION) scripts/build_version.sh "APP_VERSION")
-endif
-
 ifeq ($(strip $(APP_VERSION_TAG)),)
-	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) scripts/build_version.sh "APP_VERSION_TAG")
+	export APP_VERSION_TAG := $(shell scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
 # Set environment variables if they are not before starting.

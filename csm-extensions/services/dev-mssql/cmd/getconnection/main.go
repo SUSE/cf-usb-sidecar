@@ -6,7 +6,7 @@ import (
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mssql"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mssql/config"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mssql/provisioner"
-	"github.com/hpcloud/go-csm-lib/csm"
+	"github.com/SUSE/go-csm-lib/csm"
 	"github.com/pivotal-golang/lager"
 	"gopkg.in/caarlos0/env.v2"
 )

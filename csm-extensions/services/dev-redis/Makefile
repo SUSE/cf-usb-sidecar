@@ -11,12 +11,8 @@ endif
 export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-redis
 
-ifeq ($(strip $(VERSION)),)
-	export VERSION := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "VERSION")
-endif
-
 ifeq ($(strip $(APP_VERSION_TAG)),)
-	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+	export APP_VERSION_TAG := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
 export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-redis
@@ -90,11 +86,11 @@ test-integration: clean-all build-image build-service-image run-db run
 	export DOCKER_HOST_IP=$$SERVER_IP;\
 	echo "Testing against $$SERVER_IP:$(SIDECAR_EXTENSION_PORT)...\n";\
 	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
-	rez=`curl -i -k https://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-csm-token: $(SIDECAR_EXTENSION_TOKEN)" --silent | grep successful` ; \
+	rez=`curl -i http://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(SIDECAR_EXTENSION_TOKEN)" --silent | grep successful` ; \
 	while [ -z "$$rez" ] ; \
 	do n=$$(( $$n + 1 )) ;\
 	printf ".";\
-	rez=`curl -i -k https://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-csm-token: $(SIDECAR_EXTENSION_TOKEN)"  --silent | grep successful` ; \
+	rez=`curl -i http://$$SERVER_IP:$(SIDECAR_EXTENSION_PORT)/workspaces -X POST -d '{"workspace_id":"initial11"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(SIDECAR_EXTENSION_TOKEN)" --silent | grep successful` ; \
 	if [ $$n -ge 60 ] ;\
 	then echo "\n$(ERROR_COLOR)==>Docker took to long to wakeup or incorect setup $(NO_COLOR) "; break ;\
 	fi ;\

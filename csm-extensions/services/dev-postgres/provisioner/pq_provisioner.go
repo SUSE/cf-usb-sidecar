@@ -10,7 +10,7 @@ import (
 	"text/template"
 
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-postgres/config"
-	"github.com/hpcloud/go-csm-lib/util"
+	"github.com/SUSE/go-csm-lib/util"
 	_ "github.com/lib/pq"
 	"github.com/pivotal-golang/lager"
 )

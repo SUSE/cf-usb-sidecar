@@ -6,7 +6,7 @@ import (
 
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/config"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/provisioner/provisionerfakes"
-	"github.com/hpcloud/go-csm-lib/extension"
+	"github.com/SUSE/go-csm-lib/extension"
 	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"
 )

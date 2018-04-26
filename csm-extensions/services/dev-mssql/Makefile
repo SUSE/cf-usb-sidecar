@@ -13,12 +13,8 @@ endif
 export SIDECAR_ROOT:=${GOPATH}/src/github.com/SUSE/cf-usb-sidecar
 export SIDECAR_EXTENSION_ROOT:=${SIDECAR_ROOT}/csm-extensions/services/dev-mssql
 
-ifeq ($(strip $(VERSION)),)
-	export VERSION := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "VERSION")
-endif
-
 ifeq ($(strip $(APP_VERSION_TAG)),)
-	export APP_VERSION_TAG := $(shell VERSION=$(VERSION) ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
+	export APP_VERSION_TAG := $(shell ${SIDECAR_ROOT}/scripts/build_version.sh "APP_VERSION_TAG")
 endif
 
 export SIDECAR_EXTENSION_IMAGE_NAME:=cf-usb-sidecar-mssql
@@ -78,7 +74,7 @@ test-integration-manual: all
 	export TEST_SERVER_PORT=$(SERVER_PORT);\
 	export TEST_SERVER_TOKEN=$(TOKEN);\
 	echo "$(OK_COLOR)==>Waiting for docker to come online:$(NO_COLOR) ";n=0;\
-	until `curl -k https://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initialdbtestonly"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
+	until `curl http://$$SERVER_IP:$(SERVER_PORT)/workspaces -X POST -d '{"workspace_id":"initialdbtestonly"}' -H "Content-Type: application/json" -H "x-sidecar-token: $(TOKEN)" --fail --silent --output /dev/null`;\
 	do n=$$(( $$n + 1 )) ;\
 		printf ".";\
 		if [ $$n -ge 20 ] ;\

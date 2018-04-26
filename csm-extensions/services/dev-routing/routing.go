@@ -2,8 +2,8 @@ package routing
 
 import (
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-routing/config"
-	"github.com/hpcloud/go-csm-lib/csm"
-	"github.com/hpcloud/go-csm-lib/extension"
+	"github.com/SUSE/go-csm-lib/csm"
+	"github.com/SUSE/go-csm-lib/extension"
 	"github.com/pivotal-golang/lager"
 )
 

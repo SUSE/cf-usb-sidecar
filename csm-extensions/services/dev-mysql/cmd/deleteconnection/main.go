@@ -6,7 +6,7 @@ import (
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/config"
 	"github.com/SUSE/cf-usb-sidecar/csm-extensions/services/dev-mysql/provisioner"
-	"github.com/hpcloud/go-csm-lib/csm"
+	"github.com/SUSE/go-csm-lib/csm"
 	"github.com/pivotal-golang/lager"
 	"gopkg.in/caarlos0/env.v2"
 )

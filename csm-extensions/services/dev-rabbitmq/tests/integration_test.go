@@ -11,7 +11,6 @@ import (
 	"testing"
 	"time"
 
-	"crypto/tls"
 	"github.com/fsouza/go-dockerclient"
 	swaggerClient "github.com/go-swagger/go-swagger/client"
 	httpClient "github.com/go-swagger/go-swagger/httpkit/client"
@@ -21,7 +20,6 @@ import (
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/client/workspace"
 	"github.com/SUSE/cf-usb-sidecar/generated/CatalogServiceManager-client/models"
 	"github.com/stretchr/testify/assert"
-	"net/http"
 )
 
 const WORKSPACE_ID = "test_workspace"
@@ -49,10 +47,7 @@ func initTest() {
 	csmExtensionPort = os.Getenv("SIDECAR_EXTENSION_PORT")
 
 	transportHost = fmt.Sprintf("%s:%s", csmExtensionHost, csmExtensionPort)
-	transport = httpClient.New(transportHost, "", []string{"https"})
-	transport.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
+	transport = httpClient.New(transportHost, "", []string{"http"})
 	client = csmClient.New(transport, strfmt.Default)
 	authFunc = httpClient.APIKeyAuth("x-sidecar-token", "header", csmExtensionToken)
 }

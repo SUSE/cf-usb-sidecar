@@ -58,7 +58,7 @@ function retry () {
 status "Installing the CC CA certificate ..."
 . "${BIN_DIR}/authorize_ca.sh"
 
-cf install-plugin -f /usr/local/bin/cf-plugin-usb
+cf install-plugin -f /usr/local/bin/cf-usb-plugin
 
 status "Waiting for CC ..."
 retry 240 30s cf api "api.${CF_DOMAIN}"

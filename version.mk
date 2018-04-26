@@ -1,2 +1,0 @@
-export VERSION=${VERSION:-0.1.0}
-export MAJOR_MINOR=0.1

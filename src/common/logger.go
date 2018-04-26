@@ -1,6 +1,6 @@
 /*
 Logger implementation, using this as is from
-github.com/hpcloud/cf-usb/cmd/usb/logger.go
+github.com/SUSE/cf-usb/cmd/usb/logger.go
 */
 
 package common
