@@ -64,7 +64,10 @@ tar -x -C "stable/${bundle}" -f ../bundle.tgz
 rm -f "stable/${bundle}/templates/db.yaml"
 
 # Fix up the registry host name to the prod server
-sed -i 's@^\(\s\+\)hostname:\s\+".*"$@\1hostname: "registry.suse.com"@' "stable/${bundle}/values.yaml"
+perl -p -i -e "
+  s@^(\\s+)hostname:\\s*(\"?)(.+)\\2\$@\\1hostname: ${OVERRIDE_DOCKER_REGISTRY:-\\3}@ ;
+  s@^(\\s+)organization:\\s*(\"?)(.+)\\2\$@\\1organization: ${OVERRIDE_DOCKER_ORGANIZATION:-\\3}@ ;
+" "stable/${bundle}/values.yaml"
 
 $HUB config user.email "cf-ci-bot@suse.de"
 $HUB config user.name "${GITHUB_USER}"
@@ -74,4 +77,4 @@ $HUB commit -m "Submitting ${versioned_bundle}"
 $HUB push origin "${versioned_bundle}"
 
 # Open a Pull Request, head: current branch, base: master
-$HUB pull-request -m "${versioned_bundle} submitted by ${SOURCE_BUILD:-<unknown build>}" -b master
+$HUB pull-request -m "${versioned_bundle} submitted by ${SOURCE_BUILD:-<unknown build>}" -b "${GITHUB_ORGANIZATION}/kubernetes-charts-suse-com:master"
