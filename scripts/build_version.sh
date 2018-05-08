@@ -9,7 +9,7 @@ set -o errexit -o nounset
 env_var_to_echo=$1
 
 git fetch --tags
-export APP_VERSION_TAG=$(git describe --tags --long)
+export APP_VERSION_TAG=$(git describe --tags)
 
 set +o errexit +o nounset +o xtrace
 
