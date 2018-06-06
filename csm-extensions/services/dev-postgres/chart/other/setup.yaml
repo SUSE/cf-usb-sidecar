@@ -18,20 +18,20 @@ spec:
               key: "cf-admin-password"
               name: "cf-usb-sidecar-postgres-secret"
         - name: "CF_ADMIN_USER"
-          value: {{ required "CF_ADMIN_USER configuration missing" .Values.env.CF_ADMIN_USER | quote }}
+          value: {{ template "getvar" (dict "ctx" . "names" (list "CF_ADMIN_USER")) }}
         - name: "CF_CA_CERT"
           valueFrom:
             secretKeyRef:
               key: "cf-ca-cert"
               name: "cf-usb-sidecar-postgres-secret"
         - name: "CF_DOMAIN"
-          value: {{ required "CF_DOMAIN configuration missing" .Values.env.CF_DOMAIN | quote }}
+          value: {{ template "getvar" (dict "ctx" . "names" (list "CF_DOMAIN")) }}
         - name: "KUBERNETES_NAMESPACE"
           valueFrom:
             fieldRef:
               fieldPath: "metadata.namespace"
         - name: "SERVICE_LOCATION"
-          value: {{ required "SERVICE_LOCATION configuration missing" .Values.env.SERVICE_LOCATION | quote }}
+          value: {{ template "getvar" (dict "ctx" . "names" (list "SERVICE_LOCATION") "default" (printf "http://cf-usb-sidecar-postgres.%s:8081" .Release.Namespace)) }}
         - name: "SERVICE_TYPE"
           value: {{ .Values.env.SERVICE_TYPE | quote }}
         - name: "SIDECAR_API_KEY"
