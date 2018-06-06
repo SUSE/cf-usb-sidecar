@@ -5,11 +5,12 @@ env:
   CF_CA_CERT: ~
   CF_DOMAIN: ~
   SERVICE_LOCATION: ~
-  SERVICE_POSTGRESQL_HOST: ~
-  SERVICE_POSTGRESQL_PASS: cf-usb-sidecar-postgres-admin-password
-  SERVICE_POSTGRESQL_PORT: 5432
-  SERVICE_POSTGRESQL_SSLMODE: require
-  SERVICE_POSTGRESQL_USER: postgres
+  SERVICE_POSTGRESQL_HOST: ~                                       # The preferred name for this is "PGHOST"
+  SERVICE_POSTGRESQL_PASS: cf-usb-sidecar-postgres-admin-password  # The preferred name for this is "PGPASSWORD"
+  SERVICE_POSTGRESQL_PORT: 5432                                    # The preferred name for this is "PGPORT"
+  SERVICE_POSTGRESQL_SSLMODE: require                              # The preferred name for this is "PGSSLMODE"
+  SERVICE_POSTGRESQL_USER: postgres                                # The preferred name for this is "PGUSER"
+  PGDATABASE: postgres
   SERVICE_TYPE: postgres
   SIDECAR_LOG_LEVEL: info
   UAA_CA_CERT: ~
