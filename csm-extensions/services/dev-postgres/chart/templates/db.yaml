@@ -2,7 +2,7 @@
 # The postgres role contains a plain postgres server
 # This is only deployed if this  helm chart was deployed with a host of "AUTO"
 
-{{ if eq ( .Values.env.SERVICE_POSTGRESQL_HOST | quote ) ( "AUTO" | quote ) }}
+{{ if eq ( .Values.env.PGHOST | quote ) ( "AUTO" | quote ) }}
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
@@ -26,7 +26,7 @@ spec:
               key: service-postgres-pass
               name: cf-usb-sidecar-postgres-secret
         - name: POSTGRES_USER
-          value: {{ required "SERVICE_POSTGRESQL_USER configuration missing" .Values.env.SERVICE_POSTGRESQL_USER | quote }}
+          value: {{ template "getvar" (dict "ctx" . "names" (list "PGUSER" "SERVICE_POSTGRESQL_USER")) }}
         image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-postgres-db:latest"
         readinessProbe:
           initialDelaySeconds: 10
@@ -67,7 +67,7 @@ items:
   spec:
     ports:
     - name: postgres
-      port: {{ required "SERVICE_POSTGRESQL_PORT configuration missing" .Values.env.SERVICE_POSTGRESQL_PORT }}
+      port: {{ template "getvar" (dict "ctx" . "names" (list "PGPORT" "SERVICE_POSTGRESQL_PORT") "quote" false) }}
       protocol: TCP
       targetPort: postgres
     selector:

@@ -5,3 +5,6 @@ docker build -t ${SIDECAR_EXTENSION_IMAGE_NAME}:${SIDECAR_EXTENSION_IMAGE_TAG} -
 if test -f Dockerfile-setup ; then
     docker build -t ${SIDECAR_SETUP_IMAGE_NAME}:${SIDECAR_SETUP_IMAGE_TAG}     --rm ${SIDECAR_PARENT_IMAGE:+--build-arg base_image=${SIDECAR_PARENT_IMAGE}} -f Dockerfile-setup .
 fi
+if test -f Dockerfile-db ; then
+    docker build -t ${SIDECAR_EXTENSION_SVC_IMAGE_NAME}:${SIDECAR_EXTENSION_SVC_IMAGE_TAG}     --rm ${SIDECAR_PARENT_IMAGE:+--build-arg base_image=${SIDECAR_PARENT_IMAGE}} -f Dockerfile-db .
+fi
