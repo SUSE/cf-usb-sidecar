@@ -41,3 +41,13 @@ make helm
 |SERVICE_MYSQL_USER	|root		|User to access the mysql database		|
 |SERVICE_TYPE		|mysql		|The name used to register the sidecar with SCF	|
 |UAA_CA_CERT		|?		|The UAA CA cert   				|
+
+
+## Mysql version compatibility note
+
+Currently, the mysql sidecar will only work with deployments which use
+`mysql_native_password` as their authentication plugin `--default-auth`. This is the
+default for myql versions 8.0.3 and earlier, but later versions will need to be started
+with `--default-auth=mysql_native_password` *before* any user creation, in order to work.
+
+See [go-sql-driver/mysql Issue #785](https://github.com/go-sql-driver/mysql/issues/785) for more information.
