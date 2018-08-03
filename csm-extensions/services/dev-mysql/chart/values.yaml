@@ -18,7 +18,7 @@ kube:
     persistent: "persistent"
     shared: "shared"
   registry:
-    hostname: "docker.io"
+    hostname: "registry.suse.com"
     username: ""
     password: ""
-  organization: "splatform"
+  organization: "cap"
