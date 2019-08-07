@@ -16,7 +16,7 @@ spec:
       name: "cf-usb-sidecar-mysql"
     spec:
       containers:
-      - image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-mysql:1.0.1"
+      - image: "{{ .Values.kube.registry.hostname }}/{{ .Values.kube.organization }}/cf-usb-sidecar-mysql:latest"
         name: "cf-usb-sidecar-mysql"
         env:
         - name: "KUBERNETES_NAMESPACE"
