@@ -9,59 +9,16 @@
 # environment script we do things to ensure that we have an acceptable
 # environment.
 
-# And snarfed from
-# https://github.com/SUSE/fissile/blob/master/scripts/dockerfiles/run.sh#L32
-# a supporting function to determine the OS we are running on.
-# Notes:
-# - Removed `$chroot` reference. Unclear where it came from in the
-#   original script, and not needed here.
-# - Added /etc/os-release and detection of debian, that is the base OS
-#   for the sidecar images, at the moment.
-
-function get_os_type {
-    centos_file=/etc/centos-release
-    rhel_file=/etc/redhat-release
-    ubuntu_file=/etc/lsb-release
-    photonos_file=/etc/photon-release
-    opensuse_file=/etc/SuSE-release
-    general_file=/etc/os-release
-
-    os_type=''
-    if [ -f $photonos_file ]
-    then
-	os_type='photonos'
-    elif [ -f $ubuntu_file ]
-    then
-	os_type='ubuntu'
-    elif [ -f $centos_file ]
-    then
-	os_type='centos'
-    elif [ -f $rhel_file ]
-    then
-	os_type='rhel'
-    elif [ -f $opensuse_file ]
-    then
-	os_type='opensuse'
-    elif [ -f $general_file ]
-    then
-	if grep -qsi 'debian' $general_file
-	then
-	    os_type='debian'
-	fi
+for ca_path in $(echo '
+    /etc/pki/trust/anchors
+    /usr/local/share/ca-certificates
+') ; do
+    if test -d "${ca_path}" ; then
+        break
     fi
-
-    echo $os_type
-}
-
-os_type=$(get_os_type)
-if [ "$os_type" == "ubuntu" ]; then
-    ca_path=/usr/local/share/ca-certificates
-elif [ "$os_type" == "debian" ]; then
-    ca_path=/usr/local/share/ca-certificates
-elif [ "$os_type" == "opensuse" ]; then
-    ca_path=/etc/pki/trust/anchors
-else
-    printf "Error: unknown operating system '${os_type}'"
+done
+if ! test -d "${ca_path}" ; then
+    printf "Error: Unable to find local CA certificate directory\n" >&2
     exit 1
 fi
 
